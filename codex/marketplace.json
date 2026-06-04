@@ -1,0 +1,20 @@
+{
+  "name": "personal",
+  "interface": {
+    "displayName": "Personal"
+  },
+  "plugins": [
+    {
+      "name": "agentlas-core-engine-meta-agent",
+      "source": {
+        "source": "local",
+        "path": "./plugins/agentlas-core-engine-meta-agent"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "AI Agents"
+    }
+  ]
+}

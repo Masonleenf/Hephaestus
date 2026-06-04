@@ -1,0 +1,23 @@
+---
+name: public-plugin-packaging
+description: "Use when packaging this meta-agent for public Codex plugin registration, Claude Code installation, GitHub release, one-line terminal install, or open-source distribution."
+---
+
+# Public Plugin Packaging
+
+## Checklist
+
+- `codex/marketplace.json` exists.
+- Codex plugin has `.codex-plugin/plugin.json`.
+- Codex plugin includes at least one `SKILL.md`.
+- `.claude/commands/meta-agent.md` exists.
+- `.claude/agents/agentlas-core-engine-meta-agent.md` exists.
+- `.claude/skills/agentlas-core-engine-meta-agent/SKILL.md` exists.
+- `scripts/install.sh` supports one-line installation.
+- `scripts/verify-package.sh` passes.
+- `scripts/public_safety_check.sh` passes.
+
+## Public Boundary
+
+Publish schemas, templates, prompts, and adapters. Do not publish hosted service
+secrets, private research notes, raw logs, or local machine paths.

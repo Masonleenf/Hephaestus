@@ -1,0 +1,83 @@
+{
+  "schemaVersion": "1.0",
+  "defaultMode": "single-agent-creator",
+  "modes": {
+    "single-agent-creator": {
+      "contract": "modes/single-agent-creator.md",
+      "agent": "agents/10-single-agent-builder/agent.md",
+      "primarySkill": "skills/self-evolving-single-agent/SKILL.md",
+      "useWhen": [
+        "one installable worker",
+        "multiple skills inside one worker",
+        "self-evolving or research-refresh agent",
+        "no requested roster or team topology"
+      ],
+      "mustInclude": [
+        "AGENTS.md",
+        ".agents/skills",
+        ".agentlas/memory-map.json",
+        ".agentlas/memory-tickets.jsonl",
+        ".agentlas/vault-references.json",
+        ".agentlas/agent-card.json",
+        "runtime adapters"
+      ],
+      "mustNotInclude": [
+        "invented company roster",
+        "unrequested HQ swarm",
+        "autonomous self-modification without approval"
+      ]
+    },
+    "team-builder": {
+      "contract": "modes/team-builder.md",
+      "agent": "agents/20-multi-agent-team-builder/agent.md",
+      "primarySkill": "skills/team-builder-packaging/SKILL.md",
+      "useWhen": [
+        "multi-role team",
+        "orchestrator or HQ",
+        "roster, departments, debate, review gates, or parallel ownership",
+        "company-style topology"
+      ],
+      "mustInclude": [
+        "orchestrator/HQ",
+        "PM Soul",
+        "Memory Curator",
+        "Policy Gate",
+        "worker roles",
+        "eval judge",
+        "QA/evidence gate",
+        "Memory Tickets",
+        "runtime adapters"
+      ],
+      "mustNotInclude": [
+        "team collapsed into a lone helper",
+        "peer worker calls without HQ/project owner routing",
+        "release without eval and package verification"
+      ]
+    },
+    "agentlas-packager": {
+      "contract": "modes/agentlas-packager.md",
+      "agent": "agents/30-agentlas-packager/agent.md",
+      "primarySkill": "skills/agentlas-packaging/SKILL.md",
+      "useWhen": [
+        "existing local agent or prompt",
+        "existing Claude, Codex, Gemini, Cursor, or AGENTS.md repo",
+        "existing external public repo or zip",
+        "package for Agentlas, Codex plugin, Claude adapter, local install, or open source"
+      ],
+      "mustInclude": [
+        "canonical AGENTS.md core",
+        ".agentlas contracts",
+        "runtime adapters",
+        "manifest",
+        "verification scripts",
+        "public/private boundary cleanup"
+      ],
+      "mustNotInclude": [
+        "private local research notes",
+        "secrets or credential values",
+        "raw logs or full transcripts",
+        "unverified runtime parity claims"
+      ]
+    }
+  }
+}
