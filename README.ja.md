@@ -1,0 +1,271 @@
+<p align="center">
+  <a href="https://agentlas.cloud">
+    <img src="assets/agentlas-agent-lab-banner.svg" alt="Agentlas Agent Lab banner">
+  </a>
+</p>
+
+<h1 align="center">agentlas-meta-agent</h1>
+
+<p align="center">
+  <strong>ラフな agent アイデアを、インストール可能な Agentlas agent/team リポジトリに変換します。</strong>
+</p>
+
+<p align="center">
+  単体の専門 agent、マルチ agent チーム、既存の Claude/Codex/OpenClaw/Hermes ワークスペースを、公開可能な Agentlas パッケージとして整えます。
+</p>
+
+<p align="center">
+  <a href="README.md">English</a>
+  ·
+  <a href="README.ko.md">한국어</a>
+  ·
+  <a href="README.zh-CN.md">中文</a>
+  ·
+  <a href="README.ja.md">日本語</a>
+  ·
+  <a href="README.hi.md">हिन्दी</a>
+</p>
+
+<p align="center">
+  <img src="assets/agentlas-meta-agent-architecture.svg" alt="Agentlas Meta-Agent architecture decomposition">
+</p>
+
+---
+
+## Quickstart
+
+インストール方法は 3 つあります。Agentlas のフルローカル runtime が必要なら **1 + 3** を使います。Claude Code、Codex、通常の project folder にこの package だけを直接入れたい場合は **2** を使います。
+
+| パス | 向いている用途 | 何を開くか |
+|---|---|---|
+| 1. Agentlas Terminal | shell から Agentlas agents を実行する | 先に Agentlas Desktop、その後 macOS Terminal / Windows PowerShell / Linux terminal |
+| 2. agentlas-meta-agent standalone | Claude Code、Codex、通常 repo に直接入れる | Claude Code、Codex、または OS terminal |
+| 3. Agentlas Desktop | visual local runtime、agent/team 管理、vault、Apps | browser で download し、Agentlas Desktop app を開く |
+
+### 1. Agentlas Terminal をインストール
+
+Agentlas Terminal は **Agentlas Desktop** からインストールします。Desktop を入れた後、app 内で次を開きます。
+
+```text
+Agentlas Desktop -> Settings -> Use from the terminal (`agentlas` CLI) -> Install CLI
+```
+
+その後、通常の terminal を開いて `agentlas` を実行します。
+
+**macOS Terminal**
+
+```bash
+arch=$([ "$(uname -m)" = "arm64" ] && echo arm64 || echo x64)
+curl -fL "https://agentlas.cloud/api/desktop/download?arch=${arch}" -o Agentlas.dmg
+open Agentlas.dmg
+```
+
+**Windows PowerShell**
+
+```powershell
+$r = Invoke-RestMethod https://api.github.com/repos/jeongmk522-netizen/agentlas-desktop/releases/latest
+$u = ($r.assets | Where-Object { $_.name -like '*Windows-x64-Setup.exe' }).browser_download_url
+Invoke-WebRequest $u -OutFile "$env:TEMP\AgentlasSetup.exe"
+Start-Process "$env:TEMP\AgentlasSetup.exe"
+```
+
+**Linux terminal, AppImage**
+
+```bash
+url=$(curl -fsSL https://api.github.com/repos/jeongmk522-netizen/agentlas-desktop/releases/latest \
+  | grep -o 'https://[^"]*Linux-x64\.AppImage' | head -1)
+curl -fL "$url" -o Agentlas.AppImage
+chmod +x Agentlas.AppImage
+./Agentlas.AppImage
+```
+
+**Linux terminal, Debian/Ubuntu**
+
+```bash
+url=$(curl -fsSL https://api.github.com/repos/jeongmk522-netizen/agentlas-desktop/releases/latest \
+  | grep -o 'https://[^"]*Linux-x64\.deb' | head -1)
+curl -fL "$url" -o agentlas.deb
+sudo dpkg -i agentlas.deb
+```
+
+Desktop Settings で CLI をインストールした後:
+
+```bash
+agentlas list
+agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
+```
+
+### 2. agentlas-meta-agent を standalone でインストール
+
+#### Simple file install
+
+package files を入れたい project folder で macOS Terminal、Linux terminal、Windows Git Bash、または WSL を開きます。
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.5/scripts/install.sh | bash
+scripts/verify-package.sh
+scripts/public_safety_check.sh
+```
+
+Windows PowerShell:
+
+```powershell
+$zip = "$env:TEMP\agentlas-meta-agent-v0.1.5.zip"
+$extract = "$env:TEMP\agentlas-meta-agent-v0.1.5"
+Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.5.zip" -OutFile $zip
+Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
+Expand-Archive $zip -DestinationPath $extract -Force
+$src = Get-ChildItem $extract -Directory | Select-Object -First 1
+Get-ChildItem $src.FullName -Force | Copy-Item -Destination (Get-Location) -Recurse -Force
+```
+
+#### Claude Code plugin install
+
+marketplace 登録と plugin install は別の手順です。marketplace command は Claude Code にこの repo の場所を教えるだけで、install command が実際に plugin を入れます。インストール後は reload します。
+
+**Claude Code chat の中で入力**:
+
+```text
+/plugin marketplace add https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --sparse .claude-plugin claude/plugins
+/plugin install agentlas-meta-agent@agentlas-core-engine
+/reload-plugins
+/plugin list
+```
+
+**`claude` CLI が使える OS terminal で入力**:
+
+```bash
+claude plugin marketplace add https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --sparse .claude-plugin claude/plugins
+claude plugin install agentlas-meta-agent@agentlas-core-engine
+```
+
+期待される結果:
+
+```text
+✓ Installed agentlas-meta-agent. Run /reload-plugins to apply.
+Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers · 0 plugin LSP servers
+```
+
+#### Codex plugin install
+
+**Codex chat の中で入力**:
+
+```text
+/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+/plugin install agentlas-meta-agent@agentlas-core-engine
+/reload-plugins
+/plugin list
+```
+
+**`codex` CLI が使える OS terminal で入力**:
+
+```bash
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+codex plugin list
+codex plugin add agentlas-meta-agent@agentlas-core-engine
+codex plugin list
+```
+
+Codex session がすでに開いている場合は `/reload-plugins` を実行するか、新しい session を開始してください。
+
+### 3. Agentlas Desktop をインストール
+
+browser で次を開きます。
+
+```text
+https://agentlas.cloud/desktop
+```
+
+Desktop は local projects、agents、teams、Apps、vault references、runtime selection、built-in Core Engine Meta-Agent routing、`agentlas` CLI installer を提供します。
+
+## 何を開き、どこに入力するか
+
+| 作業 | 開くもの | 入力先 |
+|---|---|---|
+| Desktop を download | browser | `https://agentlas.cloud/desktop` または OS 別 download command |
+| `agentlas` CLI を install | Agentlas Desktop | Settings -> Use from the terminal -> Install CLI |
+| Agentlas Terminal を実行 | OS terminal | `agentlas list`, `agentlas run ...` |
+| Claude plugin を slash command で install | Claude Code | `/plugin marketplace add ...`, `/plugin install ...`, `/reload-plugins` |
+| Claude plugin を shell で install | OS terminal | `claude plugin marketplace add ...`, `claude plugin install ...` |
+| Codex plugin を slash command で install | Codex chat | `/plugin marketplace add ...`, `/plugin install ...`, `/reload-plugins` |
+| Codex plugin を shell で install | OS terminal | `codex plugin marketplace add ...`, `codex plugin add ...` |
+
+## 何を生成するか
+
+`agentlas-meta-agent` は prompt だけを返すものではありません。他の runtime が読めて、install できて、verify できて、継続的に改善できる repository を残します。
+
+| 依頼 | ルート | 結果 |
+|---|---|---|
+| "X を行う agent を作って" | `10-single-agent-builder` | skills、memory contracts、runtime adapters、verification を持つ single worker |
+| "この workflow の team/company を作って" | `20-multi-agent-team-builder` | HQ、PM Soul、Memory Curator、Policy Gate、eval、QA、handoff を持つ multi-agent team |
+| "既存 agent/repo/workspace を package して" | `30-agentlas-packager` | Desktop import、terminal、Codex、Claude、Gemini、public GitHub release に対応した Agentlas package |
+
+## Architecture
+
+public core は architecture/foldering contract です。Claude、Codex、Gemini、Desktop、Terminal folders は同じ core の上にある thin adapters であり、別の source of truth ではありません。
+
+| Public contract | 役割 |
+|---|---|
+| Mode auto-detection | `single-agent-creator`、`team-builder`、`agentlas-packager` のどれかを先に選びます。 |
+| Clarify question loop | runtime、public/private boundary、tools、safety に影響する質問だけをします。 |
+| `.agentlas` auto-activation | local runtime が project memory、sitemap/task-bias、Memory Tickets、vault references を seed できるようにします。 |
+| Skill lifecycle registry | skill を candidate metadata として開始し、trial ledger と Curator decision ledger を保持します。 |
+
+default export は保守的です。生成された skill は自動で first-class recall になりません。Curator が execution evidence、sealed holdout/replay、rollback、workspace policy approval を確認してから昇格します。
+
+## Agentlas Desktop と Terminal を併用する利点
+
+- Desktop で agent/team structure、local projects、Apps、vault references、runtime choices を確認できます。
+- Terminal では同じ package を `agentlas` command で実行できます。
+- Desktop/Terminal には Core Engine Meta-Agent path が内蔵されているため、別途 standalone plugin を入れなくても agent creation/package work を開始できます。
+- standalone Claude/Codex install は、その runtime に package を直接入れたい場合に有効です。
+
+## Compare
+
+| 比較対象 | 強み | `agentlas-meta-agent` が追加するもの |
+|---|---|---|
+| OpenAI / Codex | 強力な model と coding terminal | portable repo contracts、`.agentlas` memory/package files、skills、schemas、runtime adapters、public verification |
+| Claude / Claude Code | 強力な reasoning と Claude-native workflow | Claude-only ではなく、Codex、Gemini、Desktop、Terminal、`AGENTS.md` も揃えます |
+| OpenClaw | local identity と workspace agent loop | visible role folders、Agentlas package contracts、public-safety checks、Desktop import、vault references |
+| Hermes | persona と memory-centered local runtime | PM Soul、Memory Tickets、sitemap/task-bias、policy/eval/QA、skill lifecycle evidence |
+
+OpenAI と Claude は model/runtime surfaces です。OpenClaw と Hermes は local-agent experiences です。`agentlas-meta-agent` は agent を portable、inspectable、installable、publishable にする package layer です。
+
+## 使い方
+
+```text
+/meta-agent Create a research agent for SEC filing analysis.
+Package it for Codex, Claude Code, Gemini, and Agentlas Desktop.
+```
+
+```text
+Use agentlas-meta-agent.
+Build a customer-support operations team with PM Soul, Memory Curator, Policy Gate, QA, eval, and public-safe release checks.
+```
+
+```text
+Package this local OpenClaw/Hermes-style workspace into Agentlas architecture.
+Keep private notes, machine paths, raw logs, and secrets out of the public repo.
+```
+
+## Docs
+
+| 目的 | 文書 |
+|---|---|
+| canonical route を理解する | [`AGENTS.md`](AGENTS.md) |
+| team contract を見る | [`agent.md`](agent.md) |
+| source of truth を見る | [`docs/source-of-truth.md`](docs/source-of-truth.md) |
+| runtime boundaries を理解する | [`docs/runtime-sync-boundaries.md`](docs/runtime-sync-boundaries.md) |
+| mode を選ぶ | [`docs/mode-classifier.md`](docs/mode-classifier.md) |
+| package を verify する | [`scripts/verify-package.sh`](scripts/verify-package.sh) |
+| public safety を check する | [`scripts/public_safety_check.sh`](scripts/public_safety_check.sh) |
+
+## Public Safety Boundary
+
+この repo には hosted Agentlas billing/account logic、production credentials、customer data、raw private logs、raw transcripts、desktop keychain storage、local database implementation、private deployment configuration を含めません。
+
+public package には local machine paths、API keys、tokens、private keys、service-account JSON、`.env` secrets、private research notes、raw chat transcripts、customer logs、hosted billing/account/OAuth internals、desktop storage internals を入れないでください。
+
+## License
+
+Apache-2.0。詳しくは [`LICENSE`](LICENSE) を確認してください。

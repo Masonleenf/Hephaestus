@@ -3,7 +3,7 @@ set -euo pipefail
 
 target="${1:-$PWD}"
 force="${AGENTLAS_META_OS_FORCE:-0}"
-repo_tarball="${AGENTLAS_META_OS_TARBALL_URL:-https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.4.tar.gz}"
+repo_tarball="${AGENTLAS_META_OS_TARBALL_URL:-https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.5.tar.gz}"
 
 usage() {
   cat <<'EOF'
@@ -67,7 +67,7 @@ copy_dir() {
   fi
 }
 
-for file in AGENTS.md CLAUDE.md GEMINI.md README.md ARCHITECTURE.md agent.md manifest.json LICENSE SECURITY.md; do
+for file in AGENTS.md CLAUDE.md GEMINI.md README.md README.ko.md README.zh-CN.md README.ja.md README.hi.md ARCHITECTURE.md agent.md manifest.json LICENSE SECURITY.md; do
   copy_root_file "$file"
 done
 
