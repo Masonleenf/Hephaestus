@@ -123,7 +123,7 @@ agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
 **macOS / Linux / Windows Git Bash or WSL**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.3/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.4/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -131,9 +131,9 @@ scripts/public_safety_check.sh
 **Windows PowerShell**
 
 ```powershell
-$zip = "$env:TEMP\agentlas-meta-agent-v0.1.3.zip"
-$extract = "$env:TEMP\agentlas-meta-agent-v0.1.3"
-Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.3.zip" -OutFile $zip
+$zip = "$env:TEMP\agentlas-meta-agent-v0.1.4.zip"
+$extract = "$env:TEMP\agentlas-meta-agent-v0.1.4"
+Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.4.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -168,7 +168,7 @@ Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers ·
 **Codex shell**
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.4
 codex plugin list
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 codex plugin list
@@ -177,7 +177,7 @@ codex plugin list
 **Codex slash commands**
 
 ```text
-/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
+/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.4
 /plugin install agentlas-meta-agent@agentlas-core-engine
 /reload-plugins
 /plugin list
@@ -237,14 +237,14 @@ scripts/public_safety_check.sh
 
 The public core is the architecture and foldering contract. Runtime-specific folders are adapters over the same core, not separate sources of truth. Figure 1 decomposes the flow from request shaping to generated package contracts, memory governance, skill promotion, and runtime sync boundaries.
 
-This architecture update promotes four pieces into the public contract:
+The current public contract includes the pieces that used to live only in runtime implementations:
 
 | Public contract | What it does |
 |---|---|
 | Mode auto-detection | Chooses `single-agent-creator`, `team-builder`, or `agentlas-packager` before generation |
 | Clarify question loop | Asks only the package-shaping questions that affect runtime, public boundary, tools, or safety |
 | `.agentlas` auto-activation | Lets local runtimes seed project memory, sitemap/task-bias, Memory Tickets, and vault references when a folder becomes an Agentlas workspace |
-| Skill lifecycle registry | Ships skills as candidate metadata first, with trial ledgers and Curator decisions before first-class recall |
+| Skill lifecycle registry | Ships `.agentlas/skill-registry.json`, empty trial ledgers, and Curator decision ledgers before first-class recall |
 
 ## Features
 
@@ -259,6 +259,8 @@ This architecture update promotes four pieces into the public contract:
 | **Runtime adapters** | The same core can be read by Codex, Claude Code, Gemini CLI, Cursor-style tools, and generic `AGENTS.md` runtimes. |
 | **Desktop and terminal built-in path** | Agentlas Desktop and `agentlas` CLI can route core meta-agent work locally without requiring a separate public package install. |
 | **Public-safe release checks** | `verify-package.sh` and `public_safety_check.sh` catch missing contracts, stale IDs, private paths, and common secret patterns. |
+
+The default export state is deliberately conservative: generated skills are searchable candidate metadata, not automatically promoted runtime behavior. A local Curator must see execution evidence, sealed holdout or replay proof, rollback coverage, and workspace policy approval before a skill becomes first-class recall.
 
 ## Why This Exists
 
@@ -318,7 +320,7 @@ claude plugin install agentlas-meta-agent@agentlas-core-engine
 ### Codex
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.4
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 codex plugin list
 ```
@@ -326,7 +328,7 @@ codex plugin list
 ### Plain Project Folder
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.3/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.4/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -408,7 +410,7 @@ claude plugin install agentlas-meta-agent@agentlas-core-engine
 ```
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.4
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 ```
 
@@ -422,7 +424,7 @@ claude plugin install agentlas-meta-agent@agentlas-core-engine
 ```
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.4
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 ```
 
@@ -436,7 +438,7 @@ claude plugin install agentlas-meta-agent@agentlas-core-engine
 ```
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.4
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 ```
 
@@ -450,7 +452,7 @@ claude plugin install agentlas-meta-agent@agentlas-core-engine
 ```
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.4
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 ```
 
@@ -464,7 +466,7 @@ claude plugin install agentlas-meta-agent@agentlas-core-engine
 ```
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.4
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 ```
 
