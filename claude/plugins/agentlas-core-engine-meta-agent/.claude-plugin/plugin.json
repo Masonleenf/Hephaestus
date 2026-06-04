@@ -1,0 +1,13 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "agentlas-core-engine-meta-agent",
+  "version": "0.1.1",
+  "description": "Three-agent meta-agent team for creating single agents, creating multi-agent teams, and packaging existing agents into Agentlas architecture.",
+  "author": {
+    "name": "Agentlas",
+    "email": "jeongmk522-netizen@users.noreply.github.com"
+  },
+  "skills": [
+    "./"
+  ]
+}

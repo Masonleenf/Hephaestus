@@ -1,0 +1,23 @@
+{
+  "name": "agentlas-core-engine",
+  "owner": {
+    "name": "Agentlas",
+    "email": "jeongmk522-netizen@users.noreply.github.com"
+  },
+  "metadata": {
+    "description": "Agentlas Core Engine plugins for Claude Code.",
+    "version": "0.1.1"
+  },
+  "plugins": [
+    {
+      "name": "agentlas-core-engine-meta-agent",
+      "description": "Three-agent meta-agent team for creating single agents, creating multi-agent teams, and packaging existing agents into Agentlas architecture.",
+      "version": "0.1.1",
+      "author": {
+        "name": "Agentlas",
+        "email": "jeongmk522-netizen@users.noreply.github.com"
+      },
+      "source": "./plugins/agentlas-core-engine-meta-agent"
+    }
+  ]
+}

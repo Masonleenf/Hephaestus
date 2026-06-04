@@ -33,6 +33,8 @@ agents. They are not extra members of this meta-agent team.
   memory map, Memory Tickets, vault references, and validation ledger.
 - Thin adapters for Codex, Claude Code, Gemini CLI, and generic `AGENTS.md`
   runtimes.
+- Claude-native plugin root under
+  `claude/plugins/agentlas-core-engine-meta-agent/`.
 - One-line terminal install for any local project.
 
 ## One-Line Install
@@ -40,13 +42,13 @@ agents. They are not extra members of this meta-agent team.
 Run this from the project where you want the meta-agent team available:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.0/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.1/scripts/install.sh | bash
 ```
 
 To install into a different folder:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.0/scripts/install.sh | bash -s -- /path/to/project
+curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.1/scripts/install.sh | bash -s -- /path/to/project
 ```
 
 ## Repository Map
@@ -63,6 +65,7 @@ curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_c
 ├── .agents/                          # portable runtime-discovered core
 ├── .agentlas/                        # mode, memory, sitemap, package contracts
 ├── .claude/                          # Claude command/agent/skill adapters
+├── claude/                            # Claude Code plugin package
 ├── .gemini/                          # Gemini adapter
 ├── codex/                            # Codex public plugin package scaffold
 ├── docs/                             # chain, PM, memory, runtime architecture
