@@ -7,11 +7,11 @@
 <h1 align="center">agentlas-meta-agent</h1>
 
 <p align="center">
-  <strong>Build installable AI agents and multi-agent teams from one rough idea.</strong>
+  <strong>Turn one rough agent idea into an installable agent operating system.</strong>
 </p>
 
 <p align="center">
-  Create one agent, create a full agent team, or package an existing Claude/Codex/OpenClaw/Hermes workspace into a public-safe Agentlas repo.
+  Build one specialist, assemble a multi-agent team, or package an existing Claude/Codex/OpenClaw/Hermes workspace into a public-safe Agentlas repo.
 </p>
 
 <p align="center">
@@ -21,7 +21,7 @@
   <a href="LICENSE">
     <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-green">
   </a>
-  <img alt="Runtimes" src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20AGENTS.md-black">
+  <img alt="Runtimes" src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Desktop%20%7C%20Terminal-black">
   <img alt="Package" src="https://img.shields.io/badge/package-agentlas--meta--agent-blue">
 </p>
 
@@ -30,7 +30,9 @@
   ·
   <a href="#what-it-builds">What It Builds</a>
   ·
-  <a href="#install">Install</a>
+  <a href="#architecture">Architecture</a>
+  ·
+  <a href="#features">Features</a>
   ·
   <a href="#compare">Compare</a>
   ·
@@ -51,17 +53,21 @@
   <a href="#hi">हिन्दी</a>
 </p>
 
+<p align="center">
+  <img src="assets/agentlas-meta-agent-architecture.png" alt="Agentlas Meta-Agent architecture diagram">
+</p>
+
 ---
 
 ## Quickstart
 
-Start with **Agentlas Terminal** or **Agentlas Desktop** if you want the full Agentlas runtime. Use the standalone **agentlas-meta-agent** install only when you want to register it directly inside Claude Code/Codex or drop the files into a plain `AGENTS.md` project.
+Start with **Agentlas Terminal** or **Agentlas Desktop** if you want the full Agentlas runtime. Use the standalone **agentlas-meta-agent** install only when you want to register the package directly inside Claude Code/Codex or drop the files into a plain `AGENTS.md` project.
 
-> **Note:** If you install step 1 or step 3, `agentlas-meta-agent` is included in the Agentlas runtime path. Use step 2 only for standalone file installs or Claude/Codex plugin registration.
+> **Note:** Steps 1 and 3 include `agentlas-meta-agent` in the Agentlas runtime path. Step 2 is for standalone file installs and Claude/Codex plugin registration.
 
 ### 1. Download Agentlas Terminal
 
-Agentlas Terminal ships with the Agentlas desktop build. Install the app, then open **Settings -> Use from the terminal (`agentlas` CLI) -> Install CLI**.
+Agentlas Terminal is installed from the Agentlas Desktop build. Install the app, then open **Settings -> Use from the terminal (`agentlas` CLI) -> Install CLI**.
 
 **macOS**
 
@@ -108,7 +114,7 @@ agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
 
 ### 2. Install agentlas-meta-agent Standalone
 
-#### Simple file install
+#### Simple File Install
 
 **macOS / Linux / Windows Git Bash or WSL**
 
@@ -130,7 +136,7 @@ $src = Get-ChildItem $extract -Directory | Select-Object -First 1
 Get-ChildItem $src.FullName -Force | Copy-Item -Destination (Get-Location) -Recurse -Force
 ```
 
-#### Register marketplace, then install plugin
+#### Register Marketplace, Then Install Plugin
 
 **Claude Code shell**
 
@@ -173,14 +179,14 @@ codex plugin list
 /plugin list
 ```
 
-Expected slash-command result:
+Expected result:
 
 ```text
 ✓ Installed agentlas-meta-agent. Run /reload-plugins to apply.
 Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers · 0 plugin LSP servers
 ```
 
-If a Codex session is already open, run `/reload-plugins` or start a new session after installation so the plugin is loaded.
+If a Codex session is already open, run `/reload-plugins` or start a new session so the plugin is loaded.
 
 ### 3. Install Agentlas Desktop
 
@@ -190,17 +196,19 @@ Download from:
 https://agentlas.cloud/desktop
 ```
 
-Desktop gives you the visual Agentlas surface: local projects, agents, teams, Apps, vault, runtime selection, and the `agentlas` CLI installer.
+Desktop gives you the visual Agentlas surface: local projects, agents, teams, Apps, vault, runtime selection, built-in Core Engine Meta-Agent routing, and the `agentlas` CLI installer.
 
 ## What It Builds
 
+`agentlas-meta-agent` does not stop at a prompt. It leaves behind a repo that another runtime can inspect, install, verify, and keep improving.
+
 | You ask for | It routes to | You get |
 |---|---|---|
-| "Make one agent that does X" | `10-single-agent-builder` | One installable worker with skills, memory rules, runtime adapters, and verification |
-| "Make a team/company for this workflow" | `20-multi-agent-team-builder` | A CEO/HQ, PM Soul, Memory Curator, Policy Gate, workers, eval, QA, and handoffs |
-| "Package this existing agent/repo/workspace" | `30-agentlas-packager` | A cleaned Agentlas package for local use, Desktop import, Codex, Claude, Gemini, or public GitHub release |
+| "Make one agent that does X" | `10-single-agent-builder` | One installable worker with skills, memory contracts, runtime adapters, and verification |
+| "Make a team/company for this workflow" | `20-multi-agent-team-builder` | A multi-role operating team with HQ, PM Soul, Memory Curator, Policy Gate, eval, QA, and handoffs |
+| "Package this existing agent/repo/workspace" | `30-agentlas-packager` | A cleaned Agentlas package for Desktop import, terminal use, Codex, Claude, Gemini, or public GitHub release |
 
-The output is not a prompt pasted into a chat. It is a repo shape that other runtimes can read:
+Generated or repaired packages can include:
 
 ```text
 AGENTS.md
@@ -221,31 +229,86 @@ scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
 
+## Architecture
+
+The public core is the architecture and foldering contract. Runtime-specific folders are adapters over the same core, not separate sources of truth.
+
+```text
+User request
+  -> mode classifier
+  -> clarify loop when package-shaping facts are missing
+  -> one of three builders
+       10-single-agent-builder
+       20-multi-agent-team-builder
+       30-agentlas-packager
+  -> .agentlas contracts
+  -> runtime adapters
+  -> verification and public-safety checks
+```
+
+This architecture update promotes four pieces into the public contract:
+
+| Public contract | What it does |
+|---|---|
+| Mode auto-detection | Chooses `single-agent-creator`, `team-builder`, or `agentlas-packager` before generation |
+| Clarify question loop | Asks only the package-shaping questions that affect runtime, public boundary, tools, or safety |
+| `.agentlas` auto-activation | Lets local runtimes seed project memory, sitemap/task-bias, Memory Tickets, and vault references when a folder becomes an Agentlas workspace |
+| Skill lifecycle registry | Ships skills as candidate metadata first, with trial ledgers and Curator decisions before first-class recall |
+
+## Features
+
+| Feature | Why it matters |
+|---|---|
+| **Three-mode router** | A single worker, a full team, and an existing-agent package are different jobs. The router keeps them separate. |
+| **Visible role folders** | Users can inspect the actual builders, skills, modes, schemas, and generated contracts instead of trusting hidden orchestration. |
+| **Memory Tickets** | Durable memory is proposed, redacted, deduplicated, and ACKed instead of silently dumped into a prompt. |
+| **PM Soul continuity** | Generated teams can preserve project decisions, open loops, risks, and handoff context between sessions. |
+| **Policy, eval, and QA gates** | Teams can include release checks and evidence gates instead of role lists with no accountability. |
+| **Skill lifecycle promotion** | Reusable skills start as candidates. First-class recall requires Curator review, evidence, rollback, and workspace policy. |
+| **Runtime adapters** | The same core can be read by Codex, Claude Code, Gemini CLI, Cursor-style tools, and generic `AGENTS.md` runtimes. |
+| **Desktop and terminal built-in path** | Agentlas Desktop and `agentlas` CLI can route core meta-agent work locally without requiring a separate public package install. |
+| **Public-safe release checks** | `verify-package.sh` and `public_safety_check.sh` catch missing contracts, stale IDs, private paths, and common secret patterns. |
+
 ## Why This Exists
 
-Most AI tools can answer. Fewer can leave behind an agent package that survives another tool, another model, another maintainer, or a public GitHub release.
+Most AI tools can generate a good answer. The harder problem is keeping the agent alive after the chat ends.
 
-`agentlas-meta-agent` fixes the gap between:
+`agentlas-meta-agent` closes that gap:
 
-- a good agent idea and a usable repo;
-- a Claude-only helper and a portable Claude/Codex/Gemini/AGENTS.md package;
-- a local OpenClaw/Hermes-style workspace and an Agentlas Desktop-ready import;
-- a role list and a real team with memory, policy, eval, QA, install, and public-safety checks.
+- from idea to installable repo;
+- from one Claude-only helper to a portable Claude/Codex/Gemini/AGENTS.md package;
+- from local OpenClaw/Hermes-style workspace to Agentlas Desktop-ready import;
+- from a role list to a team with memory, policy, eval, QA, install, and release checks;
+- from self-improvement claims to skill lifecycle evidence that can be reviewed.
 
-## Highlights
+## Desktop And Terminal
 
-- **Three-mode router**: single agent, multi-agent team, or package/repair existing material.
-- **Visible architecture**: roles, skills, modes, memory contracts, and runtime adapters are files.
-- **Multi-runtime by default**: Codex, Claude Code, Gemini CLI, Cursor-style, and generic `AGENTS.md` workflows.
-- **Agentlas Desktop ready**: package output can be opened, imported, and managed from Desktop and `agentlas` CLI workflows.
-- **Public-safe release path**: verification and safety scans block private paths, tokens, service-account material, and common secret formats.
-- **No model lock-in**: use the model/runtime you already trust; this repo packages the agent operating contract.
+Agentlas Desktop and Agentlas Terminal are the easiest path when you want the full local runtime.
 
-## Install
+Use Desktop for:
 
-### Claude Code Plugin
+- visual project, agent, team, Apps, and vault surfaces;
+- local runtime selection across Claude Code, Codex, Gemini, BYOK, and local runners;
+- importing or opening packages produced by this meta-agent;
+- seeing team structure and project continuity instead of only terminal logs.
 
-This is a user-local marketplace install. Every Claude Code user runs it once in their own environment.
+Use Terminal for:
+
+- running the same agents from a shell;
+- packaging a workflow without leaving the repo;
+- moving between local files, Codex, Claude Code, and Agentlas Desktop.
+
+```bash
+agentlas list
+agentlas run agentlas-meta-agent "Build a launch research team with PM Soul, QA, and public release checks"
+cd "$(agentlas cd agentlas-meta-agent)"
+```
+
+## Standalone Install
+
+Use standalone install when you want this repo directly in Claude Code, Codex, or a plain project folder.
+
+### Claude Code
 
 ```bash
 claude plugin marketplace add https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --sparse .claude-plugin claude/plugins
@@ -261,39 +324,20 @@ claude plugin marketplace add ./claude
 claude plugin install agentlas-meta-agent@agentlas-core-engine
 ```
 
-### Codex Plugin
+### Codex
 
 ```bash
 codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
 codex plugin add agentlas-meta-agent@agentlas-core-engine
-```
-
-Check:
-
-```bash
 codex plugin list
 ```
 
-### Terminal Package Install
-
-Use this when you want the files installed directly into a project without a Claude/Codex plugin marketplace.
+### Plain Project Folder
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.3/scripts/install.sh | bash
-```
-
-### Agentlas Desktop + `agentlas` CLI
-
-1. Download the latest Desktop build from [Agentlas Desktop Releases](https://github.com/jeongmk522-netizen/agentlas-desktop/releases/latest).
-2. Connect Claude Code, Codex, Gemini CLI, or BYOK API keys.
-3. Open or import the agent/team package created by `agentlas-meta-agent`.
-4. Use Desktop for visual team structure, local history, Apps, vault, automations, and runtime switching.
-5. Install the `agentlas` CLI from Desktop settings to use the same agents from terminal.
-
-```bash
-agentlas list
-agentlas run <agent> "Package this workflow for Agentlas"
-cd "$(agentlas cd <agent>)" && claude
+scripts/verify-package.sh
+scripts/public_safety_check.sh
 ```
 
 ## Use It
@@ -323,10 +367,10 @@ Keep private notes, machine paths, raw logs, and secrets out of the public repo.
 
 | Compared with | Their strength | What `agentlas-meta-agent` adds |
 |---|---|---|
-| OpenAI / Codex | Strong models and coding terminal | Portable repo contracts, `.agentlas` memory/package files, skills, schemas, and multi-runtime adapters |
+| OpenAI / Codex | Strong models and coding terminal | Portable repo contracts, `.agentlas` memory/package files, skills, schemas, runtime adapters, and public verification |
 | Claude / Claude Code | Strong reasoning and Claude-native workflows | Claude support without becoming Claude-only; Codex, Gemini, Desktop, terminal, and `AGENTS.md` stay aligned |
-| OpenClaw | Local identity and workspace agent loop | Visible role folders, public-safety checks, Desktop import, vault, and Agentlas packaging |
-| Hermes | Persona and memory-centered local agent runtime | PM Soul, Memory Tickets, sitemap/task-bias, policy/eval/QA, and release verification as files |
+| OpenClaw | Local identity and workspace agent loop | Visible role folders, Agentlas package contracts, public-safety checks, Desktop import, vault references, and install surfaces |
+| Hermes | Persona and memory-centered local agent runtime | PM Soul, Memory Tickets, sitemap/task-bias, policy/eval/QA, and skill lifecycle evidence as files |
 
 OpenAI and Claude are model/runtime surfaces. OpenClaw and Hermes are local-agent experiences. `agentlas-meta-agent` is the package layer that makes agents portable, inspectable, installable, and publishable.
 
@@ -336,19 +380,21 @@ OpenAI and Claude are model/runtime surfaces. OpenClaw and Hermes are local-agen
 |---|---|
 | Understand the canonical route | [`AGENTS.md`](AGENTS.md) |
 | See the full team contract | [`agent.md`](agent.md) |
-| See the chain map | [`docs/chain-map.md`](docs/chain-map.md) |
+| See the architecture source of truth | [`docs/source-of-truth.md`](docs/source-of-truth.md) |
+| Understand runtime boundaries | [`docs/runtime-sync-boundaries.md`](docs/runtime-sync-boundaries.md) |
+| Choose a mode | [`docs/mode-classifier.md`](docs/mode-classifier.md) |
+| Ask the right setup questions | [`docs/clarify-question-loop.md`](docs/clarify-question-loop.md) |
+| Activate local `.agentlas` workspace files | [`docs/agentlas-auto-activation.md`](docs/agentlas-auto-activation.md) |
+| Review skill lifecycle promotion | [`docs/skill-lifecycle-promotion.md`](docs/skill-lifecycle-promotion.md) |
 | Understand runtime architecture | [`docs/llm-runtime-architecture.md`](docs/llm-runtime-architecture.md) |
 | Understand memory architecture | [`docs/memory-architecture.md`](docs/memory-architecture.md) |
 | Operate PM Soul | [`docs/pm-soul-operating-loop.md`](docs/pm-soul-operating-loop.md) |
-| Read research notes | [`docs/research-log.md`](docs/research-log.md) |
-| Choose a mode | [`modes/single-agent-creator.md`](modes/single-agent-creator.md), [`modes/team-builder.md`](modes/team-builder.md), [`modes/agentlas-packager.md`](modes/agentlas-packager.md) |
 | Verify a package | [`scripts/verify-package.sh`](scripts/verify-package.sh) |
 | Check public safety | [`scripts/public_safety_check.sh`](scripts/public_safety_check.sh) |
-| See README benchmark notes | [`docs/readme-top10-patterns.md`](docs/readme-top10-patterns.md) |
 
 ## Public Safety Boundary
 
-This repo intentionally does **not** include hosted Agentlas billing/account logic, production credentials, customer data, raw private logs, raw transcripts, desktop keychain storage, or local database implementation.
+This repo intentionally does **not** include hosted Agentlas billing/account logic, production credentials, customer data, raw private logs, raw transcripts, desktop keychain storage, local database implementation, or private deployment configuration.
 
 Public output packages should not include:
 
@@ -357,13 +403,13 @@ Public output packages should not include:
 - private research notes;
 - raw chat transcripts;
 - customer or production logs;
-- hosted billing, account, OAuth, or deployment internals.
+- hosted billing, account, OAuth, desktop storage, or deployment internals.
 
 ## Localized Quick Starts
 
 <h3 id="ko">한국어</h3>
 
-`agentlas-meta-agent`는 아이디어 하나를 바로 설치 가능한 Agentlas agent/team repo로 바꿔주는 메타 에이전트입니다.
+`agentlas-meta-agent`는 아이디어 하나를 설치 가능한 Agentlas agent/team repo로 바꾸는 메타 에이전트입니다. Agentlas Desktop 또는 Terminal을 쓰면 이 경로가 내장되어 있고, Claude/Codex에 직접 설치하려면 아래처럼 marketplace 등록 후 plugin을 설치합니다.
 
 ```bash
 claude plugin marketplace add https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --sparse .claude-plugin claude/plugins
@@ -374,12 +420,10 @@ claude plugin install agentlas-meta-agent@agentlas-core-engine
 codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 ```
-
-핵심은 간단합니다. 사용자가 자기 Claude/Codex 환경에 marketplace를 등록하고, `agentlas-meta-agent`를 설치한 다음, 필요한 agent/team/package 작업을 요청합니다.
 
 <h3 id="zh">中文</h3>
 
-`agentlas-meta-agent` turns one rough idea into an installable Agentlas agent or team repository.
+`agentlas-meta-agent` turns one rough idea into an installable Agentlas agent or team repository. Agentlas Desktop and Terminal include the runtime path; use plugin install only when you want a standalone Claude/Codex setup.
 
 ```bash
 claude plugin marketplace add https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --sparse .claude-plugin claude/plugins
@@ -391,11 +435,9 @@ codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 ```
 
-每个用户都需要在自己的 Claude Code 或 Codex 环境中添加 marketplace，然后安装 plugin。README 不会自动注册 plugin。
-
 <h3 id="en">English</h3>
 
-Use `agentlas-meta-agent` when you want a real repo, not just a generated prompt.
+Use `agentlas-meta-agent` when you want a real repo, not just a generated prompt. Desktop and Terminal include the Agentlas runtime path; standalone plugin install is for Claude Code and Codex users who want this package directly.
 
 ```bash
 claude plugin marketplace add https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --sparse .claude-plugin claude/plugins
@@ -409,7 +451,7 @@ codex plugin add agentlas-meta-agent@agentlas-core-engine
 
 <h3 id="ja">日本語</h3>
 
-`agentlas-meta-agent` は、曖昧な agent/team のアイデアを installable な Agentlas package に変換します。
+`agentlas-meta-agent` は、曖昧な agent/team のアイデアを installable な Agentlas package に変換します。Desktop と Terminal には Agentlas runtime path が含まれるため、standalone plugin install は Claude Code / Codex に直接入れたい場合に使います。
 
 ```bash
 claude plugin marketplace add https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --sparse .claude-plugin claude/plugins
@@ -420,12 +462,10 @@ claude plugin install agentlas-meta-agent@agentlas-core-engine
 codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 ```
-
-各ユーザーが自分の Claude Code または Codex 環境で marketplace を追加し、plugin を install する必要があります。
 
 <h3 id="hi">हिन्दी</h3>
 
-`agentlas-meta-agent` rough agent idea को installable Agentlas repo में बदलता है।
+`agentlas-meta-agent` rough agent idea को installable Agentlas repo में बदलता है। Agentlas Desktop और Terminal में runtime path शामिल है; standalone plugin install Claude Code या Codex में direct setup के लिए है।
 
 ```bash
 claude plugin marketplace add https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --sparse .claude-plugin claude/plugins
@@ -436,8 +476,6 @@ claude plugin install agentlas-meta-agent@agentlas-core-engine
 codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 ```
-
-हर user को अपने Claude Code या Codex environment में marketplace add करके plugin install करना होगा।
 
 ## Contributing
 
