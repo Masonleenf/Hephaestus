@@ -54,7 +54,11 @@
 </p>
 
 <p align="center">
-  <img src="assets/agentlas-meta-agent-architecture.png" alt="Agentlas Meta-Agent architecture diagram">
+  <img src="assets/agentlas-meta-agent-architecture.svg" alt="Figure 1. Agentlas Meta-Agent architecture decomposition">
+</p>
+
+<p align="center">
+  <sub>Figure 1. Architecture decomposition: request shaping, three core builders, generated package contracts, memory curation, skill lifecycle, runtime adapters, and sync boundaries.</sub>
 </p>
 
 ---
@@ -231,20 +235,7 @@ scripts/public_safety_check.sh
 
 ## Architecture
 
-The public core is the architecture and foldering contract. Runtime-specific folders are adapters over the same core, not separate sources of truth.
-
-```text
-User request
-  -> mode classifier
-  -> clarify loop when package-shaping facts are missing
-  -> one of three builders
-       10-single-agent-builder
-       20-multi-agent-team-builder
-       30-agentlas-packager
-  -> .agentlas contracts
-  -> runtime adapters
-  -> verification and public-safety checks
-```
+The public core is the architecture and foldering contract. Runtime-specific folders are adapters over the same core, not separate sources of truth. Figure 1 decomposes the flow from request shaping to generated package contracts, memory governance, skill promotion, and runtime sync boundaries.
 
 This architecture update promotes four pieces into the public contract:
 
