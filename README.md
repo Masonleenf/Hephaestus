@@ -26,7 +26,7 @@
 </p>
 
 <p align="center">
-  <a href="#quick-start">Quick Start</a>
+  <a href="#quickstart">Quickstart</a>
   ·
   <a href="#what-it-builds">What It Builds</a>
   ·
@@ -53,20 +53,93 @@
 
 ---
 
-## Quick Start
+## Quickstart
 
-Pick the surface you already use.
+Start with **Agentlas Terminal** or **Agentlas Desktop** if you want the full Agentlas runtime. Use the standalone **agentlas-meta-agent** install only when you want to register it directly inside Claude Code/Codex or drop the files into a plain `AGENTS.md` project.
 
-### Claude Code
+> **Note:** If you install step 1 or step 3, `agentlas-meta-agent` is included in the Agentlas runtime path. Use step 2 only for standalone file installs or Claude/Codex plugin registration.
 
-Run from your shell:
+### 1. Download Agentlas Terminal
+
+Agentlas Terminal ships with the Agentlas desktop build. Install the app, then open **Settings -> Use from the terminal (`agentlas` CLI) -> Install CLI**.
+
+**macOS**
+
+```bash
+arch=$([ "$(uname -m)" = "arm64" ] && echo arm64 || echo x64)
+curl -fL "https://agentlas.cloud/api/desktop/download?arch=${arch}" -o Agentlas.dmg
+open Agentlas.dmg
+```
+
+**Windows PowerShell**
+
+```powershell
+$r = Invoke-RestMethod https://api.github.com/repos/jeongmk522-netizen/agentlas-desktop/releases/latest
+$u = ($r.assets | Where-Object { $_.name -like '*Windows-x64-Setup.exe' }).browser_download_url
+Invoke-WebRequest $u -OutFile "$env:TEMP\AgentlasSetup.exe"
+Start-Process "$env:TEMP\AgentlasSetup.exe"
+```
+
+**Linux AppImage**
+
+```bash
+url=$(curl -fsSL https://api.github.com/repos/jeongmk522-netizen/agentlas-desktop/releases/latest \
+  | grep -o 'https://[^"]*Linux-x64\.AppImage' | head -1)
+curl -fL "$url" -o Agentlas.AppImage
+chmod +x Agentlas.AppImage
+./Agentlas.AppImage
+```
+
+**Linux Debian/Ubuntu**
+
+```bash
+url=$(curl -fsSL https://api.github.com/repos/jeongmk522-netizen/agentlas-desktop/releases/latest \
+  | grep -o 'https://[^"]*Linux-x64\.deb' | head -1)
+curl -fL "$url" -o agentlas.deb
+sudo dpkg -i agentlas.deb
+```
+
+After installing the CLI from Settings:
+
+```bash
+agentlas list
+agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
+```
+
+### 2. Install agentlas-meta-agent Standalone
+
+#### Simple file install
+
+**macOS / Linux / Windows Git Bash or WSL**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.3/scripts/install.sh | bash
+scripts/verify-package.sh
+scripts/public_safety_check.sh
+```
+
+**Windows PowerShell**
+
+```powershell
+$zip = "$env:TEMP\agentlas-meta-agent-v0.1.3.zip"
+$extract = "$env:TEMP\agentlas-meta-agent-v0.1.3"
+Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.3.zip" -OutFile $zip
+Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
+Expand-Archive $zip -DestinationPath $extract -Force
+$src = Get-ChildItem $extract -Directory | Select-Object -First 1
+Get-ChildItem $src.FullName -Force | Copy-Item -Destination (Get-Location) -Recurse -Force
+```
+
+#### Register marketplace, then install plugin
+
+**Claude Code shell**
 
 ```bash
 claude plugin marketplace add https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --sparse .claude-plugin claude/plugins
 claude plugin install agentlas-meta-agent@agentlas-core-engine
 ```
 
-Or run inside Claude Code:
+**Claude Code slash commands**
 
 ```text
 /plugin marketplace add https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --sparse .claude-plugin claude/plugins
@@ -82,7 +155,7 @@ Expected result:
 Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers · 0 plugin LSP servers
 ```
 
-### Codex
+**Codex shell**
 
 ```bash
 codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
@@ -91,23 +164,33 @@ codex plugin add agentlas-meta-agent@agentlas-core-engine
 codex plugin list
 ```
 
-If a Codex session is already open, start a new session after installation so the plugin is loaded.
+**Codex slash commands**
 
-### Any `AGENTS.md` Project
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.3/scripts/install.sh | bash
-scripts/verify-package.sh
-scripts/public_safety_check.sh
+```text
+/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.3
+/plugin install agentlas-meta-agent@agentlas-core-engine
+/reload-plugins
+/plugin list
 ```
 
-Install into another folder:
+Expected slash-command result:
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.3/scripts/install.sh | bash -s -- /path/to/project
+```text
+✓ Installed agentlas-meta-agent. Run /reload-plugins to apply.
+Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers · 0 plugin LSP servers
 ```
 
-> The README does not register the plugin for anyone automatically. Each user adds this GitHub repo as a marketplace in their own Claude Code or Codex environment, then installs `agentlas-meta-agent`.
+If a Codex session is already open, run `/reload-plugins` or start a new session after installation so the plugin is loaded.
+
+### 3. Install Agentlas Desktop
+
+Download from:
+
+```text
+https://agentlas.cloud/desktop
+```
+
+Desktop gives you the visual Agentlas surface: local projects, agents, teams, Apps, vault, runtime selection, and the `agentlas` CLI installer.
 
 ## What It Builds
 
