@@ -20,6 +20,7 @@ Generated or packaged repos may include:
   super-ontology-epistemic-calibration.json
   super-ontology-semantic-alignment.json
   super-ontology-resilience-control.json
+  super-ontology-invariant-verification.json
   super-ontology-replays.jsonl
   super-ontology-evidence.jsonl
   super-ontology-memory-bridge.jsonl
@@ -175,6 +176,20 @@ Generated or packaged repos may include:
   rollback failure as runtime promotion, and AppBridge route as emergency-stop
   bypass.
 
+`super-ontology-invariant-verification.json`
+
+- Public-safe runtime-verification and temporal-invariant seed.
+- Requires event streams such as source intake, evidence packets, belief
+  updates, semantic alignment, resilience mode, memory tickets, graph writes,
+  tool calls, public exports, route sync, release seeds, rollback, and
+  emergency stop to be checked by explicit monitors before runtime writes.
+- Keeps `runtimePromotionAllowed=false` on export.
+- Blocks memory writes without curator-ticket invariants, graph writes without
+  evidence invariants, tool actions without authority invariants, public export
+  without contextual-flow invariants, route sync without source-contract
+  invariants, rollback without observed feedback, emergency-stop bypass,
+  unordered multi-agent writes, and non-idempotent replay mutation.
+
 ## Default State
 
 Every exported Super Ontology contract starts as:
@@ -195,6 +210,7 @@ adversarialProvenanceRequired = true
 epistemicCalibrationRequired = true
 semanticAlignmentRequired = true
 resilienceControlRequired = true
+invariantVerificationRequired = true
 memoryCuratorBridgeRequired = true
 directDurableMemoryWritesBlocked = true
 untrustedSourceRuntimeWritesBlocked = true
@@ -203,6 +219,8 @@ highAuthorityAlignmentReviewRequired = true
 unreviewedSemanticRuntimeWritesBlocked = true
 degradedRuntimeWritesBlocked = true
 emergencyStopBypassBlocked = true
+runtimeInvariantWritesBlocked = true
+forbiddenTransitionBlocked = true
 ```
 
 The package can be searched, reviewed, and replayed. It cannot write official
@@ -226,11 +244,12 @@ The public contract names these layers:
 12. epistemic calibration contract,
 13. semantic alignment contract,
 14. resilience control contract,
-15. Agentlas integration contract,
-16. Memory Curator bridge,
-17. promotion readiness,
-18. promotion replay drill,
-19. architecture sync review.
+15. invariant verification contract,
+16. Agentlas integration contract,
+17. Memory Curator bridge,
+18. promotion readiness,
+19. promotion replay drill,
+20. architecture sync review.
 
 ## Hard Stops
 
@@ -270,6 +289,9 @@ Automatic promotion is blocked when:
   context-flow violations, sync drift, degraded parser/sensor signals, rollback
   failure, or emergency-stop bypass would keep nominal graph, memory, tool,
   route, release, or public-artifact authority;
+- memory writes, graph writes, tool calls, public exports, route sync, release
+  seeds, rollback, or emergency-stop transitions bypass their event-stream
+  invariants;
 - an AppBridge route output would be treated as source-write authority;
 - a release artifact lacks SLSA or in-toto style provenance;
 - AppBridge is treated as source of truth;

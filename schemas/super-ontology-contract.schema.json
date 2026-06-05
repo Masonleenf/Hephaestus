@@ -42,6 +42,7 @@
           "epistemic_calibration_contract",
           "semantic_alignment_contract",
           "resilience_control_contract",
+          "invariant_verification_contract",
           "agentlas_integration_contract",
           "memory_curator_bridge",
           "promotion_readiness",
@@ -65,6 +66,7 @@
         "epistemicCalibration",
         "semanticAlignment",
         "resilienceControl",
+        "invariantVerification",
         "memoryCuratorBridge",
         "memoryTickets"
       ],
@@ -80,6 +82,7 @@
         "epistemicCalibration": { "type": "string" },
         "semanticAlignment": { "type": "string" },
         "resilienceControl": { "type": "string" },
+        "invariantVerification": { "type": "string" },
         "memoryCuratorBridge": { "type": "string" },
         "memoryTickets": { "type": "string" }
       },
@@ -112,6 +115,9 @@
         "resilienceControlRequired",
         "degradedRuntimeWritesBlocked",
         "emergencyStopBypassBlocked",
+        "invariantVerificationRequired",
+        "runtimeInvariantWritesBlocked",
+        "forbiddenTransitionBlocked",
         "memoryCuratorBridgeRequired",
         "directDurableMemoryWritesBlocked",
         "appbridgeSourceWritesBlocked"
@@ -136,6 +142,9 @@
         "resilienceControlRequired": { "const": true },
         "degradedRuntimeWritesBlocked": { "const": true },
         "emergencyStopBypassBlocked": { "const": true },
+        "invariantVerificationRequired": { "const": true },
+        "runtimeInvariantWritesBlocked": { "const": true },
+        "forbiddenTransitionBlocked": { "const": true },
         "memoryCuratorBridgeRequired": { "const": true },
         "directDurableMemoryWritesBlocked": { "const": true },
         "appbridgeSourceWritesBlocked": { "const": true }

@@ -118,6 +118,10 @@ The following formerly runtime-owned behaviors are now public contracts:
    Resilience control blocks degraded validators, retrieval drift, tool errors,
    parser/sensor degradation, Memory Curator backlog, sync drift, rollback
    failures, and emergency-stop bypasses from keeping nominal write authority.
+   Invariant verification blocks memory, graph, tool, public-export, route,
+   release, rollback, and emergency-stop transitions unless event order,
+   authority, evidence, consent, idempotency, and observed recovery invariants
+   pass.
    The bridge keeps direct durable memory writes blocked until Curator, Policy,
    PM Soul, or sync review approves a later phase.
 

@@ -49,6 +49,7 @@ Recommended minimum:
 ├── super-ontology-epistemic-calibration.json
 ├── super-ontology-semantic-alignment.json
 ├── super-ontology-resilience-control.json
+├── super-ontology-invariant-verification.json
 ├── super-ontology-replays.jsonl
 ├── super-ontology-evidence.jsonl
 ├── super-ontology-memory-bridge.jsonl
@@ -114,6 +115,7 @@ overwriting user content.
   affordance-binding, task-coverage, contextual-flow, causal-impact,
   assurance-case, knowledge-homeostasis, adversarial-provenance,
   epistemic-calibration, semantic-alignment, resilience-control,
+  invariant-verification,
   promotion-readiness, replay, and sync-review gates.
 
 `super-ontology-task-coverage.json`
@@ -215,6 +217,18 @@ overwriting user content.
   spikes, unknown tasks, context-flow violations, sync drift, degraded parsers,
   rollback failure, and emergency-stop bypass from becoming graph, memory, tool,
   route, release, or public-artifact authority.
+
+`super-ontology-invariant-verification.json`
+
+- Export-only runtime invariant seed.
+- Requires event streams and temporal constraints to be checked before memory,
+  graph, tool, public export, route sync, release, rollback, or emergency-stop
+  authority.
+- Keeps runtime promotion disabled and blocks direct memory writes, graph writes
+  without evidence, tool actions without authority, public export without
+  contextual-flow approval, route sync without source-contract verification,
+  unobserved rollback, emergency-stop bypass, unordered multi-agent writes, and
+  non-idempotent replay mutation.
 
 `super-ontology-replays.jsonl` and `super-ontology-evidence.jsonl`
 
