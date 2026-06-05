@@ -47,6 +47,7 @@
           "invariant_verification_contract",
           "observability_telemetry_contract",
           "objective_proxy_validity_contract",
+          "stakeholder_preference_governance_contract",
           "agentlas_integration_contract",
           "memory_curator_bridge",
           "promotion_readiness",
@@ -75,6 +76,7 @@
         "invariantVerification",
         "observabilityTelemetry",
         "objectiveProxyValidity",
+        "stakeholderPreferenceGovernance",
         "memoryCuratorBridge",
         "memoryTickets"
       ],
@@ -95,6 +97,7 @@
         "invariantVerification": { "type": "string" },
         "observabilityTelemetry": { "type": "string" },
         "objectiveProxyValidity": { "type": "string" },
+        "stakeholderPreferenceGovernance": { "type": "string" },
         "memoryCuratorBridge": { "type": "string" },
         "memoryTickets": { "type": "string" }
       },
@@ -145,6 +148,10 @@
         "proxyOptimizationRuntimeWritesBlocked",
         "countermetricRequired",
         "metricGamingProbeRequired",
+        "stakeholderPreferenceGovernanceRequired",
+        "singleStakeholderRuntimeWritesBlocked",
+        "aggregationRuleRequired",
+        "appealPathRequired",
         "memoryCuratorBridgeRequired",
         "directDurableMemoryWritesBlocked",
         "appbridgeSourceWritesBlocked"
@@ -187,6 +194,10 @@
         "proxyOptimizationRuntimeWritesBlocked": { "const": true },
         "countermetricRequired": { "const": true },
         "metricGamingProbeRequired": { "const": true },
+        "stakeholderPreferenceGovernanceRequired": { "const": true },
+        "singleStakeholderRuntimeWritesBlocked": { "const": true },
+        "aggregationRuleRequired": { "const": true },
+        "appealPathRequired": { "const": true },
         "memoryCuratorBridgeRequired": { "const": true },
         "directDurableMemoryWritesBlocked": { "const": true },
         "appbridgeSourceWritesBlocked": { "const": true }

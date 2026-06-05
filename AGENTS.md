@@ -106,6 +106,7 @@ Generated or packaged repos must include the relevant subset of:
 - `.agentlas/super-ontology-invariant-verification.json`;
 - `.agentlas/super-ontology-observability-telemetry.json`;
 - `.agentlas/super-ontology-objective-proxy-validity.json`;
+- `.agentlas/super-ontology-stakeholder-preference-governance.json`;
 - `.agentlas/super-ontology-replays.jsonl`;
 - `.agentlas/super-ontology-evidence.jsonl`;
 - `.agentlas/super-ontology-memory-bridge.jsonl`;

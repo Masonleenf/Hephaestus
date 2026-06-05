@@ -54,6 +54,7 @@ Recommended minimum:
 ├── super-ontology-invariant-verification.json
 ├── super-ontology-observability-telemetry.json
 ├── super-ontology-objective-proxy-validity.json
+├── super-ontology-stakeholder-preference-governance.json
 ├── super-ontology-replays.jsonl
 ├── super-ontology-evidence.jsonl
 ├── super-ontology-memory-bridge.jsonl
@@ -120,6 +121,7 @@ overwriting user content.
   assurance-case, knowledge-homeostasis, adversarial-provenance,
   epistemic-calibration, semantic-alignment, resilience-control,
   invariant-verification, observability-telemetry, objective-proxy-validity,
+  stakeholder-preference-governance,
   promotion-readiness, replay, and sync-review gates.
 
 `super-ontology-open-world-coverage.json`
@@ -276,6 +278,20 @@ overwriting user content.
   benchmark score, test pass rate, ontology edge count, self-judge score,
   short-term profit, green dashboards, and reward deltas from becoming write
   authority without construct validity and anti-gaming evidence.
+
+`super-ontology-stakeholder-preference-governance.json`
+
+- Export-only stakeholder preference governance seed.
+- Requires preference-driven work to name stakeholder roles, preference
+  sources, authority scope, affected parties, conflict type, aggregation rule,
+  dissent capture, appeal path, review owner, consent or rights vetoes, and
+  rollback before graph, memory, personalization, tool, route, release, public,
+  training, customer-message, financial, hiring, health, physical, or
+  runtime-policy writes can treat a preference as legitimate authority.
+- Keeps runtime promotion disabled and blocks owner preference, majority vote,
+  behavior signals, role power, old preference records, hidden affected
+  parties, missing dissent, and missing appeal paths from becoming write
+  authority.
 
 `super-ontology-replays.jsonl` and `super-ontology-evidence.jsonl`
 

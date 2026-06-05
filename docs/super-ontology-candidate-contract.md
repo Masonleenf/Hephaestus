@@ -25,6 +25,7 @@ Generated or packaged repos may include:
   super-ontology-invariant-verification.json
   super-ontology-observability-telemetry.json
   super-ontology-objective-proxy-validity.json
+  super-ontology-stakeholder-preference-governance.json
   super-ontology-replays.jsonl
   super-ontology-evidence.jsonl
   super-ontology-memory-bridge.jsonl
@@ -247,6 +248,20 @@ Generated or packaged repos may include:
   deltas from becoming authority without construct validity and anti-gaming
   evidence.
 
+`super-ontology-stakeholder-preference-governance.json`
+
+- Public-safe stakeholder preference governance seed.
+- Requires preference-driven work to name stakeholder roles, preference
+  sources, authority scope, affected parties, conflict type, aggregation rule,
+  dissent capture, appeal path, review owner, consent or rights vetoes, and
+  rollback before graph, memory, personalization, tool, route, release, public,
+  training, customer-message, financial, hiring, health, physical, or
+  runtime-policy writes can treat a preference as legitimate authority.
+- Keeps `runtimePromotionAllowed=false` on export.
+- Blocks owner preference, majority vote, behavior signals, role power, old
+  preference records, hidden affected parties, missing dissent, and missing
+  appeal paths from becoming write authority.
+
 ## Default State
 
 Every exported Super Ontology contract starts as:
@@ -275,6 +290,9 @@ epistemicCalibrationRequired = true
 semanticAlignmentRequired = true
 resilienceControlRequired = true
 invariantVerificationRequired = true
+observabilityTelemetryRequired = true
+objectiveProxyValidityRequired = true
+stakeholderPreferenceGovernanceRequired = true
 memoryCuratorBridgeRequired = true
 directDurableMemoryWritesBlocked = true
 untrustedSourceRuntimeWritesBlocked = true
@@ -285,6 +303,11 @@ degradedRuntimeWritesBlocked = true
 emergencyStopBypassBlocked = true
 runtimeInvariantWritesBlocked = true
 forbiddenTransitionBlocked = true
+unobservableRuntimeWritesBlocked = true
+proxyOptimizationRuntimeWritesBlocked = true
+singleStakeholderRuntimeWritesBlocked = true
+aggregationRuleRequired = true
+appealPathRequired = true
 ```
 
 The package can be searched, reviewed, and replayed. It cannot write official
@@ -313,11 +336,12 @@ The public contract names these layers:
 17. invariant verification contract,
 18. observability telemetry contract,
 19. objective proxy validity contract,
-20. Agentlas integration contract,
-21. Memory Curator bridge,
-22. promotion readiness,
-23. promotion replay drill,
-24. architecture sync review.
+20. stakeholder preference governance contract,
+21. Agentlas integration contract,
+22. Memory Curator bridge,
+23. promotion readiness,
+24. promotion replay drill,
+25. architecture sync review.
 
 ## Hard Stops
 
@@ -375,6 +399,11 @@ Automatic promotion is blocked when:
   rate, ontology edge count, self-judge score, short-term profit, cost savings,
   green dashboards, reward deltas, or label-leaked accuracy are treated as
   success without proving they measure the intended construct;
+- owner preference, majority vote, ranking, behavior signal, role power, old
+  preference record, or strategic preference report is treated as legitimate
+  write authority without stakeholder map, scope of authority, aggregation
+  rule, consent or rights checks, dissent capture, appeal path, review owner,
+  and rollback;
 - an AppBridge route output would be treated as source-write authority;
 - a release artifact lacks SLSA or in-toto style provenance;
 - AppBridge is treated as source of truth;
