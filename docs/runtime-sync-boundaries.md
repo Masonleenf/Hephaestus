@@ -103,7 +103,7 @@ The following formerly runtime-owned behaviors are now public contracts:
    Its open-world coverage seed, consensus-coordination seed, task coverage seed, contextual-flow seed, causal-impact seed,
    assurance-case seed, knowledge-homeostasis seed, adversarial-provenance seed,
    epistemic-calibration seed, semantic-alignment seed, resilience-control seed,
-   observability-telemetry seed, and Memory Curator bridge ledger are
+   observability-telemetry seed, objective-proxy-validity seed, and Memory Curator bridge ledger are
    candidate-only: task coverage
    classifies requested work before action, contextual flow blocks unsafe
    boundary crossings, causal impact blocks relation-as-intervention jumps,
@@ -123,6 +123,10 @@ The following formerly runtime-owned behaviors are now public contracts:
    release, rollback, and emergency-stop transitions unless event order,
    authority, evidence, consent, idempotency, and observed recovery invariants
    pass.
+   Objective proxy validity blocks metric movement, benchmark scores, approval
+   rates, ontology edge counts, reward deltas, and green dashboards from being
+   treated as real success unless construct validity, countermetrics,
+   stakeholder review, gaming probes, and rollback are present.
    The bridge keeps direct durable memory writes blocked until Curator, Policy,
    PM Soul, or sync review approves a later phase.
 

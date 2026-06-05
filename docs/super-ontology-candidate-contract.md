@@ -24,6 +24,7 @@ Generated or packaged repos may include:
   super-ontology-resilience-control.json
   super-ontology-invariant-verification.json
   super-ontology-observability-telemetry.json
+  super-ontology-objective-proxy-validity.json
   super-ontology-replays.jsonl
   super-ontology-evidence.jsonl
   super-ontology-memory-bridge.jsonl
@@ -233,6 +234,19 @@ Generated or packaged repos may include:
   degraded-mode alerts, unrecorded shadow replays, repair without before/after
   snapshots, rollback without observed event, and unobservable runtime writes.
 
+`super-ontology-objective-proxy-validity.json`
+
+- Public-safe objective/proxy validity seed.
+- Requires metric-driven work to name the real construct, proxy metric,
+  stakeholder map, countermetric, validity evidence, gaming probe, and rollback
+  before graph, memory, tool, route, release, or public writes can treat metric
+  movement as success.
+- Keeps `runtimePromotionAllowed=false` on export.
+- Blocks approval rate, open rate, benchmark score, test pass rate, ontology
+  edge count, self-judge score, short-term profit, green dashboards, and reward
+  deltas from becoming authority without construct validity and anti-gaming
+  evidence.
+
 ## Default State
 
 Every exported Super Ontology contract starts as:
@@ -298,11 +312,12 @@ The public contract names these layers:
 16. resilience control contract,
 17. invariant verification contract,
 18. observability telemetry contract,
-19. Agentlas integration contract,
-20. Memory Curator bridge,
-21. promotion readiness,
-21. promotion replay drill,
-22. architecture sync review.
+19. objective proxy validity contract,
+20. Agentlas integration contract,
+21. Memory Curator bridge,
+22. promotion readiness,
+23. promotion replay drill,
+24. architecture sync review.
 
 ## Hard Stops
 
@@ -352,6 +367,14 @@ Automatic promotion is blocked when:
 - graph, memory, tool, public, route, release, repair, rollback, or stop events
   lack trace/span/correlation/audit telemetry, redaction and retention policy,
   required snapshots, alert refs, or rollback refs;
+- objective/proxy validity evidence, construct definition, stakeholder map,
+  countermetric, negative control, gaming probe, benchmark provenance,
+  longitudinal check, owner review, or rollback plan is missing for
+  metric-driven graph, memory, tool, route, release, or public writes;
+- metric improvement, approval rate, open rate, benchmark score, test pass
+  rate, ontology edge count, self-judge score, short-term profit, cost savings,
+  green dashboards, reward deltas, or label-leaked accuracy are treated as
+  success without proving they measure the intended construct;
 - an AppBridge route output would be treated as source-write authority;
 - a release artifact lacks SLSA or in-toto style provenance;
 - AppBridge is treated as source of truth;

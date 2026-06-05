@@ -53,6 +53,7 @@ Recommended minimum:
 ├── super-ontology-resilience-control.json
 ├── super-ontology-invariant-verification.json
 ├── super-ontology-observability-telemetry.json
+├── super-ontology-objective-proxy-validity.json
 ├── super-ontology-replays.jsonl
 ├── super-ontology-evidence.jsonl
 ├── super-ontology-memory-bridge.jsonl
@@ -118,7 +119,7 @@ overwriting user content.
   affordance-binding, open-world-coverage, consensus-coordination, task-coverage, contextual-flow, causal-impact,
   assurance-case, knowledge-homeostasis, adversarial-provenance,
   epistemic-calibration, semantic-alignment, resilience-control,
-  invariant-verification, observability-telemetry,
+  invariant-verification, observability-telemetry, objective-proxy-validity,
   promotion-readiness, replay, and sync-review gates.
 
 `super-ontology-open-world-coverage.json`
@@ -263,6 +264,18 @@ overwriting user content.
   when audit sinks are down, suppressed degraded-mode alerts, unrecorded shadow
   replays, repair without before/after snapshots, and unobservable runtime
   writes.
+
+`super-ontology-objective-proxy-validity.json`
+
+- Export-only objective/proxy validity seed.
+- Requires metric-driven optimization to name the real construct, proxy metric,
+  stakeholder map, countermetric, validity evidence, gaming probe, and rollback
+  before graph, memory, tool, route, release, or public writes can treat metric
+  movement as success.
+- Keeps runtime promotion disabled and blocks approval rate, open rate,
+  benchmark score, test pass rate, ontology edge count, self-judge score,
+  short-term profit, green dashboards, and reward deltas from becoming write
+  authority without construct validity and anti-gaming evidence.
 
 `super-ontology-replays.jsonl` and `super-ontology-evidence.jsonl`
 

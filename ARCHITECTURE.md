@@ -70,6 +70,7 @@ The canonical core is runtime-neutral:
 - `.agentlas/super-ontology-resilience-control.json` in generated packages
 - `.agentlas/super-ontology-invariant-verification.json` in generated packages
 - `.agentlas/super-ontology-observability-telemetry.json` in generated packages
+- `.agentlas/super-ontology-objective-proxy-validity.json` in generated packages
 - `.agentlas/super-ontology-replays.jsonl` in generated packages
 - `.agentlas/super-ontology-evidence.jsonl` in generated packages
 - `.agentlas/super-ontology-memory-bridge.jsonl` in generated packages
@@ -97,7 +98,8 @@ Three runtime behaviors are public contracts here, not private product code:
   causal-impact metadata, assurance-case metadata, knowledge-homeostasis
   metadata, adversarial-provenance metadata, epistemic-calibration metadata,
   semantic-alignment metadata, resilience-control metadata,
-  invariant-verification metadata, observability-telemetry metadata, replay ledgers, and promotion
+  invariant-verification metadata, observability-telemetry metadata,
+  objective-proxy-validity metadata, replay ledgers, and promotion
   evidence ledgers. Runtime graph
   writes, cross-context information flows, relation-as-action jumps, broad
   safety claims, stale or desynced knowledge use, hostile-source promotion, and
@@ -105,7 +107,8 @@ Three runtime behaviors are public contracts here, not private product code:
   stay off until shadow/canary replay, rollback, homeostasis review,
   adversarial-provenance review, epistemic-calibration review,
   semantic-alignment review, resilience-control review, invariant-verification
-  review, observability-telemetry review, and sync review approve a later phase.
+  review, observability-telemetry review, objective-proxy-validity review, and
+  sync review approve a later phase.
 
 ## Generated Architecture Components
 
@@ -118,7 +121,8 @@ contracts that the three builders generate or repair inside output packages:
 - Super Ontology candidate contract, open-world coverage, consensus coordination, task coverage, contextual flow, causal
   impact, assurance cases, knowledge homeostasis, adversarial provenance,
   epistemic calibration, semantic alignment, resilience control, invariant verification,
-  observability telemetry, replay evidence, and promotion evidence.
+  observability telemetry, objective proxy validity, replay evidence, and
+  promotion evidence.
 - Sitemap and task bias.
 - LLM runtime architecture.
 - Policy Gate.

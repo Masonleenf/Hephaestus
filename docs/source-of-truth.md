@@ -76,6 +76,7 @@ These files are the public contract surface:
 - `.agentlas/super-ontology-resilience-control.json` in generated packages
 - `.agentlas/super-ontology-invariant-verification.json` in generated packages
 - `.agentlas/super-ontology-observability-telemetry.json` in generated packages
+- `.agentlas/super-ontology-objective-proxy-validity.json` in generated packages
 - `.agentlas/super-ontology-replays.jsonl` in generated packages
 - `.agentlas/super-ontology-evidence.jsonl` in generated packages
 - `.agentlas/super-ontology-memory-bridge.jsonl` in generated packages
@@ -112,7 +113,7 @@ change:
 - `.agentlas` Super Ontology open-world coverage, consensus coordination, task coverage, contextual flow, causal impact,
   assurance case, knowledge homeostasis, adversarial provenance, epistemic
   calibration, semantic alignment, resilience control, invariant verification,
-  and observability telemetry contracts;
+  observability telemetry, and objective proxy validity contracts;
 - Memory Curator, Memory Tickets, PM Soul, sitemap, task-bias, self-evolution,
   policy, eval, or QA/evidence contracts;
 - runtime adapter shape;
