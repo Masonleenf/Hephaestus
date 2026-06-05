@@ -58,6 +58,7 @@ Recommended minimum:
 ├── super-ontology-normative-authority-drift.json
 ├── super-ontology-side-effect-containment.json
 ├── super-ontology-source-lineage-version.json
+├── super-ontology-entity-identity-resolution.json
 ├── super-ontology-replays.jsonl
 ├── super-ontology-evidence.jsonl
 ├── super-ontology-memory-bridge.jsonl
@@ -335,6 +336,20 @@ overwriting user content.
   embedding hit without artifact version, Memory fact without lineage, public
   export without lineage evidence, graph edge without derivation chain, and
   superseded source to runtime write.
+
+`super-ontology-entity-identity-resolution.json`
+
+- Export-only entity identity resolution seed.
+- Requires names, aliases, domains, phone numbers, CRM ids, employee ids,
+  redacted identifiers, external URIs, embedding clusters, and LLM-generated
+  canonical labels to remain candidate-only until canonical id, source-system
+  namespace, source span, disambiguating evidence, negative evidence, temporal
+  validity, privacy basis, owner review, merge/split policy, audit, and
+  rollback exist.
+- Keeps runtime promotion disabled and blocks ambiguous identity merges,
+  public identity leakage, cross-tenant id collisions, stale aliases, recycled
+  ids, relationship edges without endpoint identity, and memory notes as
+  identity authority.
 
 `super-ontology-replays.jsonl` and `super-ontology-evidence.jsonl`
 

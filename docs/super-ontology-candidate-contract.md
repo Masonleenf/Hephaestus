@@ -29,6 +29,7 @@ Generated or packaged repos may include:
   super-ontology-normative-authority-drift.json
   super-ontology-side-effect-containment.json
   super-ontology-source-lineage-version.json
+  super-ontology-entity-identity-resolution.json
   super-ontology-replays.jsonl
   super-ontology-evidence.jsonl
   super-ontology-memory-bridge.jsonl
@@ -317,6 +318,24 @@ Generated or packaged repos may include:
   dataset version, graph edge without derivation chain, superseded source to
   runtime write, and unresolved lineage cycles.
 
+`super-ontology-entity-identity-resolution.json`
+
+- Public-safe entity identity resolution seed.
+- Requires names, aliases, email domains, phone numbers, CRM ids, employee ids,
+  tax ids, spreadsheet rows, extracted mentions, external URIs, embedding
+  clusters, redacted identifiers, merged records, and LLM-generated canonical
+  labels to name canonical id, source-system namespace, entity type, source
+  span, disambiguating attributes, negative evidence, temporal validity,
+  tenant/context boundary, privacy basis, owner review, merge/split policy,
+  tombstone, audit trace, and rollback where needed.
+- Keeps `runtimePromotionAllowed=false` on export.
+- Blocks name-as-identity, email-domain-as-company, fuzzy-match-as-merge,
+  embedding-cluster-as-identity, LLM canonical name as id, cross-tenant CRM id
+  merge, recycled employee id as same person, stale alias as current entity,
+  redacted name as public identity, merged account without split policy, split
+  entity without tombstone, external URI without context, relationship edge
+  without identity evidence, and memory note as identity authority.
+
 ## Default State
 
 Every exported Super Ontology contract starts as:
@@ -357,6 +376,10 @@ sourceLineageVersionRequired = true
 unversionedSourceRuntimeWritesBlocked = true
 derivedArtifactPromotionBlocked = true
 lineageRepairRequired = true
+entityIdentityResolutionRequired = true
+ambiguousIdentityRuntimeWritesBlocked = true
+identityMergeReviewRequired = true
+identityRollbackRequired = true
 memoryCuratorBridgeRequired = true
 directDurableMemoryWritesBlocked = true
 untrustedSourceRuntimeWritesBlocked = true

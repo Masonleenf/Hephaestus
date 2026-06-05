@@ -105,7 +105,8 @@ The following formerly runtime-owned behaviors are now public contracts:
    epistemic-calibration seed, semantic-alignment seed, resilience-control seed,
    observability-telemetry seed, objective-proxy-validity seed,
    stakeholder-preference-governance seed, normative-authority-drift seed,
-   side-effect-containment seed, source-lineage-version seed, and Memory
+   side-effect-containment seed, source-lineage-version seed,
+   entity-identity-resolution seed, and Memory
    Curator bridge ledger are
    candidate-only: task coverage
    classifies requested work before action, contextual flow blocks unsafe
