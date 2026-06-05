@@ -33,6 +33,7 @@
           "belief_ledger",
           "knowledge_capsule",
           "affordance_action_binding",
+          "task_coverage_contract",
           "agentlas_integration_contract",
           "memory_curator_bridge",
           "promotion_readiness",
@@ -44,10 +45,11 @@
     },
     "evidenceLedgers": {
       "type": "object",
-      "required": ["replays", "promotionEvidence", "memoryCuratorBridge", "memoryTickets"],
+      "required": ["replays", "promotionEvidence", "taskCoverage", "memoryCuratorBridge", "memoryTickets"],
       "properties": {
         "replays": { "type": "string" },
         "promotionEvidence": { "type": "string" },
+        "taskCoverage": { "type": "string" },
         "memoryCuratorBridge": { "type": "string" },
         "memoryTickets": { "type": "string" }
       },
@@ -65,6 +67,7 @@
         "canaryRequiredForMixedContext",
         "rollbackRequired",
         "syncReviewRequired",
+        "taskCoverageRequired",
         "memoryCuratorBridgeRequired",
         "directDurableMemoryWritesBlocked",
         "appbridgeSourceWritesBlocked"
@@ -74,6 +77,7 @@
         "canaryRequiredForMixedContext": { "const": true },
         "rollbackRequired": { "const": true },
         "syncReviewRequired": { "const": true },
+        "taskCoverageRequired": { "const": true },
         "memoryCuratorBridgeRequired": { "const": true },
         "directDurableMemoryWritesBlocked": { "const": true },
         "appbridgeSourceWritesBlocked": { "const": true }

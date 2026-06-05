@@ -57,6 +57,7 @@ The canonical core is runtime-neutral:
 - `.agentlas/skill-trials.jsonl` in generated packages
 - `.agentlas/curator-decisions.jsonl` in generated packages
 - `.agentlas/super-ontology-contract.json` in generated packages
+- `.agentlas/super-ontology-task-coverage.json` in generated packages
 - `.agentlas/super-ontology-replays.jsonl` in generated packages
 - `.agentlas/super-ontology-evidence.jsonl` in generated packages
 - `.agentlas/super-ontology-memory-bridge.jsonl` in generated packages

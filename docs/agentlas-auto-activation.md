@@ -40,6 +40,7 @@ Recommended minimum:
 ├── skill-trials.jsonl
 ├── curator-decisions.jsonl
 ├── super-ontology-contract.json
+├── super-ontology-task-coverage.json
 ├── super-ontology-replays.jsonl
 ├── super-ontology-evidence.jsonl
 ├── super-ontology-memory-bridge.jsonl
@@ -102,7 +103,17 @@ overwriting user content.
 - Candidate-only adaptive knowledge governance metadata.
 - Keeps `runtimeGraphWriteEnabled` and `zeroErrorClaim` false on export.
 - Names the source-intake, evidence-packet, belief-ledger, knowledge-capsule,
-  affordance-binding, promotion-readiness, replay, and sync-review gates.
+  affordance-binding, task-coverage, promotion-readiness, replay, and
+  sync-review gates.
+
+`super-ontology-task-coverage.json`
+
+- Export-only task coverage seed.
+- Requires unknown requests to be classified by task family before graph slices,
+  memory handoffs, tool bindings, external writes, physical actions, or training
+  actions.
+- Keeps runtime promotion disabled until evidence mode, authority, review, and
+  rollback are explicit.
 
 `super-ontology-replays.jsonl` and `super-ontology-evidence.jsonl`
 

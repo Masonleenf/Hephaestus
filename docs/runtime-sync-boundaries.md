@@ -99,9 +99,10 @@ The following formerly runtime-owned behaviors are now public contracts:
    `skills/skill-lifecycle-promotion/SKILL.md`.
 5. Super Ontology candidate metadata: see
    `docs/super-ontology-candidate-contract.md`.
-   Its Memory Curator bridge ledger is candidate-only and must keep direct
-   durable memory writes blocked until Curator, Policy, PM Soul, or sync review
-   approves a later phase.
+   Its task coverage seed and Memory Curator bridge ledger are candidate-only:
+   task coverage classifies requested work before action, and the bridge keeps
+   direct durable memory writes blocked until Curator, Policy, PM Soul, or sync
+   review approves a later phase.
 
 These are contract-level syncs. They do not move hosted billing, account state,
 private storage, or local Electron implementation into public core.

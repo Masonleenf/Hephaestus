@@ -11,6 +11,7 @@ Generated or packaged repos may include:
 ```text
 .agentlas/
   super-ontology-contract.json
+  super-ontology-task-coverage.json
   super-ontology-replays.jsonl
   super-ontology-evidence.jsonl
   super-ontology-memory-bridge.jsonl
@@ -19,8 +20,8 @@ Generated or packaged repos may include:
 `super-ontology-contract.json`
 
 - Describes the allowed ontology pipeline: source intake, evidence packets,
-  belief ledger, knowledge capsules, affordance binding, promotion readiness,
-  replay drills, and rollback.
+  belief ledger, knowledge capsules, affordance binding, task coverage,
+  promotion readiness, replay drills, and rollback.
 - Must set `runtimeGraphWriteEnabled` to `false` on export.
 - Must set `zeroErrorClaim` to `false`.
 - Must stay candidate-only until local runtime policy, shadow/canary replay,
@@ -50,6 +51,16 @@ Generated or packaged repos may include:
 - Rows must not store raw prompts, secret values, private paths, full
   transcripts, or direct durable memory writes.
 
+`super-ontology-task-coverage.json`
+
+- Public-safe task-family coverage seed.
+- Requires requests to be classified as read, draft, transform, analyze, plan,
+  coordinate, execute, repair, personalize, regulated, multimodal, physical,
+  software, finance/compliance, or education/coaching work before action.
+- Keeps `runtimePromotionAllowed=false` on export.
+- Blocks write, publish, execute, physical, and training tasks unless evidence
+  mode, authority, review, and rollback are explicit.
+
 ## Default State
 
 Every exported Super Ontology contract starts as:
@@ -61,6 +72,7 @@ zeroErrorClaim = false
 shadowRequired = true
 canaryRequiredForMixedContext = true
 rollbackRequired = true
+taskCoverageRequired = true
 memoryCuratorBridgeRequired = true
 directDurableMemoryWritesBlocked = true
 ```
@@ -77,11 +89,12 @@ The public contract names these layers:
 3. belief ledger,
 4. knowledge capsule,
 5. affordance action binding,
-6. Agentlas integration contract,
-7. Memory Curator bridge,
-8. promotion readiness,
-9. promotion replay drill,
-10. architecture sync review.
+6. task coverage contract,
+7. Agentlas integration contract,
+8. Memory Curator bridge,
+9. promotion readiness,
+10. promotion replay drill,
+11. architecture sync review.
 
 ## Hard Stops
 
@@ -92,6 +105,8 @@ Automatic promotion is blocked when:
 - a graph edge joins forbidden personal/company/public contexts;
 - a downstream agent receives the whole graph instead of a task capsule;
 - a tool call lacks argument provenance or user authority;
+- a requested task family, affordance type, evidence mode, or rollback path is
+  missing;
 - AppBridge is treated as source of truth;
 - a candidate bypasses the Memory Curator bridge and writes durable memory
   directly;

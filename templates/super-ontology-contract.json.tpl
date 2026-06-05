@@ -12,6 +12,7 @@
     "belief_ledger",
     "knowledge_capsule",
     "affordance_action_binding",
+    "task_coverage_contract",
     "agentlas_integration_contract",
     "memory_curator_bridge",
     "promotion_readiness",
@@ -21,6 +22,7 @@
   "evidenceLedgers": {
     "replays": ".agentlas/super-ontology-replays.jsonl",
     "promotionEvidence": ".agentlas/super-ontology-evidence.jsonl",
+    "taskCoverage": ".agentlas/super-ontology-task-coverage.json",
     "memoryCuratorBridge": ".agentlas/super-ontology-memory-bridge.jsonl",
     "memoryTickets": ".agentlas/memory-tickets.jsonl"
   },
@@ -30,6 +32,7 @@
     "forbidden_context_join",
     "whole_graph_exposure",
     "tool_authority_without_provenance",
+    "missing_task_coverage_contract",
     "appbridge_source_of_truth_write",
     "direct_durable_memory_write",
     "raw_prompt_or_secret_memory_capture",
@@ -42,6 +45,7 @@
     "canaryRequiredForMixedContext": true,
     "rollbackRequired": true,
     "syncReviewRequired": true,
+    "taskCoverageRequired": true,
     "memoryCuratorBridgeRequired": true,
     "directDurableMemoryWritesBlocked": true,
     "appbridgeSourceWritesBlocked": true
