@@ -102,7 +102,7 @@ agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
 जिस project folder में package files चाहिए, वहां macOS Terminal, Linux terminal, Windows Git Bash या WSL खोलें:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.5/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.6/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -110,9 +110,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\agentlas-meta-agent-v0.1.5.zip"
-$extract = "$env:TEMP\agentlas-meta-agent-v0.1.5"
-Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.5.zip" -OutFile $zip
+$zip = "$env:TEMP\agentlas-meta-agent-v0.1.6.zip"
+$extract = "$env:TEMP\agentlas-meta-agent-v0.1.6"
+Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.6.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -151,7 +151,7 @@ Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers ·
 **Codex chat के अंदर टाइप करें**:
 
 ```text
-/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.6
 /plugin install agentlas-meta-agent@agentlas-core-engine
 /reload-plugins
 /plugin list
@@ -160,7 +160,7 @@ Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers ·
 **`codex` CLI वाले OS terminal में टाइप करें**:
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.6
 codex plugin list
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 codex plugin list
@@ -177,6 +177,40 @@ https://agentlas.cloud/desktop
 ```
 
 Desktop आपको visual Agentlas surface देता है: local projects, agents, teams, Apps, vault references, runtime selection, built-in Core Engine Meta-Agent routing और `agentlas` CLI installer।
+
+## तस्वीरों के साथ install guide
+
+अगर आप Claude Code या Codex chat के अंदर हैं, तो slash command वाली तस्वीरें follow करें। अगर आपने macOS Terminal, Windows PowerShell, Linux terminal, Git Bash या WSL खोला है, तो CLI वाली तस्वीरें follow करें।
+
+### Claude Code chat
+
+इन commands को सीधे Claude Code में type करें।
+
+![Claude Code chat install flow](assets/install-claude-code-chat.svg)
+
+### OS terminal में Claude CLI
+
+जब आपके shell में `claude` command उपलब्ध हो, तो यह path इस्तेमाल करें।
+
+![Claude CLI install flow](assets/install-claude-cli.svg)
+
+### Codex chat
+
+इन commands को सीधे Codex में type करें।
+
+![Codex chat install flow](assets/install-codex-chat.svg)
+
+### Codex Desktop या IDE Extension
+
+जब Codex में Plugins settings screen दिखे, तो यह path इस्तेमाल करें।
+
+![Codex Desktop settings install flow](assets/install-codex-desktop-settings.svg)
+
+### OS terminal में Codex CLI
+
+जब आपके shell में `codex` command उपलब्ध हो, तो यह path इस्तेमाल करें।
+
+![Codex CLI install flow](assets/install-codex-cli.svg)
 
 ## क्या खोलें और कहां type करें
 

@@ -102,7 +102,7 @@ agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
 설치할 프로젝트 폴더에서 macOS Terminal, Linux terminal, Windows Git Bash, WSL 중 하나를 엽니다.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.5/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.6/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -110,9 +110,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\agentlas-meta-agent-v0.1.5.zip"
-$extract = "$env:TEMP\agentlas-meta-agent-v0.1.5"
-Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.5.zip" -OutFile $zip
+$zip = "$env:TEMP\agentlas-meta-agent-v0.1.6.zip"
+$extract = "$env:TEMP\agentlas-meta-agent-v0.1.6"
+Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.6.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -151,7 +151,7 @@ Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers ·
 **Codex 채팅창 안에서**:
 
 ```text
-/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.6
 /plugin install agentlas-meta-agent@agentlas-core-engine
 /reload-plugins
 /plugin list
@@ -160,7 +160,7 @@ Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers ·
 **OS 터미널에서 `codex` CLI로**:
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.6
 codex plugin list
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 codex plugin list
@@ -177,6 +177,40 @@ https://agentlas.cloud/desktop
 ```
 
 Desktop은 로컬 프로젝트, agents, teams, Apps, vault reference, runtime 선택, 내장 Core Engine Meta-Agent 라우팅, `agentlas` CLI 설치 화면을 제공합니다.
+
+## 그림으로 보는 설치 방법
+
+이미 Claude Code나 Codex 채팅창 안에 있다면 slash command 그림을 따라 하세요. macOS Terminal, Windows PowerShell, Linux terminal, Git Bash, WSL을 열었다면 CLI 그림을 따라 하면 됩니다.
+
+### Claude Code 채팅창
+
+Claude Code 안에 그대로 입력합니다.
+
+![Claude Code chat install flow](assets/install-claude-code-chat.svg)
+
+### OS 터미널의 Claude CLI
+
+셸에서 `claude` 명령어가 되는 경우 이 경로를 씁니다.
+
+![Claude CLI install flow](assets/install-claude-cli.svg)
+
+### Codex 채팅창
+
+Codex 안에 그대로 입력합니다.
+
+![Codex chat install flow](assets/install-codex-chat.svg)
+
+### Codex Desktop 또는 IDE Extension
+
+Codex에 Plugins 설정 화면이 보이는 경우 이 경로를 씁니다.
+
+![Codex Desktop settings install flow](assets/install-codex-desktop-settings.svg)
+
+### OS 터미널의 Codex CLI
+
+셸에서 `codex` 명령어가 되는 경우 이 경로를 씁니다.
+
+![Codex CLI install flow](assets/install-codex-cli.svg)
 
 ## 무엇을 켜고 어디에 입력하나
 

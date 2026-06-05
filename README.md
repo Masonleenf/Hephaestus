@@ -41,6 +41,8 @@
   ·
   <a href="#what-you-open-and-where-you-type">Where To Type</a>
   ·
+  <a href="#visual-install-guide">Visual Install Guide</a>
+  ·
   <a href="#what-it-builds">What It Builds</a>
   ·
   <a href="#architecture">Architecture</a>
@@ -130,7 +132,7 @@ agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
 Open macOS Terminal, Linux terminal, Windows Git Bash, or WSL in the project folder where you want the package files installed:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.5/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.6/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -138,9 +140,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\agentlas-meta-agent-v0.1.5.zip"
-$extract = "$env:TEMP\agentlas-meta-agent-v0.1.5"
-Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.5.zip" -OutFile $zip
+$zip = "$env:TEMP\agentlas-meta-agent-v0.1.6.zip"
+$extract = "$env:TEMP\agentlas-meta-agent-v0.1.6"
+Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.6.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -179,7 +181,7 @@ Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers ·
 Inside a **Codex chat**, type:
 
 ```text
-/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.6
 /plugin install agentlas-meta-agent@agentlas-core-engine
 /reload-plugins
 /plugin list
@@ -188,7 +190,7 @@ Inside a **Codex chat**, type:
 From your **OS terminal** with the `codex` CLI available:
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.6
 codex plugin list
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 codex plugin list
@@ -205,6 +207,40 @@ https://agentlas.cloud/desktop
 ```
 
 Desktop gives you the visual Agentlas surface: local projects, agents, teams, Apps, vault references, runtime selection, built-in Core Engine Meta-Agent routing, and the `agentlas` CLI installer.
+
+## Visual Install Guide
+
+Use the slash-command images when you are already inside a Claude Code or Codex chat. Use the CLI images when you are in macOS Terminal, Windows PowerShell, Linux terminal, Git Bash, or WSL.
+
+### Claude Code chat
+
+Type these commands directly into Claude Code:
+
+![Claude Code chat install flow](assets/install-claude-code-chat.svg)
+
+### Claude CLI from your OS terminal
+
+Use this path when the `claude` command is available in your shell:
+
+![Claude CLI install flow](assets/install-claude-cli.svg)
+
+### Codex chat
+
+Type these commands directly into Codex:
+
+![Codex chat install flow](assets/install-codex-chat.svg)
+
+### Codex Desktop or IDE Extension
+
+Use this path when Codex shows a Plugins settings screen:
+
+![Codex Desktop settings install flow](assets/install-codex-desktop-settings.svg)
+
+### Codex CLI from your OS terminal
+
+Use this path when the `codex` command is available in your shell:
+
+![Codex CLI install flow](assets/install-codex-cli.svg)
 
 ## What You Open And Where You Type
 

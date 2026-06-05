@@ -102,7 +102,7 @@ agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
 package files を入れたい project folder で macOS Terminal、Linux terminal、Windows Git Bash、または WSL を開きます。
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.5/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.6/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -110,9 +110,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\agentlas-meta-agent-v0.1.5.zip"
-$extract = "$env:TEMP\agentlas-meta-agent-v0.1.5"
-Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.5.zip" -OutFile $zip
+$zip = "$env:TEMP\agentlas-meta-agent-v0.1.6.zip"
+$extract = "$env:TEMP\agentlas-meta-agent-v0.1.6"
+Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.6.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -151,7 +151,7 @@ Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers ·
 **Codex chat の中で入力**:
 
 ```text
-/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.6
 /plugin install agentlas-meta-agent@agentlas-core-engine
 /reload-plugins
 /plugin list
@@ -160,7 +160,7 @@ Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers ·
 **`codex` CLI が使える OS terminal で入力**:
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.6
 codex plugin list
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 codex plugin list
@@ -177,6 +177,40 @@ https://agentlas.cloud/desktop
 ```
 
 Desktop は local projects、agents、teams、Apps、vault references、runtime selection、built-in Core Engine Meta-Agent routing、`agentlas` CLI installer を提供します。
+
+## 画像で見るインストール手順
+
+すでに Claude Code または Codex chat の中にいる場合は slash command の画像を使います。macOS Terminal、Windows PowerShell、Linux terminal、Git Bash、WSL を開いている場合は CLI の画像を使います。
+
+### Claude Code chat
+
+Claude Code にそのまま入力します。
+
+![Claude Code chat install flow](assets/install-claude-code-chat.svg)
+
+### OS terminal の Claude CLI
+
+shell で `claude` command が使える場合はこちらです。
+
+![Claude CLI install flow](assets/install-claude-cli.svg)
+
+### Codex chat
+
+Codex にそのまま入力します。
+
+![Codex chat install flow](assets/install-codex-chat.svg)
+
+### Codex Desktop または IDE Extension
+
+Codex に Plugins settings 画面がある場合はこちらです。
+
+![Codex Desktop settings install flow](assets/install-codex-desktop-settings.svg)
+
+### OS terminal の Codex CLI
+
+shell で `codex` command が使える場合はこちらです。
+
+![Codex CLI install flow](assets/install-codex-cli.svg)
 
 ## 何を開き、どこに入力するか
 

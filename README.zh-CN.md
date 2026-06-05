@@ -102,7 +102,7 @@ agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
 在你想安装包文件的项目文件夹中打开 macOS Terminal、Linux terminal、Windows Git Bash 或 WSL：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.5/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/v0.1.6/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -110,9 +110,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\agentlas-meta-agent-v0.1.5.zip"
-$extract = "$env:TEMP\agentlas-meta-agent-v0.1.5"
-Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.5.zip" -OutFile $zip
+$zip = "$env:TEMP\agentlas-meta-agent-v0.1.6.zip"
+$extract = "$env:TEMP\agentlas-meta-agent-v0.1.6"
+Invoke-WebRequest "https://github.com/jeongmk522-netizen/agent_agentlas_core_engine_meta_agent/archive/refs/tags/v0.1.6.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -151,7 +151,7 @@ Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers ·
 **在 Codex 聊天窗口中输入**：
 
 ```text
-/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+/plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.6
 /plugin install agentlas-meta-agent@agentlas-core-engine
 /reload-plugins
 /plugin list
@@ -160,7 +160,7 @@ Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers ·
 **在带有 `codex` CLI 的系统终端中输入**：
 
 ```bash
-codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.5
+codex plugin marketplace add jeongmk522-netizen/agent_agentlas_core_engine_meta_agent --ref v0.1.6
 codex plugin list
 codex plugin add agentlas-meta-agent@agentlas-core-engine
 codex plugin list
@@ -177,6 +177,40 @@ https://agentlas.cloud/desktop
 ```
 
 Desktop 提供可视化 Agentlas 界面：本地项目、agents、teams、Apps、vault references、runtime 选择、内置 Core Engine Meta-Agent 路由，以及 `agentlas` CLI 安装入口。
+
+## 图解安装方法
+
+如果你已经在 Claude Code 或 Codex 聊天窗口中，请使用 slash command 图片。如果你打开的是 macOS Terminal、Windows PowerShell、Linux terminal、Git Bash 或 WSL，请使用 CLI 图片。
+
+### Claude Code 聊天窗口
+
+把这些命令直接输入 Claude Code。
+
+![Claude Code chat install flow](assets/install-claude-code-chat.svg)
+
+### OS 终端中的 Claude CLI
+
+当你的 shell 中可以运行 `claude` 命令时，使用这个路径。
+
+![Claude CLI install flow](assets/install-claude-cli.svg)
+
+### Codex 聊天窗口
+
+把这些命令直接输入 Codex。
+
+![Codex chat install flow](assets/install-codex-chat.svg)
+
+### Codex Desktop 或 IDE Extension
+
+当 Codex 显示 Plugins 设置页面时，使用这个路径。
+
+![Codex Desktop settings install flow](assets/install-codex-desktop-settings.svg)
+
+### OS 终端中的 Codex CLI
+
+当你的 shell 中可以运行 `codex` 命令时，使用这个路径。
+
+![Codex CLI install flow](assets/install-codex-cli.svg)
 
 ## 打开什么，在什么地方输入
 
