@@ -12,6 +12,7 @@ Generated or packaged repos may include:
 .agentlas/
   super-ontology-contract.json
   super-ontology-task-coverage.json
+  super-ontology-assurance-case.json
   super-ontology-replays.jsonl
   super-ontology-evidence.jsonl
   super-ontology-memory-bridge.jsonl
@@ -61,6 +62,17 @@ Generated or packaged repos may include:
 - Blocks write, publish, execute, physical, and training tasks unless evidence
   mode, authority, review, and rollback are explicit.
 
+`super-ontology-assurance-case.json`
+
+- Public-safe claim/evidence seed.
+- Requires broad claims about coverage, memory safety, action safety,
+  promotion readiness, red-team follow-up, or sync integrity to name required
+  evidence, observed evidence, validators, residual risk, blocked shortcuts,
+  and rollback.
+- Keeps `runtimePromotionAllowed=false` on export.
+- Treats literal perfection or zero-error language as a rejected overclaim, not
+  a release state.
+
 ## Default State
 
 Every exported Super Ontology contract starts as:
@@ -73,6 +85,7 @@ shadowRequired = true
 canaryRequiredForMixedContext = true
 rollbackRequired = true
 taskCoverageRequired = true
+assuranceCaseRequired = true
 memoryCuratorBridgeRequired = true
 directDurableMemoryWritesBlocked = true
 ```
@@ -90,11 +103,12 @@ The public contract names these layers:
 4. knowledge capsule,
 5. affordance action binding,
 6. task coverage contract,
-7. Agentlas integration contract,
-8. Memory Curator bridge,
-9. promotion readiness,
-10. promotion replay drill,
-11. architecture sync review.
+7. assurance case contract,
+8. Agentlas integration contract,
+9. Memory Curator bridge,
+10. promotion readiness,
+11. promotion replay drill,
+12. architecture sync review.
 
 ## Hard Stops
 
@@ -107,6 +121,8 @@ Automatic promotion is blocked when:
 - a tool call lacks argument provenance or user authority;
 - a requested task family, affordance type, evidence mode, or rollback path is
   missing;
+- a broad claim lacks an assurance case, observed evidence, validator, residual
+  risk, or rollback plan;
 - AppBridge is treated as source of truth;
 - a candidate bypasses the Memory Curator bridge and writes durable memory
   directly;

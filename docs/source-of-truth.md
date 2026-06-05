@@ -64,6 +64,7 @@ These files are the public contract surface:
 - `.agentlas/curator-decisions.jsonl` in generated packages
 - `.agentlas/super-ontology-contract.json` in generated packages
 - `.agentlas/super-ontology-task-coverage.json` in generated packages
+- `.agentlas/super-ontology-assurance-case.json` in generated packages
 - `.agentlas/super-ontology-replays.jsonl` in generated packages
 - `.agentlas/super-ontology-evidence.jsonl` in generated packages
 - `.agentlas/super-ontology-memory-bridge.jsonl` in generated packages
@@ -97,6 +98,7 @@ change:
 - `.agentlas` schemas or required files;
 - `.agentlas` auto-activation contract;
 - `.agentlas` skill lifecycle registry contract;
+- `.agentlas` Super Ontology task coverage and assurance case contracts;
 - Memory Curator, Memory Tickets, PM Soul, sitemap, task-bias, self-evolution,
   policy, eval, or QA/evidence contracts;
 - runtime adapter shape;

@@ -13,6 +13,7 @@
     "knowledge_capsule",
     "affordance_action_binding",
     "task_coverage_contract",
+    "assurance_case_contract",
     "agentlas_integration_contract",
     "memory_curator_bridge",
     "promotion_readiness",
@@ -23,6 +24,7 @@
     "replays": ".agentlas/super-ontology-replays.jsonl",
     "promotionEvidence": ".agentlas/super-ontology-evidence.jsonl",
     "taskCoverage": ".agentlas/super-ontology-task-coverage.json",
+    "assuranceCase": ".agentlas/super-ontology-assurance-case.json",
     "memoryCuratorBridge": ".agentlas/super-ontology-memory-bridge.jsonl",
     "memoryTickets": ".agentlas/memory-tickets.jsonl"
   },
@@ -33,6 +35,8 @@
     "whole_graph_exposure",
     "tool_authority_without_provenance",
     "missing_task_coverage_contract",
+    "missing_assurance_case_contract",
+    "unsupported_claim",
     "appbridge_source_of_truth_write",
     "direct_durable_memory_write",
     "raw_prompt_or_secret_memory_capture",
@@ -46,6 +50,7 @@
     "rollbackRequired": true,
     "syncReviewRequired": true,
     "taskCoverageRequired": true,
+    "assuranceCaseRequired": true,
     "memoryCuratorBridgeRequired": true,
     "directDurableMemoryWritesBlocked": true,
     "appbridgeSourceWritesBlocked": true

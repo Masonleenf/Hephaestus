@@ -19,6 +19,7 @@
     ".agentlas/curator-decisions.jsonl",
     ".agentlas/super-ontology-contract.json",
     ".agentlas/super-ontology-task-coverage.json",
+    ".agentlas/super-ontology-assurance-case.json",
     ".agentlas/super-ontology-replays.jsonl",
     ".agentlas/super-ontology-evidence.jsonl",
     ".agentlas/super-ontology-memory-bridge.jsonl"

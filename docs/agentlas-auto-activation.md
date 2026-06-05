@@ -41,6 +41,7 @@ Recommended minimum:
 ├── curator-decisions.jsonl
 ├── super-ontology-contract.json
 ├── super-ontology-task-coverage.json
+├── super-ontology-assurance-case.json
 ├── super-ontology-replays.jsonl
 ├── super-ontology-evidence.jsonl
 ├── super-ontology-memory-bridge.jsonl
@@ -103,8 +104,8 @@ overwriting user content.
 - Candidate-only adaptive knowledge governance metadata.
 - Keeps `runtimeGraphWriteEnabled` and `zeroErrorClaim` false on export.
 - Names the source-intake, evidence-packet, belief-ledger, knowledge-capsule,
-  affordance-binding, task-coverage, promotion-readiness, replay, and
-  sync-review gates.
+  affordance-binding, task-coverage, assurance-case, promotion-readiness,
+  replay, and sync-review gates.
 
 `super-ontology-task-coverage.json`
 
@@ -114,6 +115,14 @@ overwriting user content.
   actions.
 - Keeps runtime promotion disabled until evidence mode, authority, review, and
   rollback are explicit.
+
+`super-ontology-assurance-case.json`
+
+- Export-only assurance case seed.
+- Requires broad claims to name required evidence, observed evidence,
+  validators, residual risk, blocked shortcuts, and rollback.
+- Keeps runtime promotion disabled and treats perfection or zero-error language
+  as a rejected overclaim.
 
 `super-ontology-replays.jsonl` and `super-ontology-evidence.jsonl`
 

@@ -21,8 +21,8 @@ Public core owns the portable contract:
   and runtime adapter rules;
 - skill lifecycle registry, trial evidence, and Curator promotion decision
   contracts;
-- Super Ontology candidate contract, replay evidence, and promotion evidence
-  contracts;
+- Super Ontology candidate contract, task coverage, assurance case, replay
+  evidence, and promotion evidence contracts;
 - public-safe schemas, templates, docs, skills, and verification scripts.
 
 Public core should be runnable as a Markdown-first agent team. It should not
@@ -99,8 +99,9 @@ The following formerly runtime-owned behaviors are now public contracts:
    `skills/skill-lifecycle-promotion/SKILL.md`.
 5. Super Ontology candidate metadata: see
    `docs/super-ontology-candidate-contract.md`.
-   Its task coverage seed and Memory Curator bridge ledger are candidate-only:
-   task coverage classifies requested work before action, and the bridge keeps
+   Its task coverage seed, assurance case seed, and Memory Curator bridge
+   ledger are candidate-only: task coverage classifies requested work before
+   action, assurance cases block unsupported broad claims, and the bridge keeps
    direct durable memory writes blocked until Curator, Policy, PM Soul, or sync
    review approves a later phase.
 

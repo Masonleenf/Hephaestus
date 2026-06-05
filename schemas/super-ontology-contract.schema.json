@@ -34,6 +34,7 @@
           "knowledge_capsule",
           "affordance_action_binding",
           "task_coverage_contract",
+          "assurance_case_contract",
           "agentlas_integration_contract",
           "memory_curator_bridge",
           "promotion_readiness",
@@ -45,11 +46,19 @@
     },
     "evidenceLedgers": {
       "type": "object",
-      "required": ["replays", "promotionEvidence", "taskCoverage", "memoryCuratorBridge", "memoryTickets"],
+      "required": [
+        "replays",
+        "promotionEvidence",
+        "taskCoverage",
+        "assuranceCase",
+        "memoryCuratorBridge",
+        "memoryTickets"
+      ],
       "properties": {
         "replays": { "type": "string" },
         "promotionEvidence": { "type": "string" },
         "taskCoverage": { "type": "string" },
+        "assuranceCase": { "type": "string" },
         "memoryCuratorBridge": { "type": "string" },
         "memoryTickets": { "type": "string" }
       },
@@ -68,6 +77,7 @@
         "rollbackRequired",
         "syncReviewRequired",
         "taskCoverageRequired",
+        "assuranceCaseRequired",
         "memoryCuratorBridgeRequired",
         "directDurableMemoryWritesBlocked",
         "appbridgeSourceWritesBlocked"
@@ -78,6 +88,7 @@
         "rollbackRequired": { "const": true },
         "syncReviewRequired": { "const": true },
         "taskCoverageRequired": { "const": true },
+        "assuranceCaseRequired": { "const": true },
         "memoryCuratorBridgeRequired": { "const": true },
         "directDurableMemoryWritesBlocked": { "const": true },
         "appbridgeSourceWritesBlocked": { "const": true }
