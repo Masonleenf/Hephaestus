@@ -261,11 +261,16 @@ class SourceParserRegistry:
         )
 
     def _parse_image_ocr(self, path: Path) -> ParsedDocument:
+        macos_result: ParsedDocument | None = None
         if macos_vision_available():
-            return self._parse_image_ocr_macos(path)
+            macos_result = self._parse_image_ocr_macos(path)
+            if macos_result.parser_status == "parsed":
+                return macos_result
         tesseract = shutil.which("tesseract")
         if tesseract:
             return self._parse_image_ocr_tesseract(path, tesseract)
+        if macos_result is not None:
+            return macos_result
         return unsupported("image", "image_ocr_adapter", "no OCR engine available")
 
     def _parse_image_ocr_tesseract(self, path: Path, tesseract: str) -> ParsedDocument:
@@ -301,6 +306,9 @@ class SourceParserRegistry:
                     check=True,
                     timeout=60,
                 )
+            except (subprocess.CalledProcessError, subprocess.TimeoutExpired, FileNotFoundError) as exc:
+                detail = getattr(exc, "stderr", "") or str(exc)
+                return unsupported("image", "macos_vision_ocr_adapter", f"macOS Vision OCR unavailable: {detail}")
             except Exception as exc:
                 return ParsedDocument("image", "parser_error", [], str(exc), "macos_vision_ocr_adapter")
         text = output.stdout.strip()

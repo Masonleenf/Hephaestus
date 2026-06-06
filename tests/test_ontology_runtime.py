@@ -8,6 +8,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from unittest import mock
 
 
 class OntologyRuntimeTests(unittest.TestCase):
@@ -209,6 +210,32 @@ class OntologyRuntimeTests(unittest.TestCase):
         answer = rt.query("Project Helios Memory Curator")
         self.assertTrue(answer["chunks"], answer)
         self.assertTrue(answer["relation_edges"], answer)
+
+    def test_image_ocr_engine_failure_is_adapter_pending(self):
+        from ontology.parsers import SourceParserRegistry
+
+        image = self.root / "scan.png"
+        image.write_bytes(b"not a useful image fixture")
+        registry = SourceParserRegistry()
+
+        with (
+            mock.patch("ontology.parsers.macos_vision_available", return_value=True),
+            mock.patch("ontology.parsers.shutil.which", return_value=None),
+            mock.patch(
+                "ontology.parsers.subprocess.run",
+                side_effect=subprocess.CalledProcessError(
+                    returncode=2,
+                    cmd=["swift", "ocr.swift", str(image)],
+                    stderr="image_load_failed",
+                ),
+            ),
+        ):
+            parsed = registry.parse(image)
+
+        self.assertEqual(parsed.source_type, "image")
+        self.assertEqual(parsed.parser_status, "unsupported_pending_adapter")
+        self.assertEqual(parsed.adapter_name, "macos_vision_ocr_adapter")
+        self.assertIn("macOS Vision OCR unavailable", parsed.parser_message)
 
     def test_cli_end_to_end_verify_and_json_outputs(self):
         env = os.environ.copy()
