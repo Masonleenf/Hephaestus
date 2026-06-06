@@ -10,7 +10,89 @@ export PYTHONPATH="$root${PYTHONPATH:+:$PYTHONPATH}"
 python3 -m unittest discover -s "$root/tests" -v
 
 db="$tmp/ontology.sqlite"
+adapter_corpus="$tmp/adapter-corpus"
+mkdir -p "$adapter_corpus"
+python3 - "$adapter_corpus" <<'PY'
+import json
+import shutil
+import sys
+import zipfile
+from pathlib import Path
+
+adapter = Path(sys.argv[1])
+
+def pdf_escape(text):
+    return text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+
+def write_text_pdf(path, text):
+    stream = f"BT /F1 24 Tf 72 720 Td ({pdf_escape(text)}) Tj ET".encode()
+    objects = [
+        b"1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n",
+        b"2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n",
+        b"3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >> endobj\n",
+        b"4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\n",
+        b"5 0 obj << /Length " + str(len(stream)).encode() + b" >> stream\n" + stream + b"\nendstream endobj\n",
+    ]
+    out = bytearray(b"%PDF-1.4\n")
+    offsets = [0]
+    for obj in objects:
+        offsets.append(len(out))
+        out.extend(obj)
+    xref_start = len(out)
+    out.extend(f"xref\n0 {len(objects) + 1}\n0000000000 65535 f \n".encode())
+    for offset in offsets[1:]:
+        out.extend(f"{offset:010d} 00000 n \n".encode())
+    out.extend(f"trailer << /Root 1 0 R /Size {len(objects) + 1} >>\nstartxref\n{xref_start}\n%%EOF\n".encode())
+    path.write_bytes(out)
+
+def write_zip(path, entries):
+    with zipfile.ZipFile(path, "w") as archive:
+        for name, text in entries.items():
+            archive.writestr(name, text)
+
+write_text_pdf(adapter / "manual.pdf", "Project Helios depends on Memory Curator")
+write_zip(adapter / "manual.hwpx", {
+    "Contents/section0.xml": """<?xml version="1.0" encoding="UTF-8"?>
+<hp:section xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph"><hp:p><hp:run><hp:t>Project Helios depends on Memory Curator</hp:t></hp:run></hp:p></hp:section>
+"""
+})
+write_zip(adapter / "brief.docx", {
+    "word/document.xml": """<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body><w:p><w:r><w:t>Project Helios depends on Memory Curator</w:t></w:r></w:p></w:body></w:document>
+"""
+})
+write_zip(adapter / "matrix.xlsx", {
+    "xl/sharedStrings.xml": """<?xml version="1.0" encoding="UTF-8"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><si><t>name</t></si><si><t>depends_on</t></si><si><t>Project Helios</t></si><si><t>Memory Curator</t></si></sst>
+""",
+    "xl/worksheets/sheet1.xml": """<?xml version="1.0" encoding="UTF-8"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData><row r="1"><c t="s"><v>0</v></c><c t="s"><v>1</v></c></row><row r="2"><c t="s"><v>2</v></c><c t="s"><v>3</v></c></row></sheetData></worksheet>
+""",
+})
+write_zip(adapter / "slides.pptx", {
+    "ppt/slides/slide1.xml": """<?xml version="1.0" encoding="UTF-8"?>
+<p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><p:cSld><p:spTree><p:sp><p:txBody><a:p><a:r><a:t>Project Helios depends on Memory Curator</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>
+"""
+})
+image_expected = False
+try:
+    from PIL import Image, ImageDraw, ImageFont
+    image = Image.new("RGB", (900, 180), "white")
+    draw = ImageDraw.Draw(image)
+    try:
+        font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 52)
+    except Exception:
+        font = None
+    draw.text((40, 55), "Memory Curator OCR", fill="black", font=font)
+    image.save(adapter / "scan.png")
+    image_expected = sys.platform == "darwin" and shutil.which("swift") is not None
+except Exception:
+    (adapter / "scan.png").write_bytes(b"ocr fixture unavailable")
+
+(adapter / "adapter-meta.json").write_text(json.dumps({"image_expected": image_expected}), encoding="utf-8")
+PY
 "$root/bin/ontology" --db "$db" ingest "$root/examples/ontology-corpus" --scope internal >"$tmp/ingest.json"
+"$root/bin/ontology" --db "$db" ingest "$adapter_corpus" --scope internal >"$tmp/adapter-ingest.json"
 "$root/bin/ontology" --db "$db" query "Project Helios Memory Curator" --agent verifier >"$tmp/query.json"
 "$root/bin/ontology" --db "$db" graph entity "Project Helios" >"$tmp/entity.json"
 "$root/bin/ontology" --db "$db" memory candidates >"$tmp/candidates.json"
@@ -25,6 +107,7 @@ import sys
 
 tmp = pathlib.Path(sys.argv[1])
 ingest = json.loads((tmp / "ingest.json").read_text())
+adapter_ingest = json.loads((tmp / "adapter-ingest.json").read_text())
 query = json.loads((tmp / "query.json").read_text())
 entity = json.loads((tmp / "entity.json").read_text())
 candidates = json.loads((tmp / "candidates.json").read_text())
@@ -37,7 +120,17 @@ assert statuses["text"] == "parsed", statuses
 assert statuses["json"] == "parsed", statuses
 assert statuses["csv"] == "parsed", statuses
 assert statuses["hwp"] == "unsupported_pending_adapter", statuses
+adapter_statuses = {item["display_name"]: item["parser_status"] for item in adapter_ingest["sources"]}
+assert adapter_statuses["manual.pdf"] == "parsed", adapter_statuses
+assert adapter_statuses["manual.hwpx"] == "parsed", adapter_statuses
+assert adapter_statuses["brief.docx"] == "parsed", adapter_statuses
+assert adapter_statuses["matrix.xlsx"] == "parsed", adapter_statuses
+assert adapter_statuses["slides.pptx"] == "parsed", adapter_statuses
+meta = json.loads((tmp / "adapter-corpus" / "adapter-meta.json").read_text())
+if meta["image_expected"]:
+    assert adapter_statuses["scan.png"] == "parsed", adapter_statuses
 assert ingest["chunks_written"] >= 4, ingest
+assert adapter_ingest["chunks_written"] >= 5, adapter_ingest
 assert query["chunks"], query
 assert query["relation_edges"], query
 assert query["memory_candidate_suggestions"], query

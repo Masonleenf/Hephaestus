@@ -248,20 +248,33 @@ public core는 architecture/foldering contract입니다. Claude, Codex, Gemini, 
 
 기본 export는 보수적입니다. 생성된 skill은 바로 first-class recall이 되지 않습니다. Curator가 실행 증거, sealed holdout/replay, rollback, workspace policy를 확인해야 승격됩니다.
 
-### Super Ontology와 Working Memory
+### Production Ontology Runtime
 
-개인 자료나 회사 자료처럼 지식이 많은 agent/team을 만들 때 Hephaestus는 `.agentlas/` 아래에 candidate-only Super Ontology contract를 seed할 수 있습니다. 이건 agent가 모든 미래 edge case를 이미 안다는 뜻도 아니고, production graph database 자체도 아닙니다. 대신 source evidence, source lineage, privacy boundary, task type, causal impact, consensus, knowledge drift, repair, reflexive feedback을 확인한 뒤에야 graph, memory, tool, public export, runtime policy write를 믿을 수 있게 만드는 공개 가능한 규칙층입니다.
+개인 자료나 회사 자료처럼 지식이 많은 agent/team을 만들 때 Hephaestus는 실제 local-first ontology runtime을 제공합니다. 원본 파일을 source archive에 넣고, chunk를 만들고, full-text/vector 검색과 graph relation을 저장한 뒤, GraphRAG 결과를 Memory Curator ticket과 Agent Working Memory cache로 연결합니다.
 
-실제 runtime은 층을 나눠야 합니다.
+Super Ontology 파일은 안전 규칙층입니다. 실제 저장/검색/graph/memory cache는 `ontology/`와 `bin/ontology`가 처리합니다.
 
 | 층 | 역할 |
 |---|---|
-| Source archive / RAG | 원본 문서, chunk, embedding, spreadsheet, PDF, 정확한 source span을 저장하고 검색합니다. |
-| Super Ontology | candidate entity, relation, evidence, authority, uncertainty, repair gate를 정리합니다. |
-| Memory Curator | ticket, quarantine, supersession, deprecation, discard를 통해 durable memory로 승격할지 결정합니다. |
-| Agent Working Memory | 현재 작업에 필요한 작은 per-agent hot cache입니다. scoped fact, 최근 결정, 검색된 graph slice, TTL, source ref, confidence, invalidation state를 담습니다. |
+| Source archive / chunk store | 원본 파일 metadata, checksum, type, parser status, version, privacy scope, lineage, chunk span을 저장합니다. |
+| Search / vector | SQLite FTS5와 local hashing vector를 기본으로 쓰고, `OPENAI_API_KEY`가 있으면 OpenAI embedding adapter를 선택할 수 있습니다. |
+| Ontology graph | entity, alias, relation, confidence, evidence chunk, observed/valid time, stale/deprecated 상태를 저장합니다. |
+| GraphRAG | chunk와 graph edge를 같이 반환합니다. 단순 vector 검색이 아닙니다. |
+| Memory Curator | durable memory에 바로 쓰지 않고 candidate ticket만 만듭니다. |
+| Agent Working Memory | 현재 작업에 필요한 per-agent hot cache입니다. TTL, source ref, confidence, invalidation state가 있고 source of truth가 아닙니다. |
 
-이 hot working-memory layer는 source of truth가 아니라 cache입니다. 수십 GB 개인/회사 자료에서 context token을 줄이고, 빠르게 recall하고, 개인화 성능을 올리는 게 목표라면 production runtime에는 이 층이 필요합니다. 이 public repo는 그 runtime cache가 나중에 감사 가능한 구조가 되도록 candidate contract, schema, template, verification gate를 제공합니다.
+지원 ingest:
+
+| 형식 | 상태 |
+|---|---|
+| `.txt`, `.md`, `.json`, `.csv` | 실제 parse |
+| `.docx`, `.xlsx`, `.pptx` | OpenXML adapter로 parse |
+| `.pdf` | `pdftotext`가 있으면 parse |
+| `.hwpx` | HWPX XML adapter로 parse |
+| 이미지/OCR | macOS Vision OCR 또는 Tesseract가 있으면 parse |
+| binary `.hwp` | `hwp5txt`가 있으면 parse, 없으면 이유와 함께 `unsupported_pending_adapter` |
+
+이 hot working-memory layer는 source of truth가 아니라 cache입니다. 수십 GB 개인/회사 자료에서 context token을 줄이고, 빠르게 recall하고, 개인화 성능을 올리는 게 목표라면 이 층이 필요합니다.
 
 ## Agentlas Desktop과 Terminal을 같이 쓰면 좋은 점
 

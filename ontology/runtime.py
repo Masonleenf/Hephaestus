@@ -8,7 +8,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
-from .embeddings import LocalHashingVectorAdapter, cosine_similarity, tokenize
+from .embeddings import build_vector_adapter, cosine_similarity, tokenize
 from .parsers import ParsedRecord, SourceParserRegistry
 from .utils import clamp, content_hash, estimate_tokens, json_dumps, json_loads, normalize_name, normalized_key, stable_hash, utc_now
 
@@ -34,7 +34,7 @@ class OntologyRuntime:
         self.config = config or RuntimeConfig()
         self.db_path = Path(self.config.db_path)
         self.parser_registry = SourceParserRegistry()
-        self.vector_adapter = LocalHashingVectorAdapter()
+        self.vector_adapter = build_vector_adapter(self.config.vector_provider)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.migrate()
 
@@ -194,25 +194,17 @@ class OntologyRuntime:
                 "INSERT OR IGNORE INTO schema_migrations(version, applied_at) VALUES (?, ?)",
                 (SCHEMA_VERSION, utc_now()),
             )
+            vector_config = {"provider": self.config.vector_provider}
+            if hasattr(self.vector_adapter, "dimensions"):
+                vector_config["dimensions"] = self.vector_adapter.dimensions
             conn.execute(
                 """
                 INSERT OR REPLACE INTO runtime_adapters(name, kind, status, config_json, updated_at)
                 VALUES (?, ?, ?, ?, ?)
                 """,
-                (self.vector_adapter.name, "vector", self.vector_adapter.status, json_dumps({"dimensions": self.vector_adapter.dimensions}), utc_now()),
+                (self.vector_adapter.name, "vector", self.vector_adapter.status, json_dumps(vector_config), utc_now()),
             )
-            for name, status in [
-                ("markdown_parser", "available"),
-                ("text_parser", "available"),
-                ("json_parser", "available"),
-                ("csv_parser", "available"),
-                ("docx_xml_parser", "available"),
-                ("xlsx_xml_parser", "available"),
-                ("pptx_xml_parser", "available"),
-                ("pdf_text_adapter", "unsupported_pending_adapter"),
-                ("hwp_adapter", "unsupported_pending_adapter"),
-                ("image_ocr_adapter", "unsupported_pending_adapter"),
-            ]:
+            for name, status in self.parser_registry.adapter_statuses():
                 conn.execute(
                     "INSERT OR REPLACE INTO runtime_adapters(name, kind, status, config_json, updated_at) VALUES (?, ?, ?, ?, ?)",
                     (name, "parser", status, "{}", utc_now()),

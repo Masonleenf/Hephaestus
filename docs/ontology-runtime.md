@@ -51,14 +51,18 @@ Supported local parsers:
 | `.docx` | parsed through the OpenXML text adapter |
 | `.xlsx` | parsed through the OpenXML sheet adapter |
 | `.pptx` | parsed through the OpenXML slide adapter |
+| `.pdf` | parsed through `pdftotext` when installed |
+| `.hwpx` | parsed through the HWPX XML adapter |
+| images and OCR formats | parsed through macOS Vision OCR or Tesseract when available |
+| `.hwp` binary | parsed through `hwp5txt` when available |
 
-Registered adapter boundaries that do not fake success:
+Registered adapter boundaries do not fake success:
 
-| Format | Runtime status |
+| Case | Runtime status |
 |---|---|
-| `.pdf` | `unsupported_pending_adapter` |
-| `.hwp` / `.hwpx` | `unsupported_pending_adapter` |
-| images and OCR formats | `unsupported_pending_adapter` |
+| `.pdf` without `pdftotext` | `unsupported_pending_adapter` with the missing parser reason |
+| `.hwp` binary without `hwp5txt` | `unsupported_pending_adapter` with the missing parser reason |
+| image OCR without macOS Vision or Tesseract | `unsupported_pending_adapter` with the missing OCR engine reason |
 | unknown extensions | `unsupported_pending_adapter` |
 
 Ingestion is idempotent by source URI and content hash. Re-running ingest on
@@ -74,8 +78,9 @@ bin/ontology ingest examples/ontology-corpus --scope internal
 
 Full-text search uses SQLite FTS5. Vector search uses the `local_hashing`
 adapter by default: a deterministic hashed bag-of-words vector that works
-without provider keys. Hosted embeddings, pgvector, Qdrant, or other vector
-stores can replace it behind the adapter boundary.
+without provider keys. OpenAI embeddings can be selected with
+`--vector-provider openai` when `OPENAI_API_KEY` is set. `--vector-provider auto`
+uses OpenAI when the key exists and otherwise falls back to the local adapter.
 
 `ontology query` returns more than text chunks:
 
@@ -146,15 +151,16 @@ The runtime verification covers:
 - TTL eviction;
 - privacy scope filtering;
 - direct durable-memory write prevention;
-- unsupported adapter status reporting.
+- PDF, HWPX, DOCX, XLSX, PPTX, and image OCR adapter ingest;
+- unsupported adapter status reporting when a required local parser is missing.
 
-## Current Limits
+## Runtime Boundaries
 
-- PDF, HWP, image, and OCR adapters are registered as pending and report
-  `unsupported_pending_adapter`.
-- The default vector adapter is deterministic and local. It is suitable for
-  provider-free operation, but hosted embeddings or vector databases should be
-  configured for large semantic corpora.
+- Binary HWP parsing depends on `hwp5txt`; HWPX is parsed directly.
+- PDF text parsing depends on `pdftotext`.
+- Image OCR uses macOS Vision first and Tesseract when available.
+- OpenAI embeddings require `OPENAI_API_KEY`; without a key, the default local
+  vector adapter remains real and deterministic.
 - Entity and relation extraction is deterministic and source-grounded. It does
   not use an LLM to infer hidden facts.
 - The local runtime stores user-selected source metadata and chunks in the

@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import csv
 import json
+import platform
 import re
+import shutil
+import subprocess
+import tempfile
 import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -44,12 +48,30 @@ class SourceParserRegistry:
         if suffix == ".pptx":
             return self._parse_pptx(path)
         if suffix == ".pdf":
-            return unsupported("pdf", "pdf_text_adapter")
-        if suffix in {".hwp", ".hwpx"}:
-            return unsupported("hwp", "hwp_adapter")
+            return self._parse_pdf(path)
+        if suffix == ".hwpx":
+            return self._parse_hwpx(path)
+        if suffix == ".hwp":
+            return self._parse_hwp(path)
         if suffix in {".png", ".jpg", ".jpeg", ".gif", ".webp", ".tiff", ".bmp"}:
-            return unsupported("image", "image_ocr_adapter")
+            return self._parse_image_ocr(path)
         return unsupported(suffix.lstrip(".") or "unknown", "unregistered_parser_adapter")
+
+    def adapter_statuses(self) -> list[tuple[str, str]]:
+        return [
+            ("markdown_parser", "available"),
+            ("text_parser", "available"),
+            ("json_parser", "available"),
+            ("csv_parser", "available"),
+            ("docx_xml_parser", "available"),
+            ("xlsx_xml_parser", "available"),
+            ("pptx_xml_parser", "available"),
+            ("pdf_text_adapter", "available" if shutil.which("pdftotext") else "unavailable_missing_pdftotext"),
+            ("hwpx_xml_parser", "available"),
+            ("hwp5txt_adapter", "available" if shutil.which("hwp5txt") else "unsupported_pending_adapter"),
+            ("macos_vision_ocr_adapter", "available" if macos_vision_available() else "unavailable_missing_macos_vision"),
+            ("tesseract_ocr_adapter", "available" if shutil.which("tesseract") else "unavailable_missing_tesseract"),
+        ]
 
     def _parse_text(self, path: Path, source_type: str) -> ParsedDocument:
         text = path.read_text(encoding="utf-8", errors="replace")
@@ -165,6 +187,132 @@ class SourceParserRegistry:
             return ParsedDocument("pptx", "parser_error", [], str(exc), "pptx_xml_parser")
         return ParsedDocument("pptx", "parsed", records, adapter_name="pptx_xml_parser")
 
+    def _parse_pdf(self, path: Path) -> ParsedDocument:
+        pdftotext = shutil.which("pdftotext")
+        if not pdftotext:
+            return unsupported("pdf", "pdf_text_adapter", "pdftotext is not installed")
+        try:
+            output = subprocess.run(
+                [pdftotext, "-layout", "-enc", "UTF-8", str(path), "-"],
+                text=True,
+                capture_output=True,
+                check=True,
+                timeout=30,
+            )
+        except Exception as exc:
+            return ParsedDocument("pdf", "parser_error", [], str(exc), "pdf_text_adapter")
+        pages = split_pages(output.stdout)
+        records = [
+            ParsedRecord(
+                text=text,
+                span={"kind": "pdf_page", "page": index},
+                metadata={"page": index},
+            )
+            for index, text in enumerate(pages, start=1)
+            if text.strip()
+        ]
+        if not records:
+            return ParsedDocument("pdf", "parser_error", [], "no extractable text found", "pdf_text_adapter")
+        return ParsedDocument("pdf", "parsed", records, adapter_name="pdf_text_adapter")
+
+    def _parse_hwpx(self, path: Path) -> ParsedDocument:
+        try:
+            with zipfile.ZipFile(path) as archive:
+                xml_names = sorted(name for name in archive.namelist() if name.lower().endswith(".xml"))
+                records: list[ParsedRecord] = []
+                for index, name in enumerate(xml_names, start=1):
+                    root = ElementTree.fromstring(archive.read(name))
+                    values = []
+                    for node in root.iter():
+                        local = node.tag.rsplit("}", 1)[-1].lower()
+                        if local in {"t", "text"} and node.text and node.text.strip():
+                            values.append(node.text.strip())
+                    text = " ".join(values)
+                    if text:
+                        records.append(
+                            ParsedRecord(
+                                text=text,
+                                span={"kind": "hwpx_xml", "file": name, "index": index},
+                                metadata={"xml_file": name},
+                            )
+                        )
+        except Exception as exc:
+            return ParsedDocument("hwpx", "parser_error", [], str(exc), "hwpx_xml_parser")
+        if not records:
+            return ParsedDocument("hwpx", "parser_error", [], "no extractable text found", "hwpx_xml_parser")
+        return ParsedDocument("hwpx", "parsed", records, adapter_name="hwpx_xml_parser")
+
+    def _parse_hwp(self, path: Path) -> ParsedDocument:
+        hwp5txt = shutil.which("hwp5txt")
+        if not hwp5txt:
+            return unsupported("hwp", "hwp5txt_adapter", "binary HWP requires hwp5txt")
+        try:
+            output = subprocess.run([hwp5txt, str(path)], text=True, capture_output=True, check=True, timeout=30)
+        except Exception as exc:
+            return ParsedDocument("hwp", "parser_error", [], str(exc), "hwp5txt_adapter")
+        text = output.stdout.strip()
+        if not text:
+            return ParsedDocument("hwp", "parser_error", [], "no extractable text found", "hwp5txt_adapter")
+        return ParsedDocument(
+            "hwp",
+            "parsed",
+            [ParsedRecord(text=text, span={"kind": "hwp_text"}, metadata={})],
+            adapter_name="hwp5txt_adapter",
+        )
+
+    def _parse_image_ocr(self, path: Path) -> ParsedDocument:
+        if macos_vision_available():
+            return self._parse_image_ocr_macos(path)
+        tesseract = shutil.which("tesseract")
+        if tesseract:
+            return self._parse_image_ocr_tesseract(path, tesseract)
+        return unsupported("image", "image_ocr_adapter", "no OCR engine available")
+
+    def _parse_image_ocr_tesseract(self, path: Path, tesseract: str) -> ParsedDocument:
+        try:
+            output = subprocess.run(
+                [tesseract, str(path), "stdout"],
+                text=True,
+                capture_output=True,
+                check=True,
+                timeout=45,
+            )
+        except Exception as exc:
+            return ParsedDocument("image", "parser_error", [], str(exc), "tesseract_ocr_adapter")
+        text = output.stdout.strip()
+        if not text:
+            return ParsedDocument("image", "parser_error", [], "no text recognized", "tesseract_ocr_adapter")
+        return ParsedDocument(
+            "image",
+            "parsed",
+            [ParsedRecord(text=text, span={"kind": "image_ocr", "engine": "tesseract"}, metadata={"engine": "tesseract"})],
+            adapter_name="tesseract_ocr_adapter",
+        )
+
+    def _parse_image_ocr_macos(self, path: Path) -> ParsedDocument:
+        with tempfile.TemporaryDirectory() as tmp:
+            script = Path(tmp) / "ocr.swift"
+            script.write_text(MACOS_VISION_OCR_SWIFT, encoding="utf-8")
+            try:
+                output = subprocess.run(
+                    ["swift", str(script), str(path)],
+                    text=True,
+                    capture_output=True,
+                    check=True,
+                    timeout=60,
+                )
+            except Exception as exc:
+                return ParsedDocument("image", "parser_error", [], str(exc), "macos_vision_ocr_adapter")
+        text = output.stdout.strip()
+        if not text:
+            return ParsedDocument("image", "parser_error", [], "no text recognized", "macos_vision_ocr_adapter")
+        return ParsedDocument(
+            "image",
+            "parsed",
+            [ParsedRecord(text=text, span={"kind": "image_ocr", "engine": "macos_vision"}, metadata={"engine": "macos_vision"})],
+            adapter_name="macos_vision_ocr_adapter",
+        )
+
     def _xlsx_shared_strings(self, archive: zipfile.ZipFile) -> list[str]:
         try:
             root = ElementTree.fromstring(archive.read("xl/sharedStrings.xml"))
@@ -203,11 +351,52 @@ def flatten_json(payload: Any, prefix: str = "$") -> list[tuple[str, str]]:
     return rows
 
 
-def unsupported(source_type: str, adapter_name: str) -> ParsedDocument:
+def split_pages(text: str) -> list[str]:
+    pages = [page.strip() for page in text.split("\f")]
+    return [page for page in pages if page]
+
+
+def macos_vision_available() -> bool:
+    return platform.system() == "Darwin" and shutil.which("swift") is not None
+
+
+MACOS_VISION_OCR_SWIFT = r"""
+import Foundation
+import Vision
+import AppKit
+
+let path = CommandLine.arguments[1]
+let url = URL(fileURLWithPath: path)
+guard let image = NSImage(contentsOf: url),
+      let tiff = image.tiffRepresentation,
+      let bitmap = NSBitmapImageRep(data: tiff),
+      let cgImage = bitmap.cgImage else {
+  fputs("image_load_failed\n", stderr)
+  exit(2)
+}
+
+let request = VNRecognizeTextRequest()
+request.recognitionLevel = .accurate
+request.usesLanguageCorrection = true
+let handler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+do {
+  try handler.perform([request])
+  let observations = request.results ?? []
+  let lines = observations.compactMap { $0.topCandidates(1).first?.string }
+  print(lines.joined(separator: "\n"))
+} catch {
+  fputs("ocr_failed: \(error)\n", stderr)
+  exit(3)
+}
+"""
+
+
+def unsupported(source_type: str, adapter_name: str, reason: str | None = None) -> ParsedDocument:
+    message = reason or f"{adapter_name} is registered but not implemented in the local runtime"
     return ParsedDocument(
         source_type=source_type,
         parser_status="unsupported_pending_adapter",
         records=[],
-        parser_message=f"{adapter_name} is registered but not implemented in the local runtime",
+        parser_message=message,
         adapter_name=adapter_name,
     )

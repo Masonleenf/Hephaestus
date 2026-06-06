@@ -137,8 +137,10 @@ Three runtime behaviors are public contracts here, not private product code:
   package that ingests supported files into SQLite, FTS5, deterministic local
   vectors, source-lineaged chunks, ontology entities and relations, GraphRAG
   query responses, Memory Curator candidate tickets, and Agent Working Memory
-  cache entries. The runtime blocks direct durable-memory writes and records
-  unsupported formats as `unsupported_pending_adapter`.
+  cache entries. The runtime parses text, Markdown, JSON, CSV, DOCX, XLSX,
+  PPTX, PDF text, HWPX, and OCR images when the local OCR engine is available.
+  It blocks direct durable-memory writes and records missing external parsers as
+  `unsupported_pending_adapter` instead of pretending success.
 
 ## Generated Architecture Components
 

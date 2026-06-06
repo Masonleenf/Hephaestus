@@ -1,10 +1,12 @@
 import json
 import os
+import shutil
 import sqlite3
 import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 
@@ -179,6 +181,35 @@ class OntologyRuntimeTests(unittest.TestCase):
         with self.assertRaises(DirectDurableMemoryWriteBlocked):
             rt.write_durable_memory("agent-alpha", {"fact": "must not be written directly"})
 
+    def test_document_adapters_parse_real_formats(self):
+        adapter_corpus = self.root / "adapter-corpus"
+        adapter_corpus.mkdir()
+        write_text_pdf(adapter_corpus / "manual.pdf", "Project Helios depends on Memory Curator")
+        write_hwpx(adapter_corpus / "manual.hwpx", "Project Helios depends on Memory Curator")
+        write_docx(adapter_corpus / "brief.docx", "Project Helios depends on Memory Curator")
+        write_xlsx(adapter_corpus / "matrix.xlsx", "Project Helios", "Memory Curator")
+        write_pptx(adapter_corpus / "slides.pptx", "Project Helios depends on Memory Curator")
+        image_expected = write_ocr_image(adapter_corpus / "scan.png", "Memory Curator OCR")
+
+        rt = self.runtime()
+        ingest = rt.ingest_path(adapter_corpus, access_scope="internal")
+        by_name = {item["display_name"]: item for item in ingest["sources"]}
+
+        self.assertEqual(by_name["manual.pdf"]["parser_status"], "parsed", by_name)
+        self.assertEqual(by_name["manual.hwpx"]["parser_status"], "parsed", by_name)
+        self.assertEqual(by_name["brief.docx"]["parser_status"], "parsed", by_name)
+        self.assertEqual(by_name["matrix.xlsx"]["parser_status"], "parsed", by_name)
+        self.assertEqual(by_name["slides.pptx"]["parser_status"], "parsed", by_name)
+        if image_expected:
+            self.assertEqual(by_name["scan.png"]["parser_status"], "parsed", by_name)
+        else:
+            self.assertEqual(by_name["scan.png"]["parser_status"], "unsupported_pending_adapter", by_name)
+
+        self.assertGreaterEqual(ingest["chunks_written"], 5)
+        answer = rt.query("Project Helios Memory Curator")
+        self.assertTrue(answer["chunks"], answer)
+        self.assertTrue(answer["relation_edges"], answer)
+
     def test_cli_end_to_end_verify_and_json_outputs(self):
         env = os.environ.copy()
         env["PYTHONPATH"] = str(Path(__file__).resolve().parents[1])
@@ -238,6 +269,114 @@ class OntologyRuntimeTests(unittest.TestCase):
         )
         verify_payload = json.loads(verify.stdout)
         self.assertEqual(verify_payload["status"], "pass")
+
+def write_text_pdf(path: Path, text: str) -> None:
+    stream = f"BT /F1 24 Tf 72 720 Td ({pdf_escape(text)}) Tj ET".encode("utf-8")
+    objects = [
+        b"1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj\n",
+        b"2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj\n",
+        b"3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >> endobj\n",
+        b"4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj\n",
+        b"5 0 obj << /Length " + str(len(stream)).encode("ascii") + b" >> stream\n" + stream + b"\nendstream endobj\n",
+    ]
+    output = bytearray(b"%PDF-1.4\n")
+    offsets = [0]
+    for obj in objects:
+        offsets.append(len(output))
+        output.extend(obj)
+    xref_start = len(output)
+    output.extend(f"xref\n0 {len(objects) + 1}\n0000000000 65535 f \n".encode("ascii"))
+    for offset in offsets[1:]:
+        output.extend(f"{offset:010d} 00000 n \n".encode("ascii"))
+    output.extend(f"trailer << /Root 1 0 R /Size {len(objects) + 1} >>\nstartxref\n{xref_start}\n%%EOF\n".encode("ascii"))
+    path.write_bytes(output)
+
+
+def pdf_escape(text: str) -> str:
+    return text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+
+
+def write_hwpx(path: Path, text: str) -> None:
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr(
+            "Contents/section0.xml",
+            f"""<?xml version="1.0" encoding="UTF-8"?>
+<hp:section xmlns:hp="http://www.hancom.co.kr/hwpml/2011/paragraph">
+  <hp:p><hp:run><hp:t>{text}</hp:t></hp:run></hp:p>
+</hp:section>
+""",
+        )
+
+
+def write_docx(path: Path, text: str) -> None:
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr(
+            "word/document.xml",
+            f"""<?xml version="1.0" encoding="UTF-8"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body><w:p><w:r><w:t>{text}</w:t></w:r></w:p></w:body>
+</w:document>
+""",
+        )
+
+
+def write_xlsx(path: Path, subject: str, target: str) -> None:
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr(
+            "xl/sharedStrings.xml",
+            f"""<?xml version="1.0" encoding="UTF-8"?>
+<sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <si><t>name</t></si>
+  <si><t>depends_on</t></si>
+  <si><t>{subject}</t></si>
+  <si><t>{target}</t></si>
+</sst>
+""",
+        )
+        archive.writestr(
+            "xl/worksheets/sheet1.xml",
+            """<?xml version="1.0" encoding="UTF-8"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <sheetData>
+    <row r="1"><c t="s"><v>0</v></c><c t="s"><v>1</v></c></row>
+    <row r="2"><c t="s"><v>2</v></c><c t="s"><v>3</v></c></row>
+  </sheetData>
+</worksheet>
+""",
+        )
+
+
+def write_pptx(path: Path, text: str) -> None:
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr(
+            "ppt/slides/slide1.xml",
+            f"""<?xml version="1.0" encoding="UTF-8"?>
+<p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"
+       xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+  <p:cSld><p:spTree><p:sp><p:txBody><a:p><a:r><a:t>{text}</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld>
+</p:sld>
+""",
+        )
+
+
+def write_ocr_image(path: Path, text: str) -> bool:
+    if not shutil.which("swift"):
+        path.write_bytes(b"no ocr engine fixture")
+        return False
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except Exception:
+        path.write_bytes(b"no pil fixture")
+        return False
+    image = Image.new("RGB", (900, 180), "white")
+    draw = ImageDraw.Draw(image)
+    try:
+        font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 52)
+    except Exception:
+        font = None
+    draw.text((40, 55), text, fill="black", font=font)
+    image.save(path)
+    return sys.platform == "darwin"
 
 
 if __name__ == "__main__":

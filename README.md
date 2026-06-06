@@ -302,7 +302,7 @@ The default export state is conservative. Generated skills are searchable candid
 
 ### Production Ontology Runtime
 
-For knowledge-heavy personal or company agents, Hephaestus now ships a real local-first ontology runtime under `ontology/` with the executable CLI `bin/ontology`. It turns approved files into an agent-readable source archive, chunk store, full-text index, deterministic local vector index, ontology graph, GraphRAG result, Memory Curator candidate ticket, and Agent Working Memory cache.
+For knowledge-heavy personal or company agents, Hephaestus now ships a real local-first ontology runtime under `ontology/` with the executable CLI `bin/ontology`. It turns approved files into an agent-readable source archive, chunk store, full-text index, vector index, ontology graph, GraphRAG result, Memory Curator candidate ticket, and Agent Working Memory cache.
 
 The Super Ontology files under `.agentlas/` remain the safety/governance layer. They define the source-lineage, privacy, task-coverage, causal, consensus, and memory-write gates around the runtime. The runtime is the implementation layer.
 
@@ -312,7 +312,11 @@ Supported ingest formats:
 |---|---|
 | `.txt`, `.md`, `.json`, `.csv` | parsed |
 | `.docx`, `.xlsx`, `.pptx` | parsed through OpenXML adapters |
-| `.pdf`, `.hwp` / `.hwpx`, images/OCR, unknown extensions | `unsupported_pending_adapter` |
+| `.pdf` | parsed through `pdftotext` when installed |
+| `.hwpx` | parsed through the HWPX XML adapter |
+| images/OCR | parsed through macOS Vision OCR or Tesseract when available |
+| `.hwp` binary | parsed through `hwp5txt` when available; otherwise clearly reported as `unsupported_pending_adapter` |
+| unknown extensions | `unsupported_pending_adapter` |
 
 The storage default is SQLite at `.agentlas/ontology-runtime.sqlite`, ignored by Git. The schema includes `sources`, `source_lineage`, `chunks`, `chunk_fts`, `entities`, `entity_aliases`, `relations`, `memory_candidates`, `memory_candidate_events`, `working_memory`, `runtime_adapters`, and `schema_migrations`.
 
@@ -334,7 +338,7 @@ The runtime stack is layered:
 | Layer | Role |
 |---|---|
 | Source archive and chunk store | Stores source metadata, checksum, source type, parser status, version, privacy scope, lineage, chunks, source spans, token estimates, and checksums |
-| Search index | Uses SQLite FTS5 plus a pluggable vector adapter; the default is deterministic local hashing when no provider key exists |
+| Search index | Uses SQLite FTS5 plus a pluggable vector adapter; local hashing works without keys, and OpenAI embeddings can be selected with `--vector-provider openai` when `OPENAI_API_KEY` is set |
 | Ontology graph | Stores entities, aliases, relations, confidence, evidence chunks, observed/valid time fields, source lineage, and active/stale/deprecated status |
 | GraphRAG retriever | Returns text evidence and graph slices together |
 | Memory Curator bridge | Creates candidate tickets only; direct durable memory writes are blocked |
@@ -350,7 +354,7 @@ bin/ontology memory decide <ticket-id> quarantine --reason "Needs source owner r
 
 Approval records review state but still does not write durable memory. The Memory Curator owns durable promotion. Agent Working Memory is intentionally a cache, not a source of truth.
 
-See [`docs/ontology-runtime.md`](docs/ontology-runtime.md) for the schema, adapter boundaries, storage commands, verification coverage, and current limits.
+See [`docs/ontology-runtime.md`](docs/ontology-runtime.md) for the schema, adapter behavior, storage commands, and verification coverage.
 
 ## Why Agentlas Desktop And Terminal Make It Better
 
