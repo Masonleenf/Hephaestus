@@ -53,6 +53,7 @@
           "source_lineage_version_contract",
           "entity_identity_resolution_contract",
           "temporal_state_transition_contract",
+          "capability_delegation_authority_contract",
           "agentlas_integration_contract",
           "memory_curator_bridge",
           "promotion_readiness",
@@ -87,6 +88,7 @@
         "sourceLineageVersion",
         "entityIdentityResolution",
         "temporalStateTransition",
+        "capabilityDelegationAuthority",
         "memoryCuratorBridge",
         "memoryTickets"
       ],
@@ -113,6 +115,7 @@
         "sourceLineageVersion": { "type": "string" },
         "entityIdentityResolution": { "type": "string" },
         "temporalStateTransition": { "type": "string" },
+        "capabilityDelegationAuthority": { "type": "string" },
         "memoryCuratorBridge": { "type": "string" },
         "memoryTickets": { "type": "string" }
       },
@@ -187,6 +190,11 @@
         "timelessStateRuntimeWritesBlocked",
         "eventReplayRequired",
         "projectionVersionRequired",
+        "capabilityDelegationAuthorityRequired",
+        "unscopedCapabilityRuntimeWritesBlocked",
+        "delegationChainRequired",
+        "capabilityAttenuationRequired",
+        "purposeBoundCapabilityRequired",
         "memoryCuratorBridgeRequired",
         "directDurableMemoryWritesBlocked",
         "appbridgeSourceWritesBlocked"
@@ -253,6 +261,11 @@
         "timelessStateRuntimeWritesBlocked": { "const": true },
         "eventReplayRequired": { "const": true },
         "projectionVersionRequired": { "const": true },
+        "capabilityDelegationAuthorityRequired": { "const": true },
+        "unscopedCapabilityRuntimeWritesBlocked": { "const": true },
+        "delegationChainRequired": { "const": true },
+        "capabilityAttenuationRequired": { "const": true },
+        "purposeBoundCapabilityRequired": { "const": true },
         "memoryCuratorBridgeRequired": { "const": true },
         "directDurableMemoryWritesBlocked": { "const": true },
         "appbridgeSourceWritesBlocked": { "const": true }

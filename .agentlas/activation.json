@@ -38,6 +38,7 @@
     ".agentlas/super-ontology-source-lineage-version.json",
     ".agentlas/super-ontology-entity-identity-resolution.json",
     ".agentlas/super-ontology-temporal-state-transition.json",
+    ".agentlas/super-ontology-capability-delegation-authority.json",
     ".agentlas/super-ontology-replays.jsonl",
     ".agentlas/super-ontology-evidence.jsonl",
     ".agentlas/super-ontology-memory-bridge.jsonl"

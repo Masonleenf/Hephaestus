@@ -77,6 +77,7 @@ The canonical core is runtime-neutral:
 - `.agentlas/super-ontology-source-lineage-version.json` in generated packages
 - `.agentlas/super-ontology-entity-identity-resolution.json` in generated packages
 - `.agentlas/super-ontology-temporal-state-transition.json` in generated packages
+- `.agentlas/super-ontology-capability-delegation-authority.json` in generated packages
 - `.agentlas/super-ontology-replays.jsonl` in generated packages
 - `.agentlas/super-ontology-evidence.jsonl` in generated packages
 - `.agentlas/super-ontology-memory-bridge.jsonl` in generated packages
@@ -108,13 +109,14 @@ Three runtime behaviors are public contracts here, not private product code:
   objective-proxy-validity metadata, stakeholder-preference-governance metadata,
   normative-authority-drift metadata, side-effect-containment metadata,
   source-lineage-version metadata, entity-identity-resolution metadata,
-  temporal-state-transition metadata, replay ledgers, and promotion
+  temporal-state-transition metadata, capability-delegation-authority metadata,
+  replay ledgers, and promotion
   evidence ledgers. Runtime graph
   writes, cross-context information flows, relation-as-action jumps, broad
   safety claims, stale or desynced knowledge use, hostile-source promotion, and
   uncalibrated answers or writes, unreviewed term/schema/ontology merges, and
   preference-driven writes without stakeholder governance, and stale or
-  out-of-scope authority claims
+  out-of-scope authority claims, and unbounded role/token/tool authority
   stay off until shadow/canary replay, rollback, homeostasis review,
   adversarial-provenance review, epistemic-calibration review,
   semantic-alignment review, resilience-control review, invariant-verification

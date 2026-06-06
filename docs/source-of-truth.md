@@ -83,6 +83,7 @@ These files are the public contract surface:
 - `.agentlas/super-ontology-source-lineage-version.json` in generated packages
 - `.agentlas/super-ontology-entity-identity-resolution.json` in generated packages
 - `.agentlas/super-ontology-temporal-state-transition.json` in generated packages
+- `.agentlas/super-ontology-capability-delegation-authority.json` in generated packages
 - `.agentlas/super-ontology-replays.jsonl` in generated packages
 - `.agentlas/super-ontology-evidence.jsonl` in generated packages
 - `.agentlas/super-ontology-memory-bridge.jsonl` in generated packages
@@ -121,8 +122,8 @@ change:
   calibration, semantic alignment, resilience control, invariant verification,
   observability telemetry, objective proxy validity, stakeholder preference
   governance, normative authority drift, side-effect containment, source
-  lineage version, entity identity resolution, and temporal state transition
-  contracts;
+  lineage version, entity identity resolution, temporal state transition, and
+  capability delegation authority contracts;
 - Memory Curator, Memory Tickets, PM Soul, sitemap, task-bias, self-evolution,
   policy, eval, or QA/evidence contracts;
 - runtime adapter shape;

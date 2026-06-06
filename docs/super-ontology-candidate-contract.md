@@ -31,6 +31,7 @@ Generated or packaged repos may include:
   super-ontology-source-lineage-version.json
   super-ontology-entity-identity-resolution.json
   super-ontology-temporal-state-transition.json
+  super-ontology-capability-delegation-authority.json
   super-ontology-replays.jsonl
   super-ontology-evidence.jsonl
   super-ontology-memory-bridge.jsonl
@@ -359,6 +360,26 @@ Generated or packaged repos may include:
   memory fact without validity interval, and graph edge without temporal
   bounds.
 
+`super-ontology-capability-delegation-authority.json`
+
+- Public-safe capability delegation authority seed.
+- Requires roles, groups, OAuth scopes, API keys, service accounts, session
+  cookies, tool schemas, cached policy decisions, broad approvals, delegation
+  tokens, and child-agent authority to name actor, principal, task, operation,
+  resource, scope, purpose, delegation chain, caveats, policy decision,
+  revocation check, audit, rollback, and post-action verification before
+  authority-bearing use.
+- Keeps `runtimePromotionAllowed=false` on export.
+- Blocks role-as-capability, OAuth scope as task permission, API key as actor,
+  read access as write authority, unbounded parent-agent delegation, missing
+  delegation chain, purpose mismatch, capability without caveats, stale token
+  as current authority, cross-context capability reuse, tool-choice privilege
+  escalation, child agent exceeding parent authority, reused human consent,
+  permission prompt as policy, tool schema as authorization, cached auth
+  decision without fresh context, break-glass without expiry, admin role as all
+  actions, shared service account as identity, task goal as permission, and
+  hidden tool calls without policy decisions.
+
 ## Default State
 
 Every exported Super Ontology contract starts as:
@@ -407,6 +428,11 @@ temporalStateTransitionRequired = true
 timelessStateRuntimeWritesBlocked = true
 eventReplayRequired = true
 projectionVersionRequired = true
+capabilityDelegationAuthorityRequired = true
+unscopedCapabilityRuntimeWritesBlocked = true
+delegationChainRequired = true
+capabilityAttenuationRequired = true
+purposeBoundCapabilityRequired = true
 memoryCuratorBridgeRequired = true
 directDurableMemoryWritesBlocked = true
 untrustedSourceRuntimeWritesBlocked = true

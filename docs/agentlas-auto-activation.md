@@ -60,6 +60,7 @@ Recommended minimum:
 ├── super-ontology-source-lineage-version.json
 ├── super-ontology-entity-identity-resolution.json
 ├── super-ontology-temporal-state-transition.json
+├── super-ontology-capability-delegation-authority.json
 ├── super-ontology-replays.jsonl
 ├── super-ontology-evidence.jsonl
 ├── super-ontology-memory-bridge.jsonl
@@ -364,6 +365,20 @@ overwriting user content.
   deadlines, stale caches, partial failures, scheduled jobs without receipts,
   memory facts without validity intervals, and graph edges without temporal
   bounds.
+
+`super-ontology-capability-delegation-authority.json`
+
+- Export-only capability delegation authority seed.
+- Keeps runtime promotion disabled and blocks role/group/OAuth scope/API key,
+  service account, session cookie, tool schema, cached decision, broad
+  approval, and child-agent token shortcuts from becoming graph, memory,
+  public, training, tool, route, scheduled, permission, financial, release,
+  customer-output, or physical authority.
+- Requires actor identity, agent identity, user intent, task id, workflow step,
+  delegation chain, parent capability, resource id, operation, scope, purpose,
+  caveats, consent or owner approval, policy decision/version, revocation
+  check, audit trace, rollback snapshot, and post-action verification where
+  needed.
 
 `super-ontology-replays.jsonl` and `super-ontology-evidence.jsonl`
 
