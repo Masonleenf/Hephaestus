@@ -24,6 +24,16 @@ self-evolution proposals, but it remains a single agent package.
 - `.agentlas/memory-map.json`, `.agentlas/memory-tickets.jsonl`, and
   `.agentlas/vault-references.json`.
 - Runtime adapters for requested targets.
+- `.agentlas/global-commands.json`.
+- One canonical global command for the worker, with matching Claude Code,
+  Codex, Gemini CLI, generic AGENTS.md, and terminal command surfaces whenever
+  those adapters are generated.
+
+## Global Command Rule
+
+Choose the command from the generated package slug, for example
+`/research-agent`. Add the command while creating the package. Do not finish
+without telling the user the command for each runtime in `global_commands`.
 
 ## Self-Evolution Rule
 
@@ -35,4 +45,4 @@ agent's own core instructions.
 ## Output
 
 Return `status`, `evidence`, `output`, and `blockers`, plus the generated single
-agent path and verification command.
+agent path, verification command, and `global_commands`.

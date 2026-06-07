@@ -9,6 +9,12 @@ xcode-select --install
 git --version
 ```
 
+One-command install or update for Claude, Codex, and Gemini:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.5/scripts/install-all-runtimes.sh | bash
+```
+
 ```bash
 claude plugin marketplace add https://github.com/agentlas-ai/Hephaestus --sparse .claude-plugin claude/plugins
 claude plugin install hephaestus@agentlas-core-engine
@@ -24,9 +30,7 @@ Then open or restart Claude Code in the project and type:
 If an older install still points at `agentlas-meta-agent`:
 
 ```bash
-claude plugin marketplace update agentlas-core-engine
-claude plugin uninstall agentlas-meta-agent@agentlas-core-engine
-claude plugin install hephaestus@agentlas-core-engine
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.5/scripts/install-all-runtimes.sh | bash
 ```
 
 That command creates and opens:
@@ -41,6 +45,9 @@ Use the same slash command for builder work:
 /hephaestus create a research agent for SEC filing analysis
 /hephaestus package this existing Claude agent into Agentlas architecture
 ```
+
+After generation, the final handoff must include `global_commands` for the
+created agent or team. For teams, that command routes to the orchestrator/HQ.
 
 Local validation from this repository:
 

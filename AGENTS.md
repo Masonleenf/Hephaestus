@@ -9,6 +9,7 @@ Claude Code, Gemini CLI, Cursor, and `AGENTS.md`-compatible runtimes.
 - Canonical entry point: `AGENTS.md`.
 - Architecture ownership rule: `docs/source-of-truth.md`.
 - Runtime split and sync boundary: `docs/runtime-sync-boundaries.md`.
+- Global command contract: `docs/global-command-contract.md`.
 - Production Ontology Runtime: `docs/ontology-runtime.md`, `ontology/`,
   `bin/ontology`, `tests/test_ontology_runtime.py`, and
   `scripts/verify-ontology-runtime.sh`.
@@ -24,7 +25,8 @@ Claude Code, Gemini CLI, Cursor, and `AGENTS.md`-compatible runtimes.
 - Reusable skills: `.agents/skills/*/SKILL.md` and root `skills/*/SKILL.md`.
 - Agentlas contracts: `.agentlas/mode-map.json`,
   `.agentlas/agent-card.json`, `.agentlas/company-blueprint.json`,
-  `.agentlas/sitemap.json`, `.agentlas/memory-map.json`,
+  `.agentlas/sitemap.json`, `.agentlas/global-commands.json`,
+  `.agentlas/memory-map.json`,
   `.agentlas/memory-tickets.jsonl`, `.agentlas/vault-references.json`,
   `.agentlas/local-credentials.map.json`, and skill lifecycle files emitted in
   generated packages.
@@ -51,14 +53,18 @@ become separate sources of truth.
 5. Emit or repair the smallest useful Agentlas package.
 6. Add the required architecture contracts for the selected mode.
 7. Add thin adapters for Codex, Claude Code, Gemini CLI, and optional Cursor.
-8. Add `.agentlas` seed files when the generated or packaged output needs local
+8. Assign one canonical global command during creation, write
+   `.agentlas/global-commands.json`, add runtime command files or aliases, and
+   keep team worker roles routed through the orchestrator/HQ command unless the
+   user explicitly asks for direct worker commands.
+9. Add `.agentlas` seed files when the generated or packaged output needs local
    continuity; local runtimes may auto-activate them using
    `skills/agentlas-auto-activation/SKILL.md`.
-9. Add skill lifecycle metadata using
+10. Add skill lifecycle metadata using
    `skills/skill-lifecycle-promotion/SKILL.md` when the package contains
    reusable skills.
-10. Verify with `scripts/verify-package.sh`.
-11. For ontology runtime changes, also verify with
+11. Verify with `scripts/verify-package.sh`.
+12. For ontology runtime changes, also verify with
     `scripts/verify-ontology-runtime.sh`.
 
 ## Team Roles
@@ -82,6 +88,8 @@ When asked to create, repair, or package an agent repo, return:
 - `status`: completed, blocked, or needs_clarification.
 - `evidence`: files inspected, commands run, and verification result.
 - `output`: generated path, changed files, or exact design.
+- `global_commands`: Claude Code, Codex, Gemini CLI, generic AGENTS.md, and
+  terminal commands from `.agentlas/global-commands.json`.
 - `blockers`: only blockers that require the user or external state.
 
 Generated or packaged repos must include the relevant subset of:
@@ -91,6 +99,7 @@ Generated or packaged repos must include the relevant subset of:
 - `.agentlas/mode-map.json`;
 - `.agentlas/agent-card.json`;
 - `.agentlas/company-blueprint.json`;
+- `.agentlas/global-commands.json`;
 - `.agentlas/memory-map.json`;
 - `.agentlas/memory-tickets.jsonl`;
 - `.agentlas/vault-references.json`;
@@ -128,6 +137,10 @@ Generated or packaged repos must include the relevant subset of:
 - `.agentlas/super-ontology-evidence.jsonl`;
 - `.agentlas/super-ontology-memory-bridge.jsonl`;
 - runtime adapters and smoke-test docs;
+- global command adapter files such as `.claude/commands/<slug>.md`,
+  `codex/plugins/<package-id>/commands/<slug>.md`, and
+  `gemini/extension/commands/<slug>.toml` with optional
+  `.gemini/commands/<slug>.toml` fallback;
 - production ontology runtime code, CLI, tests, and sample corpus when the
   package needs local-first knowledge storage, search, GraphRAG, Memory Curator
   bridge tickets, or Agent Working Memory;
@@ -139,16 +152,20 @@ Generated or packaged repos must include the relevant subset of:
 `single-agent-creator` produces one installable worker package. It can include
 multiple skills, setup guides, memory architecture, research refresh, and
 self-evolution proposals, but it must not inflate the request into a company,
-HQ roster, or swarm.
+HQ roster, or swarm. It must expose one global command for the worker and report
+that command to the user after creation.
 
 `team-builder` produces a multi-role team package. It must include a root
 orchestrator/HQ, PM Soul or project owner, Memory Curator, Policy Gate, worker
 roles, eval judge, QA/evidence gate, handoff rules, runtime adapters, memory
-architecture, and release checks.
+architecture, and release checks. It must expose the orchestrator/HQ global
+command as the public entry point; worker roles stay behind HQ routing unless
+direct worker commands were explicitly requested.
 
 `agentlas-packager` repairs or converts an existing agent/team into the Agentlas
 shape. It adds canonical core files, `.agentlas` contracts, runtime adapters,
-schemas, manifest, install scripts, verification, and public/private cleanup.
+schemas, manifest, install scripts, global command registry, verification, and
+public/private cleanup.
 
 ## Memory Preflight
 

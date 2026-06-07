@@ -13,9 +13,11 @@ description: "Use when generating or auditing a multi-role agent team package wi
 4. Add Policy Gate, eval judge, and QA/evidence gate.
 5. Add workers only for real domain ownership.
 6. Encode handoff and return contracts.
-7. Emit runtime adapters and package verification.
+7. Emit one orchestrator/HQ global command in `.agentlas/global-commands.json`
+   and runtime command files. Do not expose worker commands unless requested.
+8. Emit runtime adapters and package verification.
 
 ## Output
 
 Return `team_topology`, `nodes`, `edges`, `memory_architecture`, `gates`,
-`runtime_adapters`, and `verification`.
+`runtime_adapters`, `global_commands`, and `verification`.

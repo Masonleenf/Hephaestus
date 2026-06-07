@@ -15,10 +15,13 @@ self-evolution proposals, but it is still one worker.
 - `.agentlas/company-blueprint.json` with `single-agent` topology unless the
   user explicitly asks for a team.
 - `.agentlas/memory-map.json` and `.agentlas/vault-references.json`.
+- `.agentlas/global-commands.json` with one public command for the worker.
 - `memory/<slug>-memory.md` or `.agentlas/project-soul-memory.md` for project
   memory owned by PM Soul/project owner.
 - Thin adapters for Codex, Claude Code, Gemini CLI, Cursor, and generic
   `AGENTS.md` tools.
+- Runtime command files or aliases for Claude Code, Codex, Gemini CLI, generic
+  AGENTS.md tools, and terminal use.
 
 ## Self-Evolution Rule
 
@@ -36,3 +39,4 @@ Self-evolving means proposal-first improvement:
   worker request.
 - Do not remove memory architecture just because the package is single-agent.
 - Do not allow autonomous self-modification without explicit approval.
+- Do not finish without reporting `global_commands` to the user.

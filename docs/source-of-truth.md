@@ -16,6 +16,7 @@ This repository owns:
 - visible public foldering for generated Agentlas packages;
 - `.agentlas` contracts;
 - public `.agentlas` auto-activation contract for local runtimes;
+- public global command contract for generated and packaged agents;
 - public skill lifecycle registry contract for export-only candidate metadata;
 - public runtime adapters;
 - public-safe schemas, templates, and verification scripts.
@@ -48,6 +49,7 @@ These files are the public contract surface:
 - `docs/runtime-sync-boundaries.md`
 - `docs/mode-classifier.md`
 - `docs/clarify-question-loop.md`
+- `docs/global-command-contract.md`
 - `docs/agentlas-auto-activation.md`
 - `docs/skill-lifecycle-promotion.md`
 - `docs/super-ontology-candidate-contract.md`
@@ -55,6 +57,7 @@ These files are the public contract surface:
 - `.agentlas/agent-card.json`
 - `.agentlas/company-blueprint.json`
 - `.agentlas/sitemap.json`
+- `.agentlas/global-commands.json`
 - `.agentlas/memory-map.json`
 - `.agentlas/memory-tickets.jsonl`
 - `.agentlas/vault-references.json`
@@ -102,6 +105,9 @@ These files are the public contract surface:
 - `schemas/`
 - `templates/`
 - runtime adapters under `codex/`, `.claude/`, `.gemini/`, and `claude/`
+- global command adapters under `.claude/commands/`,
+  `codex/plugins/*/commands/`, and `gemini/extension/commands/`, with optional
+  `.gemini/commands/` fallback files
 - `scripts/verify-package.sh`
 - `scripts/public_safety_check.sh`
 
@@ -118,6 +124,7 @@ change:
 - clarify question loop;
 - generated package folder layout;
 - `.agentlas` schemas or required files;
+- `.agentlas` global command registry or generated command surfaces;
 - `.agentlas` auto-activation contract;
 - `.agentlas` skill lifecycle registry contract;
 - `.agentlas` Super Ontology open-world coverage, consensus coordination, task coverage, contextual flow, causal impact,
@@ -141,6 +148,7 @@ The following behaviors are public contracts in this repo:
 - mode auto-detection;
 - clarify question loop;
 - `.agentlas` local auto-activation.
+- `.agentlas/global-commands.json` with final `global_commands` handoff.
 - export-only skill lifecycle metadata with candidate tier, trial ledgers, and
   Curator decision ledgers.
 

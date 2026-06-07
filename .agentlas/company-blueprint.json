@@ -62,6 +62,7 @@
     "qa_evidence_gate",
     "sitemap_task_bias",
     "llm_runtime_architecture",
+    "global_command_registry",
     "thin_runtime_adapters",
     "install_verification"
   ],
@@ -69,6 +70,7 @@
     "peerToPeerWorkerCalls": "route-through-root",
     "durableMemoryWrites": "through-memory-tickets",
     "runtimeAdapters": "thin-adapters-over-canonical-core",
+    "globalCommands": "one-public-command-per-generated-agent-or-team",
     "publicRelease": "requires-public-safety-check"
   }
 }

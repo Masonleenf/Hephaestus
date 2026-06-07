@@ -6,4 +6,5 @@ description: "Use when converting or repairing an existing local/external agent 
 # Agentlas Packaging
 
 Inspect the source, classify it, preserve useful behavior, add Agentlas
-contracts and thin runtime adapters, remove unsafe public material, and verify.
+contracts, `.agentlas/global-commands.json`, thin runtime command adapters,
+remove unsafe public material, and verify. Return `global_commands`.

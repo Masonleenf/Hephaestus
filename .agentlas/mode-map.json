@@ -18,6 +18,7 @@
         ".agentlas/memory-map.json",
         ".agentlas/memory-tickets.jsonl",
         ".agentlas/vault-references.json",
+        ".agentlas/global-commands.json",
         ".agentlas/agent-card.json",
         "runtime adapters"
       ],
@@ -46,6 +47,7 @@
         "eval judge",
         "QA/evidence gate",
         "Memory Tickets",
+        ".agentlas/global-commands.json",
         "runtime adapters"
       ],
       "mustNotInclude": [
@@ -67,6 +69,7 @@
       "mustInclude": [
         "canonical AGENTS.md core",
         ".agentlas contracts",
+        ".agentlas/global-commands.json",
         "runtime adapters",
         "manifest",
         "verification scripts",

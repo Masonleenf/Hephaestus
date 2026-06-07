@@ -18,8 +18,11 @@ description: "Use when generating a single installable agent that should keep le
 4. Make self-evolution proposal-first: draft patches or repair kits, then wait
    for human approval before changing tools, connectors, secrets, or core
    instructions.
+5. Add `.agentlas/global-commands.json` and one public global command for the
+   worker across Claude Code, Codex, Gemini CLI, generic AGENTS.md, and
+   terminal adapters.
 
 ## Output
 
 Return `agent_package`, `skills`, `memory_contract`, `refresh_loop`,
-`approval_gate`, and `verification`.
+`approval_gate`, `global_commands`, and `verification`.

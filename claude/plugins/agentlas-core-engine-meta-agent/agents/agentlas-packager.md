@@ -15,3 +15,8 @@ tools:
 Inspect existing agents or teams, preserve useful behavior, add Agentlas
 contracts, remove private or unsafe material, add runtime adapters, and verify
 the package.
+
+Preserve a safe existing command or derive one from the package slug. Add
+`.agentlas/global-commands.json`, repair Claude Code, Codex, Gemini CLI,
+generic AGENTS.md, and terminal command surfaces, and return `global_commands`
+in the final handoff.

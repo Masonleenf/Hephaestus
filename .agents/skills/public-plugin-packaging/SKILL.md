@@ -9,7 +9,8 @@ description: "Use when packaging an Agentlas agent repo for public GitHub releas
 
 1. Separate public operating-system files from private hosted service code.
 2. Include `README.md`, `LICENSE`, `SECURITY.md`, `AGENTS.md`, `agents/`,
-   `skills/`, `.agentlas/`, schemas, templates, install scripts, and verification.
+   `skills/`, `.agentlas/global-commands.json`, schemas, templates, install
+   scripts, runtime command files, and verification.
 3. Keep private research, credentials, raw logs, and local paths out of the
    package.
 4. Run `scripts/public_safety_check.sh`.
@@ -17,4 +18,5 @@ description: "Use when packaging an Agentlas agent repo for public GitHub releas
 
 ## Output
 
-Return release surface, install command, validation commands, and blockers.
+Return release surface, install command, global_commands, validation commands,
+and blockers.

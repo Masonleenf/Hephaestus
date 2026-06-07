@@ -29,6 +29,8 @@ portable Agentlas-compatible package.
 - `.agentlas/` mode, memory, vault, sitemap, ticket, capability, and blueprint
   files.
 - Thin runtime adapters for Codex, Claude Code, Gemini CLI, and Cursor.
+- A canonical global command registry in `.agentlas/global-commands.json` and
+  matching command files or aliases for each supported runtime.
 - Install and verification scripts when packaging for reuse.
 
 ## Core Rules
@@ -47,6 +49,8 @@ portable Agentlas-compatible package.
 - Do not store secrets in memory or generated files.
 - Every durable memory write goes through Memory Events and Memory Tickets.
 - Public repos must include visible role folders and reusable skill folders.
+- Every generated or packaged repo must include a global command and the final
+  handoff must show the user how to invoke it.
 
 ## Done Criteria
 
@@ -55,6 +59,9 @@ The generated or packaged output is done only when a user can:
 1. see whether it is single-agent, team-builder, or packager output;
 2. inspect the visible structure;
 3. install it into a project;
-4. call it from Codex, Claude Code, or Gemini when requested;
+4. call it from Codex, Claude Code, Gemini CLI, generic AGENTS.md tools, or
+   terminal using the generated global command;
 5. see the Agentlas architecture contracts as files;
-6. run a verification command without hidden private dependencies.
+6. run a verification command without hidden private dependencies;
+7. read the `global_commands` section in the final handoff without guessing
+   which command to type next.

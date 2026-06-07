@@ -14,7 +14,9 @@ Invoke the Agentlas Core Engine Meta-Agent Team.
    - `agents/30-agentlas-packager/agent.md` for existing agent/team packaging.
 5. Load matching skills only.
 6. Use `.agentlas` auto-activation contracts when local continuity is needed.
-7. Return `status`, `evidence`, `output`, and `blockers`.
+7. Generate or repair `.agentlas/global-commands.json` and matching runtime
+   command files or aliases.
+8. Return `status`, `evidence`, `output`, `global_commands`, and `blockers`.
 
 ## Examples
 

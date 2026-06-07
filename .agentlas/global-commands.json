@@ -1,0 +1,51 @@
+{
+  "schemaVersion": "1.0",
+  "packageId": "agentlas-core-engine-meta-agent",
+  "canonicalCommand": "/hephaestus",
+  "commands": [
+    {
+      "runtime": "claude-code",
+      "command": "/hephaestus",
+      "adapterPath": ".claude/commands/hephaestus.md",
+      "globalInstallPath": "~/.claude/commands/hephaestus.md",
+      "scope": "global",
+      "status": "native-slash-command"
+    },
+    {
+      "runtime": "codex",
+      "command": "/hephaestus",
+      "adapterPath": "codex/plugins/agentlas-core-engine-meta-agent/commands/hephaestus.md",
+      "globalInstallPath": "codex plugin add hephaestus@agentlas-core-engine",
+      "scope": "plugin",
+      "status": "plugin-slash-command"
+    },
+    {
+      "runtime": "gemini-cli",
+      "command": "/hephaestus",
+      "adapterPath": "gemini/extension/commands/hephaestus.toml",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v0.2.5",
+      "scope": "global",
+      "status": "extension-custom-command",
+      "notes": "Fallback user command is also installable at ~/.gemini/commands/hephaestus.toml."
+    },
+    {
+      "runtime": "generic-agents-md",
+      "command": "/hephaestus",
+      "adapterPath": "AGENTS.md",
+      "scope": "project",
+      "status": "adapter-command-alias"
+    },
+    {
+      "runtime": "agentlas-terminal",
+      "command": "hephaestus",
+      "adapterPath": "bin/hephaestus",
+      "globalInstallPath": "agentlas run hephaestus",
+      "scope": "terminal",
+      "status": "shell-command"
+    }
+  ],
+  "postCreationUserMessage": {
+    "required": true,
+    "template": "global_commands: Claude Code /hephaestus; Codex /hephaestus; Gemini CLI /hephaestus; Agentlas terminal hephaestus or agentlas run hephaestus"
+  }
+}

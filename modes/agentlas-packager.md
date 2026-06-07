@@ -16,6 +16,7 @@ Cursor rules, another public repo, a ZIP, or an ad hoc Markdown structure.
 - `.agentlas/memory-map.json`.
 - `.agentlas/memory-tickets.jsonl`.
 - `.agentlas/vault-references.json`.
+- `.agentlas/global-commands.json`.
 - `manifest.json`.
 - `scripts/verify-package.sh`.
 - `scripts/public_safety_check.sh` for public release.
@@ -25,8 +26,9 @@ Cursor rules, another public repo, a ZIP, or an ad hoc Markdown structure.
 1. Decide whether the source is a single-agent package or team package.
 2. Preserve useful source behavior.
 3. Add missing Agentlas contracts.
-4. Remove private or unsafe material before public release.
-5. Add Codex plugin, Claude adapter, Gemini adapter, and terminal install
+4. Preserve or derive a canonical global command and add runtime command files.
+5. Remove private or unsafe material before public release.
+6. Add Codex plugin, Claude adapter, Gemini adapter, and terminal install
    surfaces when requested.
 
 ## Do Not
@@ -34,3 +36,4 @@ Cursor rules, another public repo, a ZIP, or an ad hoc Markdown structure.
 - Do not claim runtime parity when an adapter only maps the canonical core.
 - Do not copy local-only research notes into public output.
 - Do not store secret values or raw logs.
+- Do not finish without reporting `global_commands` to the user.

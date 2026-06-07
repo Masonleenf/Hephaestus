@@ -18,8 +18,17 @@ This is a thin Gemini CLI adapter for the Agentlas Core Engine Meta-Agent Team.
 7. Use `.agents/skills/agentlas-auto-activation/SKILL.md` when local project
    continuity or `.agentlas` activation is part of the output.
 8. Use `.agentlas/memory-map.json` for memory routing.
+9. Use `.agentlas/global-commands.json` for generated command routing and final
+   user handoff.
 
 ## Default Behavior
 
 Create or package portable Markdown-first Agentlas agents and teams with
 Codex, Claude Code, Gemini, Cursor, and AGENTS.md adapters.
+
+## Global Command
+
+This package exposes `/hephaestus` for Gemini CLI through
+`gemini/extension/commands/hephaestus.toml`, with a fallback user command at
+`.gemini/commands/hephaestus.toml`. Generated agents must receive their own
+Gemini extension command and a matching `.agentlas/global-commands.json` entry.

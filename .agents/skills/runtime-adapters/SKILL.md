@@ -10,13 +10,14 @@ description: "Use when creating Codex, Claude Code, Gemini CLI, Cursor, or AGENT
 - `AGENTS.md` is canonical.
 - `.claude/`, `.codex/`, `.gemini/`, `.cursor/`, and root `skills/` are thin
   adapters or mirrors.
+- `.agentlas/global-commands.json` records the command each adapter exposes.
 - Adapter text should point back to `AGENTS.md`.
 - Do not claim identical behavior across runtimes. Say the canonical core is
   portable and each adapter maps it into local conventions.
 
 ## Required Adapters
 
-- Codex: plugin manifest plus skill.
-- Claude Code: command, agent, and skill adapter.
-- Gemini CLI: `GEMINI.md`.
-- Generic: root `AGENTS.md`.
+- Codex: plugin manifest plus skill and `commands/<slug>.md`.
+- Claude Code: command, agent, and skill adapter under `.claude/commands/`.
+- Gemini CLI: `GEMINI.md` plus `.gemini/commands/<slug>.toml`.
+- Generic: root `AGENTS.md` with the command alias documented.

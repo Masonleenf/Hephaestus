@@ -19,6 +19,7 @@ Public core owns the portable contract:
 - `.agentlas` contracts;
 - local credential store contract for gitignored `.env`, `signing/`, and
   `credentials/` materialization;
+- global command registry and post-creation command handoff;
 - Memory Tickets, PM Soul, Memory Curator, sitemap/task-bias, policy, eval, QA,
   and runtime adapter rules;
 - skill lifecycle registry, trial evidence, and Curator promotion decision
@@ -45,6 +46,7 @@ public core contract is the public version they should all mirror:
 | Mode auto-detection | public rule | may implement in code | may implement in code |
 | Clarify question loop | public rule | may store sessions and meter usage | may run locally |
 | Generated folder layout | canonical | emits ZIPs | installs or imports |
+| Global commands | canonical `.agentlas/global-commands.json` and command files | emits command registry and install hints | may install global commands locally |
 | `.agentlas` memory files | canonical | emits in exports | creates/maintains locally |
 | Local credential store | value-free public contract | may emit placeholders only | may store real values in gitignored local files |
 | `.agentlas` skill lifecycle files | canonical export contract | emits candidate registry and empty ledgers | may merge locally as candidate metadata |
@@ -102,10 +104,13 @@ The following formerly runtime-owned behaviors are now public contracts:
 3. `.agentlas` auto-activation: see `docs/agentlas-auto-activation.md` and
    `skills/agentlas-auto-activation/SKILL.md`.
 4. Local credential store: see `docs/local-credential-store.md`.
-5. Skill lifecycle promotion metadata: see
+5. Global commands: see `docs/global-command-contract.md`. Generated and
+   packaged agents must include `.agentlas/global-commands.json`, runtime
+   command files or aliases, and a final `global_commands` handoff.
+6. Skill lifecycle promotion metadata: see
    `docs/skill-lifecycle-promotion.md` and
    `skills/skill-lifecycle-promotion/SKILL.md`.
-6. Super Ontology candidate metadata: see
+7. Super Ontology candidate metadata: see
    `docs/super-ontology-candidate-contract.md`.
    Its open-world coverage seed, consensus-coordination seed, task coverage seed, contextual-flow seed, causal-impact seed,
    assurance-case seed, knowledge-homeostasis seed, adversarial-provenance seed,

@@ -3,7 +3,7 @@ set -euo pipefail
 
 target="${1:-$PWD}"
 force="${AGENTLAS_META_OS_FORCE:-0}"
-repo_tarball="${AGENTLAS_META_OS_TARBALL_URL:-https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.2.4.tar.gz}"
+repo_tarball="${AGENTLAS_META_OS_TARBALL_URL:-https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.2.5.tar.gz}"
 
 usage() {
   cat <<'EOF'
@@ -71,7 +71,7 @@ for file in AGENTS.md CLAUDE.md GEMINI.md README.md README.ko.md README.zh-CN.md
   copy_root_file "$file"
 done
 
-for dir in assets agents modes skills .agents .agentlas .claude-plugin .claude claude .gemini codex docs schemas templates examples scripts bin; do
+for dir in assets agents modes skills .agents .agentlas .claude-plugin .claude claude .gemini gemini codex docs schemas templates examples scripts bin; do
   copy_dir "$dir"
 done
 

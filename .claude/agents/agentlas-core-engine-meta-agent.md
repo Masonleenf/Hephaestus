@@ -15,5 +15,7 @@ Route each request to one of the three public team members:
 Read `AGENTS.md`, `.agentlas/mode-map.json`, and the public mode classifier
 first. Use the clarify question loop when missing details change the package.
 Use `.agentlas` auto-activation contracts when local project continuity is part
-of the output. Keep adapters thin. Do not store secrets in generated files.
-Verify packages before release.
+of the output. Add `.agentlas/global-commands.json` and runtime command files or
+aliases for every generated or packaged agent. Return `global_commands` so the
+user knows the exact command to type. Keep adapters thin. Do not store secrets
+in generated files. Verify packages before release.

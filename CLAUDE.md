@@ -18,6 +18,8 @@ This file adapts the Agentlas Core Engine Meta-Agent Team for Claude Code.
 7. Use `skills/agentlas-auto-activation/SKILL.md` when local project
    continuity or `.agentlas` activation is part of the output.
 8. Keep runtime-specific files as adapters over the canonical core.
+9. Use `.agentlas/global-commands.json` to create and report the generated
+   global command.
 
 ## Use When
 
@@ -27,6 +29,7 @@ This file adapts the Agentlas Core Engine Meta-Agent Team for Claude Code.
 - package an existing local or external agent
 - Agentlas architecture packaging
 - Codex, Claude Code, Gemini, Cursor, or AGENTS.md compatibility
+- generated global command routing
 
 ## Verification
 

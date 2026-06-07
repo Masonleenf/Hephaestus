@@ -24,9 +24,19 @@ Codex plugin packaging, Claude adapter use, or public open-source release.
 - `.agentlas/mode-map.json`.
 - `.agentlas/memory-map.json`, `.agentlas/memory-tickets.jsonl`, and
   `.agentlas/vault-references.json`.
+- `.agentlas/global-commands.json`.
 - Sitemap/task-bias coverage when packaging complex teams.
 - `manifest.json`, schemas, install scripts, and verification scripts for
   public release.
+- Missing global command files for Claude Code, Codex, Gemini CLI, generic
+  AGENTS.md, and terminal use.
+
+## Global Command Rule
+
+If the source agent already has a command, preserve it when it is safe and
+portable. Otherwise derive one from the package slug. For teams, expose the HQ
+command and keep workers behind HQ unless direct worker commands were requested.
+The final handoff must include `global_commands`.
 
 ## Safety
 
@@ -37,4 +47,4 @@ output.
 ## Output
 
 Return `status`, `evidence`, `output`, and `blockers`, plus repaired files,
-public safety result, and install command.
+public safety result, install command, and `global_commands`.

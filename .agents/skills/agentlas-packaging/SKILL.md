@@ -18,12 +18,15 @@ description: "Use when converting, repairing, or packaging an existing local or 
    - `.agentlas/memory-map.json`;
    - `.agentlas/memory-tickets.jsonl`;
    - `.agentlas/vault-references.json`;
+   - `.agentlas/global-commands.json`;
    - runtime adapters;
    - verification scripts.
-4. Remove secrets, raw logs, private local notes, and unsafe public paths.
-5. Run package verification and public-safety checks before release.
+4. Add or repair the global command across Claude Code, Codex, Gemini CLI,
+   generic AGENTS.md tools, and terminal adapters.
+5. Remove secrets, raw logs, private local notes, and unsafe public paths.
+6. Run package verification and public-safety checks before release.
 
 ## Output
 
 Return `classification`, `repaired_files`, `agentlas_contracts_added`,
-`runtime_adapters`, `verification`, and `blockers`.
+`runtime_adapters`, `global_commands`, `verification`, and `blockers`.

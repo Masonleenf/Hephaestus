@@ -18,6 +18,7 @@ small operating system, not a loose list of prompts.
 - Eval judge and QA/evidence gate before final handoff.
 - Runtime Adapter Engineer for Codex, Claude Code, Gemini CLI, Cursor, and
   generic `AGENTS.md` surfaces.
+- Global Command Registry for one orchestrator/HQ command across runtimes.
 
 ## Required Contracts
 
@@ -28,6 +29,9 @@ small operating system, not a loose list of prompts.
 - Memory Tickets wrapped by runtime/orchestrator before Memory Curator review.
 - PM Soul owns project memory. Policy Gate controls shared team-memory
   promotion.
+- `.agentlas/global-commands.json` owns the public team command. Worker roles
+  route through orchestrator/HQ unless the user explicitly requested direct
+  worker commands.
 
 ## Do Not
 
@@ -36,3 +40,5 @@ small operating system, not a loose list of prompts.
   owner.
 - Do not ship a team package without eval, QA/evidence, policy, and memory
   architecture.
+- Do not finish without reporting the orchestrator/HQ command in
+  `global_commands`.

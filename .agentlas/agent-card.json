@@ -12,6 +12,7 @@
     "agent_repo_design",
     "agent_team_design",
     "runtime_adapter_generation",
+    "global_command_generation",
     "memory_ticket_contracts",
     "sitemap_task_bias",
     "pm_soul_architecture",
@@ -25,7 +26,8 @@
     "agent": ".agents/agentlas-core-engine-meta-agent/agent.md",
     "codex": "codex/marketplace.json",
     "claude": ".claude/commands/meta-agent.md",
-    "gemini": "GEMINI.md"
+    "gemini": "GEMINI.md",
+    "globalCommands": ".agentlas/global-commands.json"
   },
   "contracts": {
     "modes": ".agentlas/mode-map.json",
@@ -33,6 +35,7 @@
     "pmSoul": ".agentlas/project-soul-memory.md",
     "memory": ".agentlas/memory-map.json",
     "runtimeArchitecture": "docs/llm-runtime-architecture.md",
+    "globalCommands": "docs/global-command-contract.md",
     "chainMap": "docs/chain-map.md"
   }
 }

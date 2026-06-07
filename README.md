@@ -86,6 +86,33 @@ git --version
 
 After `git --version` works, rerun the Claude or Codex plugin install command.
 
+### Recommended. One terminal command for all runtimes
+
+Run this from your normal OS terminal. It installs or updates the Claude Code
+plugin, Codex plugin, and Gemini CLI extension/custom command. It also fixes the
+common `Already added from a different source` marketplace conflict by removing
+the old `agentlas-core-engine` entry and adding it again from this repo.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.5/scripts/install-all-runtimes.sh | bash
+```
+
+After it finishes, restart any open Claude Code, Codex, or Gemini sessions.
+Then use:
+
+```text
+Claude Code: /reload-plugins, then /hephaestus ontology
+Codex:       /plugins, then /hephaestus ontology
+Gemini CLI:  /extensions list or /commands list, then /hephaestus
+```
+
+Use the same command again to update to the packaged ref. To force a different
+ref:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | HEPHAESTUS_REF=main bash
+```
+
 ### Option A. Claude Code plugin
 
 Open your normal OS terminal, not the Claude chat box, and run:
@@ -106,9 +133,7 @@ If you already installed the old `agentlas-meta-agent` plugin and Claude says
 `hephaestus` is not found, refresh the marketplace and replace the old plugin:
 
 ```bash
-claude plugin marketplace update agentlas-core-engine
-claude plugin uninstall agentlas-meta-agent@agentlas-core-engine
-claude plugin install hephaestus@agentlas-core-engine
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.5/scripts/install-all-runtimes.sh | bash
 ```
 
 `/hephaestus ontology` opens a local ontology dashboard for the current project.
@@ -140,7 +165,7 @@ Claude also supports `claude plugins ...` as an alias, but this README uses
 Open your normal OS terminal, not the Codex chat box, and run:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.2.4
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.2.5
 codex plugin add hephaestus@agentlas-core-engine
 ```
 
@@ -154,9 +179,7 @@ If Codex still shows `agentlas-meta-agent`, refresh the marketplace and replace
 the old plugin:
 
 ```bash
-codex plugin marketplace upgrade agentlas-core-engine
-codex plugin remove agentlas-meta-agent@agentlas-core-engine
-codex plugin add hephaestus@agentlas-core-engine
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.5/scripts/install-all-runtimes.sh | bash
 ```
 
 The Codex OS-terminal CLI command is singular: `codex plugin`, not
@@ -176,6 +199,11 @@ To create agents or teams after install:
 /hephaestus package this existing Codex workspace into Agentlas architecture
 ```
 
+Every generated or packaged Agentlas agent receives a global command during
+creation. The final handoff must include `global_commands` for Claude Code,
+Codex, Gemini CLI, generic `AGENTS.md` tools, and terminal use. For a team,
+that public command routes to the orchestrator/HQ.
+
 ### Option C. Copy the files into a project
 
 Use this if you are not installing the Claude/Codex plugin and just want the
@@ -183,7 +211,7 @@ repo package files in your current project. Open macOS Terminal, Linux terminal,
 Windows Git Bash, or WSL in that project folder and run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.4/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.5/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -191,9 +219,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\agentlas-meta-agent-v0.2.4.zip"
-$extract = "$env:TEMP\agentlas-meta-agent-v0.2.4"
-Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.2.4.zip" -OutFile $zip
+$zip = "$env:TEMP\hephaestus-v0.2.5.zip"
+$extract = "$env:TEMP\hephaestus-v0.2.5"
+Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.2.5.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -286,6 +314,10 @@ Hephaestus leaves behind a repository that another runtime can inspect, install,
 | "Make a team/company for this workflow" | `20-multi-agent-team-builder` | A multi-role operating team with HQ, PM Soul, Memory Curator, Policy Gate, eval, QA, and handoffs |
 | "Package this existing agent/repo/workspace" | `30-agentlas-packager` | A cleaned Agentlas package for Desktop import, terminal use, Codex, Claude, Gemini, or public GitHub release |
 
+All three modes must create `.agentlas/global-commands.json` and report the
+exact global command after generation. The user should not have to infer how to
+run the new agent.
+
 Generated or repaired packages can include:
 
 ```text
@@ -297,9 +329,11 @@ agents/
 skills/
 modes/
 .agentlas/
+.agentlas/global-commands.json
 .agents/
 .claude/
 .gemini/
+.gemini/commands/
 codex/
 schemas/
 templates/
@@ -315,6 +349,7 @@ The public core is the architecture and foldering contract. Runtime-specific fol
 |---|---|
 | Mode auto-detection | Chooses `single-agent-creator`, `team-builder`, or `agentlas-packager` before generation |
 | Clarify question loop | Asks only package-shaping questions that affect runtime, public boundary, tools, or safety |
+| Global command registry | Adds `.agentlas/global-commands.json`, runtime command files, and the final `global_commands` handoff |
 | `.agentlas` auto-activation | Lets local runtimes seed project memory, sitemap/task-bias, Memory Tickets, and vault references |
 | Skill lifecycle registry | Ships candidate skill metadata, empty trial ledgers, and Curator decision ledgers before first-class recall |
 | Super Ontology candidate layer | Seeds public-safe graph and memory governance files for source lineage, privacy, task coverage, causality, consensus, repair, and reflexive feedback checks |

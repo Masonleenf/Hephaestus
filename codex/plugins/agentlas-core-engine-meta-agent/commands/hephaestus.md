@@ -45,7 +45,12 @@ Meta-Agent team:
 3. Classify the request as single-agent builder, multi-agent team builder, or
    packager.
 4. Load only the matching public skills.
-5. Return `status`, `evidence`, `output`, and `blockers`.
+5. Generate or repair `.agentlas/global-commands.json` and matching runtime
+   command files or aliases.
+6. Return `status`, `evidence`, `output`, `global_commands`, and `blockers`.
+   The `global_commands` section must tell the user the exact Claude Code,
+   Codex, Gemini CLI, generic AGENTS.md, and terminal commands for the generated
+   agent.
 
 ## Examples
 

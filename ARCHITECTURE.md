@@ -39,6 +39,7 @@ The canonical core is runtime-neutral:
 - `docs/runtime-sync-boundaries.md`
 - `docs/mode-classifier.md`
 - `docs/clarify-question-loop.md`
+- `docs/global-command-contract.md`
 - `docs/agentlas-auto-activation.md`
 - `docs/local-credential-store.md`
 - `docs/skill-lifecycle-promotion.md`
@@ -57,6 +58,7 @@ The canonical core is runtime-neutral:
 - `.agentlas/agent-card.json`
 - `.agentlas/company-blueprint.json`
 - `.agentlas/sitemap.json`
+- `.agentlas/global-commands.json`
 - `.agentlas/memory-map.json`
 - `.agentlas/memory-tickets.jsonl`
 - `.agentlas/vault-references.json`
@@ -105,6 +107,9 @@ Three runtime behaviors are public contracts here, not private product code:
 - Clarify question loop: ask one to five package-shaping questions when the
   mode, runtime target, public boundary, tools, or safety constraints are
   unclear.
+- Global command contract: every generated or packaged agent receives a
+  canonical command, runtime command files or aliases, and a final
+  `global_commands` handoff to the user.
 - `.agentlas` auto-activation: local runtimes may create or merge public
   `.agentlas` seed files after explicit activation or repeated meaningful work
   in the same folder.
@@ -151,6 +156,7 @@ contracts that the three builders generate or repair inside output packages:
   promotion evidence.
 - Sitemap and task bias.
 - LLM runtime architecture.
+- Global command registry.
 - Policy Gate.
 - Eval judge and QA/evidence gate.
 - Thin runtime adapters.
@@ -164,7 +170,8 @@ Adapters translate the same core into each runtime:
 - Codex: `codex/marketplace.json` and
   `codex/plugins/agentlas-core-engine-meta-agent/`.
 - Claude Code: `.claude/commands/`, `.claude/agents/`, `.claude/skills/`.
-- Gemini CLI: `GEMINI.md` and `.gemini/GEMINI.md`.
+- Gemini CLI: `GEMINI.md`, `.gemini/GEMINI.md`, and
+  `.gemini/commands/`.
 - Generic AGENTS.md tools: root `AGENTS.md`.
 - Ontology CLI: `bin/ontology` runs the local-first storage/search/graph/memory
   runtime from a shell.
@@ -181,6 +188,7 @@ existing prompt / agent / team / repo / zip
   -> classify single-agent or team package
   -> add AGENTS.md canonical core
   -> add .agentlas contracts
+  -> assign global command
   -> add runtime adapters
   -> remove private or unsafe material from public output
   -> verify package
@@ -197,3 +205,6 @@ A public package should look intentional at first glance:
 - `skills/` shows reusable procedures.
 - `schemas/` makes contracts explicit.
 - `scripts/verify-package.sh` proves the package shape.
+
+Generated public packages also need `.agentlas/global-commands.json` and must
+show the user the generated command after creation.

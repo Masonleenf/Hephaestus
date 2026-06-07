@@ -26,6 +26,17 @@ runtime adapters.
 - `.agentlas/memory-map.json`, `.agentlas/memory-tickets.jsonl`, and
   `.agentlas/vault-references.json`.
 - Runtime adapters for requested targets.
+- `.agentlas/global-commands.json`.
+- One orchestrator/HQ global command that acts as the public entry point for
+  the whole team across Claude Code, Codex, Gemini CLI, generic AGENTS.md, and
+  terminal adapters.
+
+## Global Command Rule
+
+Expose the orchestrator/HQ global command, for example `/wedding` or
+`/research-hq`. Route worker roles through HQ by default. Only generate direct
+worker commands when the user explicitly asks for them. The final handoff must
+include `global_commands`.
 
 ## Do Not
 
@@ -37,4 +48,4 @@ runtime adapters.
 ## Output
 
 Return `status`, `evidence`, `output`, and `blockers`, plus team topology,
-nodes, edges, generated files, and verification command.
+nodes, edges, generated files, verification command, and `global_commands`.

@@ -17,10 +17,13 @@ required_files=(
   "README.ja.md"
   "README.hi.md"
   "ARCHITECTURE.md"
+  "gemini/extension/gemini-extension.json"
+  "gemini/extension/GEMINI.md"
   "docs/source-of-truth.md"
   "docs/runtime-sync-boundaries.md"
   "docs/mode-classifier.md"
   "docs/clarify-question-loop.md"
+  "docs/global-command-contract.md"
   "docs/agentlas-auto-activation.md"
   "docs/skill-lifecycle-promotion.md"
   "docs/super-ontology-candidate-contract.md"
@@ -45,6 +48,7 @@ required_files=(
   ".agentlas/agent-card.json"
   ".agentlas/company-blueprint.json"
   ".agentlas/sitemap.json"
+  ".agentlas/global-commands.json"
   ".agentlas/memory-map.json"
   ".agentlas/memory-tickets.jsonl"
   ".agentlas/vault-references.json"
@@ -81,6 +85,7 @@ required_files=(
   ".agentlas/super-ontology-evidence.jsonl"
   ".agentlas/super-ontology-memory-bridge.jsonl"
   "schemas/activation.schema.json"
+  "schemas/global-commands.schema.json"
   "schemas/skill-registry.schema.json"
   "schemas/super-ontology-contract.schema.json"
   "schemas/super-ontology-open-world-coverage.schema.json"
@@ -109,6 +114,7 @@ required_files=(
   "schemas/super-ontology-reflexive-feedback-stability.schema.json"
   "schemas/super-ontology-memory-bridge.schema.json"
   "templates/activation.json.tpl"
+  "templates/global-commands.json.tpl"
   "templates/skill-registry.json.tpl"
   "templates/super-ontology-contract.json.tpl"
   "templates/super-ontology-open-world-coverage.json.tpl"
@@ -146,6 +152,7 @@ required_files=(
   "bin/hephaestus"
   "CLAUDE.md"
   "GEMINI.md"
+  "gemini/extension/commands/hephaestus.toml"
   ".claude-plugin/marketplace.json"
   ".claude/commands/hephaestus.md"
   ".claude/commands/meta-agent.md"
@@ -163,6 +170,7 @@ required_files=(
   "claude/plugins/agentlas-core-engine-meta-agent/skills/agentlas-auto-activation/SKILL.md"
   "claude/plugins/agentlas-core-engine-meta-agent/skills/skill-lifecycle-promotion/SKILL.md"
   ".gemini/GEMINI.md"
+  ".gemini/commands/hephaestus.toml"
   "codex/plugins/agentlas-core-engine-meta-agent/.codex-plugin/plugin.json"
   "codex/plugins/agentlas-core-engine-meta-agent/commands/hephaestus.md"
   "codex/plugins/agentlas-core-engine-meta-agent/bin/hephaestus"
@@ -184,7 +192,9 @@ required_files=(
   "ontology/utils.py"
   "tests/test_ontology_runtime.py"
   "scripts/preflight-macos.sh"
+  "scripts/install-all-runtimes.sh"
   "scripts/verify-install-docs.sh"
+  "scripts/verify-global-command-contract.sh"
   "scripts/verify-one-touch-install.sh"
   "scripts/run-one-touch-terminal.command"
   "scripts/verify-ontology-runtime.sh"
@@ -238,6 +248,7 @@ if grep -R -nE '00-meta|05-mode|10-agent-repo|20-runtime|30-memory|40-pm|50-poli
 fi
 
 scripts/verify-install-docs.sh
+scripts/verify-global-command-contract.sh
 scripts/verify-ontology-runtime.sh
 
 echo "Package verification passed."

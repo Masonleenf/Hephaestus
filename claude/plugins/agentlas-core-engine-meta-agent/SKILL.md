@@ -16,6 +16,10 @@ description: "Use when the user asks for /meta-agent, single agent builder, mult
    - `agentlas-packager`.
 4. Preserve `AGENTS.md` as the canonical core.
 5. Add or repair `.agentlas` contracts, runtime adapters, memory architecture,
-   and verification scripts. Include auto-activation seed files when local
-   continuity is part of the output.
-6. Return `status`, `evidence`, `output`, and `blockers`.
+   `.agentlas/global-commands.json`, and verification scripts. Include
+   auto-activation seed files when local continuity is part of the output.
+6. Add the generated command to Claude Code, Codex, Gemini CLI, generic
+   AGENTS.md, and terminal adapters. For teams, expose the orchestrator/HQ
+   command and route workers through HQ unless direct worker commands were
+   requested.
+7. Return `status`, `evidence`, `output`, `global_commands`, and `blockers`.

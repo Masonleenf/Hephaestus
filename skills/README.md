@@ -23,6 +23,7 @@ for runtime discovery.
 - `memory-ticketing`
 - `runtime-adapters`
 - `llm-runtime-architecture`
+- `global-command-contract` through `docs/global-command-contract.md`
 - `pm-soul`
 - `sitemap-task-bias`
 - `public-plugin-packaging`

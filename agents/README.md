@@ -16,6 +16,7 @@ portable agent folders.
   the Agentlas architecture and prepares Codex, Claude, local install, or public
   release packaging.
 
-PM Soul, Memory Curator, runtime adapters, sitemap/task-bias, policy, and eval
-are required architecture components inside generated or packaged outputs. They
-are not extra members of this meta-agent team.
+PM Soul, Memory Curator, global command registry, runtime adapters,
+sitemap/task-bias, policy, and eval are required architecture components inside
+generated or packaged outputs. They are not extra members of this meta-agent
+team.

@@ -21,9 +21,14 @@ description: "Use when creating a single Agentlas agent, creating a multi-agent 
    - `30-agentlas-packager`.
 6. Load matching support skills.
 7. Emit or repair Agentlas contracts, including `.agentlas` activation seed
-   files when local continuity is part of the output.
-8. Verify with `scripts/verify-package.sh`.
+   files and `.agentlas/global-commands.json` when local continuity is part of
+   the output.
+8. Add the generated command to Claude Code, Codex, Gemini CLI, generic
+   AGENTS.md, and terminal adapters. For teams, expose the orchestrator/HQ
+   command and route workers through HQ unless direct worker commands were
+   requested.
+9. Verify with `scripts/verify-package.sh`.
 
 ## Output
 
-Return `status`, `evidence`, `output`, and `blockers`.
+Return `status`, `evidence`, `output`, `global_commands`, and `blockers`.
