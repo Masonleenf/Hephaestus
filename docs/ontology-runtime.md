@@ -49,6 +49,22 @@ bin/ontology auto .
 bin/ontology sources add /path/to/company-docs --project . --kind company --scope private
 ```
 
+## Local Dashboard
+
+`/hephaestus ontology` and `bin/hephaestus ontology` create
+`.agentlas/ontology-gui/index.html` inside the active project. The file is a
+self-contained dashboard, so it works without a hosted web server.
+
+The dashboard contract is:
+
+- left navigation for overview, graph, sources, query, memory, and commands;
+- an Obsidian-style knowledge graph map backed by the runtime counts;
+- source search and scope filtering for registered source paths;
+- a GraphRAG query builder that copies exact local CLI commands;
+- a Memory Candidate Queue that keeps durable memory promotion gated by Memory
+  Curator;
+- no home-folder scan, no sibling-project scan, and no remote API dependency.
+
 ## Storage Model
 
 The default storage adapter is SQLite at `.agentlas/ontology-runtime.sqlite`.

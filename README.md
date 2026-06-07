@@ -94,7 +94,7 @@ common `Already added from a different source` marketplace conflict by removing
 the old `agentlas-core-engine` entry and adding it again from this repo.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.6/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.7/scripts/install-all-runtimes.sh | bash
 ```
 
 After it finishes, restart any open Claude Code, Codex, or Gemini sessions.
@@ -133,11 +133,13 @@ If you already installed the old `agentlas-meta-agent` plugin and Claude says
 `hephaestus` is not found, refresh the marketplace and replace the old plugin:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.6/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.7/scripts/install-all-runtimes.sh | bash
 ```
 
-`/hephaestus ontology` opens a local ontology dashboard for the current project.
-It creates these files in that project only:
+`/hephaestus ontology` opens a local SaaS-style ontology dashboard for the
+current project. The dashboard has a left navigation rail, an Obsidian-style
+knowledge graph, source search, a GraphRAG query builder, a Memory Candidate
+Queue, and copyable commands. It creates these files in that project only:
 
 ```text
 .agentlas/ontology-inbox/
@@ -147,7 +149,8 @@ It creates these files in that project only:
 ```
 
 It does not scan your home folder or sibling projects. Put approved company docs
-inside `.agentlas/ontology-inbox/`, then run `/hephaestus ontology` again.
+inside `.agentlas/ontology-inbox/`, then run `/hephaestus ontology` again to
+refresh the dashboard.
 
 To create agents or teams after install:
 
@@ -165,7 +168,7 @@ Claude also supports `claude plugins ...` as an alias, but this README uses
 Open your normal OS terminal, not the Codex chat box, and run:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.2.6
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.2.7
 codex plugin add hephaestus@agentlas-core-engine
 ```
 
@@ -179,13 +182,14 @@ If Codex still shows `agentlas-meta-agent`, refresh the marketplace and replace
 the old plugin:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.6/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.7/scripts/install-all-runtimes.sh | bash
 ```
 
 The Codex OS-terminal CLI command is singular: `codex plugin`, not
 `codex plugins`. Inside the Codex app, the slash command for the plugin browser
 is plural: `/plugins`. After plugin install, `/hephaestus ontology` creates and
-opens the same project-local ontology dashboard:
+opens the same project-local dashboard with graph, sources, query, memory queue,
+and command views:
 
 ```text
 .agentlas/ontology-gui/index.html
@@ -211,7 +215,7 @@ repo package files in your current project. Open macOS Terminal, Linux terminal,
 Windows Git Bash, or WSL in that project folder and run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.6/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.7/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -219,9 +223,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\hephaestus-v0.2.6.zip"
-$extract = "$env:TEMP\hephaestus-v0.2.6"
-Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.2.6.zip" -OutFile $zip
+$zip = "$env:TEMP\hephaestus-v0.2.7.zip"
+$extract = "$env:TEMP\hephaestus-v0.2.7"
+Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.2.7.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1

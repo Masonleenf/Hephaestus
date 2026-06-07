@@ -310,7 +310,15 @@ class OntologyRuntimeTests(unittest.TestCase):
         self.assertFalse(gui_payload["opened"])
         gui_path = Path(gui_payload["gui_path"])
         self.assertTrue(gui_path.exists())
-        self.assertIn("Hephaestus Ontology", gui_path.read_text(encoding="utf-8"))
+        gui_html = gui_path.read_text(encoding="utf-8")
+        self.assertIn("Hephaestus Ontology", gui_html)
+        self.assertIn('data-app="ontology-dashboard"', gui_html)
+        self.assertIn("Ontology Command Center", gui_html)
+        self.assertIn("Knowledge Graph", gui_html)
+        self.assertIn("Ask Ontology", gui_html)
+        self.assertIn("Memory Candidate Queue", gui_html)
+        self.assertIn("data-view-target=\"sources\"", gui_html)
+        self.assertIn("data-copy=\"/hephaestus ontology\"", gui_html)
 
     def test_hephaestus_runner_creates_project_gui_without_browser(self):
         env = os.environ.copy()
@@ -333,7 +341,11 @@ class OntologyRuntimeTests(unittest.TestCase):
         payload = json.loads(result.stdout)
         self.assertEqual(payload["status"], "gui_ready")
         self.assertFalse(payload["opened"])
-        self.assertTrue(Path(payload["gui_path"]).exists())
+        gui_path = Path(payload["gui_path"])
+        self.assertTrue(gui_path.exists())
+        gui_html = gui_path.read_text(encoding="utf-8")
+        self.assertIn("Ontology Command Center", gui_html)
+        self.assertIn("data-view-target=\"commands\"", gui_html)
         self.assertTrue(Path(payload["db_path"]).exists())
 
     def test_auto_activation_uses_project_local_inbox_and_blocks_cross_project_mixing(self):
