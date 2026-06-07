@@ -102,7 +102,7 @@ agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
 package files を入れたい project folder で macOS Terminal、Linux terminal、Windows Git Bash、または WSL を開きます。
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.2/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.3/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -110,9 +110,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\agentlas-meta-agent-v0.2.2.zip"
-$extract = "$env:TEMP\agentlas-meta-agent-v0.2.2"
-Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.2.2.zip" -OutFile $zip
+$zip = "$env:TEMP\agentlas-meta-agent-v0.2.3.zip"
+$extract = "$env:TEMP\agentlas-meta-agent-v0.2.3"
+Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.2.3.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -153,7 +153,7 @@ Codex chat の中では `/plugin marketplace add` は使いません。Codex app
 **`codex` CLI が使える OS terminal で入力**:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.2.2
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.2.3
 codex plugin list
 codex plugin add hephaestus@agentlas-core-engine
 codex plugin list
@@ -219,7 +219,7 @@ shell で `codex` command が使える場合はこちらです。
 
 ## 何を生成するか
 
-`agentlas-meta-agent` は prompt だけを返すものではありません。他の runtime が読めて、install できて、verify できて、継続的に改善できる repository を残します。
+Hephaestus は prompt だけを返すものではありません。他の runtime が読めて、install できて、verify できて、継続的に改善できる repository を残します。
 
 | 依頼 | ルート | 結果 |
 |---|---|---|
@@ -249,14 +249,14 @@ default export は保守的です。生成された skill は自動で first-cla
 
 ## Compare
 
-| 比較対象 | 強み | `agentlas-meta-agent` が追加するもの |
+| 比較対象 | 強み | Hephaestus が追加するもの |
 |---|---|---|
 | OpenAI / Codex | 強力な model と coding terminal | portable repo contracts、`.agentlas` memory/package files、skills、schemas、runtime adapters、public verification |
 | Claude / Claude Code | 強力な reasoning と Claude-native workflow | Claude-only ではなく、Codex、Gemini、Desktop、Terminal、`AGENTS.md` も揃えます |
 | OpenClaw | local identity と workspace agent loop | visible role folders、Agentlas package contracts、public-safety checks、Desktop import、vault references |
 | Hermes | persona と memory-centered local runtime | PM Soul、Memory Tickets、sitemap/task-bias、policy/eval/QA、skill lifecycle evidence |
 
-OpenAI と Claude は model/runtime surfaces です。OpenClaw と Hermes は local-agent experiences です。`agentlas-meta-agent` は agent を portable、inspectable、installable、publishable にする package layer です。
+OpenAI と Claude は model/runtime surfaces です。OpenClaw と Hermes は local-agent experiences です。Hephaestus は agent を portable、inspectable、installable、publishable にする package layer です。
 
 ## 使い方
 
@@ -266,7 +266,7 @@ Package it for Codex, Claude Code, Gemini, and Agentlas Desktop.
 ```
 
 ```text
-Use agentlas-meta-agent.
+Use Hephaestus.
 Build a customer-support operations team with PM Soul, Memory Curator, Policy Gate, QA, eval, and public-safe release checks.
 ```
 

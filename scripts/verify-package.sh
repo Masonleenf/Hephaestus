@@ -184,6 +184,9 @@ required_files=(
   "ontology/utils.py"
   "tests/test_ontology_runtime.py"
   "scripts/preflight-macos.sh"
+  "scripts/verify-install-docs.sh"
+  "scripts/verify-one-touch-install.sh"
+  "scripts/run-one-touch-terminal.command"
   "scripts/verify-ontology-runtime.sh"
   "examples/ontology-corpus/company.md"
   "examples/ontology-corpus/notes.txt"
@@ -234,6 +237,7 @@ if grep -R -nE '00-meta|05-mode|10-agent-repo|20-runtime|30-memory|40-pm|50-poli
   fail "old concept-agent ids still present"
 fi
 
+scripts/verify-install-docs.sh
 scripts/verify-ontology-runtime.sh
 
 echo "Package verification passed."
