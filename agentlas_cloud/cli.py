@@ -1,0 +1,109 @@
+from __future__ import annotations
+
+import argparse
+import json
+import shutil
+from pathlib import Path
+from typing import Any
+
+from .runtime import AgentlasMockStore, compile_runtime_bundle, read_agent_file, run_setup_wizard, scan_agent_folder
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="agentlas-cloud", description="Agentlas Cloud v1 local package tools")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    wizard = sub.add_parser("wizard", help="Generate or repair agentlas.json")
+    wizard.add_argument("folder")
+    wizard.add_argument("--name")
+    wizard.add_argument("--no-write", action="store_true")
+
+    security = sub.add_parser("security", help="Security commands")
+    security_sub = security.add_subparsers(dest="security_command", required=True)
+    scan = security_sub.add_parser("scan", help="Scan an agent folder")
+    scan.add_argument("folder")
+    scan.add_argument("--strict", action="store_true")
+
+    bundle = sub.add_parser("bundle", help="Compile runtime bundle")
+    bundle.add_argument("folder")
+
+    read = sub.add_parser("read-agent-file", help="Lazy file read with manifest gates")
+    read.add_argument("folder")
+    read.add_argument("path")
+
+    sub.add_parser("field-test", help="Run local fixture field test")
+
+    args = parser.parse_args(argv)
+    if args.command == "wizard":
+        return emit(run_setup_wizard(args.folder, args.name, write=not args.no_write))
+    if args.command == "security" and args.security_command == "scan":
+        report = scan_agent_folder(args.folder)
+        emit(report)
+        return 1 if args.strict and report["verdict"] == "BLOCK" else 0
+    if args.command == "bundle":
+        return emit(compile_runtime_bundle(args.folder))
+    if args.command == "read-agent-file":
+        return emit(read_agent_file(args.folder, args.path))
+    if args.command == "field-test":
+        return emit(run_field_test())
+    parser.error("unhandled command")
+    return 2
+
+
+def emit(payload: Any) -> int:
+    print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
+    return 0
+
+
+def run_field_test() -> dict[str, Any]:
+    base = Path(".agentlas/field-test/hephaestus").resolve()
+    if base.exists():
+        shutil.rmtree(base)
+    agent = base / "mac_a" / "instagram-operator"
+    (agent / "skills" / "social-media-strategist").mkdir(parents=True, exist_ok=True)
+    (agent / ".agentlas").mkdir(parents=True, exist_ok=True)
+    (agent / "AGENTS.md").write_text("# Instagram Operator\n\nBuild weekly Instagram posts.\n", encoding="utf-8")
+    (agent / "skills" / "social-media-strategist" / "SKILL.md").write_text(
+        "---\nname: social-media-strategist\ndescription: Use for social content.\n---\n\nCreate social plans.\n",
+        encoding="utf-8",
+    )
+    (agent / ".agentlas" / "memory-map.json").write_text('{"project":"instagram-operator"}\n', encoding="utf-8")
+    wizard = run_setup_wizard(agent, "instagram-operator")
+    bundle = compile_runtime_bundle(agent)
+    allowed = read_agent_file(agent, "AGENTS.md")
+    denied = read_agent_file(agent, ".env")
+    store = AgentlasMockStore()
+    record = store.upload_private(
+        {
+            "agentId": "agent_private_instagram",
+            "ownerId": "owner",
+            "creatorId": "creator",
+            "version": "1.0.0",
+            "manifest": wizard["manifest"],
+            "files": [{"path": "AGENTS.md", "content": (agent / "AGENTS.md").read_text(encoding="utf-8")}],
+            "memory": {"scope": "private", "summary": "private campaign memory", "deltas": ["weekly cadence"]},
+        }
+    )
+    public = store.publish_clean_copy("owner", record["agentId"], "agent_public_instagram")
+    denied_download = store.download("other_user", public["agentId"])
+    public_call = store.call_agent("other_user", public["agentId"])
+    scenarios = [
+        ("E1", wizard["status"] == "Ready for MCP call", [str(agent / "agentlas.json"), str(agent / ".agentlas" / "security-scan.json")]),
+        ("E2", bundle["entry"]["path"] == "AGENTS.md" and allowed["status"] == "allowed" and denied["status"] == "denied", [str(agent / "agentlas.json")]),
+        ("E3", denied_download["status"] == "denied" and public_call["status"] == "PASS", ["in-memory-store", "invocation-ledger"]),
+    ]
+    report = {
+        "suite": "hephaestus-agentlas-cloud-field-test",
+        "status": "PASS" if all(item[1] for item in scenarios) else "FAIL",
+        "scenarios": [
+            {"id": item[0], "status": "PASS" if item[1] else "FAIL", "evidence": item[2], "blockers": [] if item[1] else ["scenario failed"]}
+            for item in scenarios
+        ],
+        "ledger": store.invocation_ledger,
+    }
+    Path(".agentlas/field-test-report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return report
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

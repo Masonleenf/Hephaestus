@@ -23,6 +23,8 @@ credentials/*
 
 .memory.local/
 .agentlas/ontology-runtime.sqlite*
+.agentlas/field-test/
+.agentlas/field-test-report.*
 .ontology-runtime/
 .codex/
 .claude/settings.local.json

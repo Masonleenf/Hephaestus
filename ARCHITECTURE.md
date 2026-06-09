@@ -187,6 +187,9 @@ existing prompt / agent / team / repo / zip
   -> inspect current structure
   -> classify single-agent or team package
   -> add AGENTS.md canonical core
+  -> add or repair agentlas.json
+  -> run Hephaestus security scan
+  -> compile runtime bundle
   -> add .agentlas contracts
   -> assign global command
   -> add runtime adapters
@@ -204,6 +207,8 @@ A public package should look intentional at first glance:
 - `modes/` shows the three work modes.
 - `skills/` shows reusable procedures.
 - `schemas/` makes contracts explicit.
+- `agentlas.json` defines the Cloud call entry, allow/deny reads, memory
+  write-back policy, and public clean-copy policy.
 - `scripts/verify-package.sh` proves the package shape.
 
 Generated public packages also need `.agentlas/global-commands.json` and must

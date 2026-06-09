@@ -14,6 +14,9 @@ runtimes.
 - Production Ontology Runtime: `docs/ontology-runtime.md`, `ontology/`,
   `bin/ontology`, `tests/test_ontology_runtime.py`, and
   `scripts/verify-ontology-runtime.sh`.
+- Agentlas Cloud runtime contract: `docs/agentlas-cloud-runtime.md`,
+  `agentlas_cloud/`, `schemas/agentlas-manifest.schema.json`, and
+  `templates/agentlas.json.tpl`.
 - Portable support contracts: `docs/mode-classifier.md`,
   `docs/clarify-question-loop.md`, `docs/agentlas-auto-activation.md`,
   `docs/local-credential-store.md`, and `docs/skill-lifecycle-promotion.md`.
@@ -63,11 +66,14 @@ become separate sources of truth.
 9. Add `.agentlas` seed files when the generated or packaged output needs local
    continuity; local runtimes may auto-activate them using
    `skills/agentlas-auto-activation/SKILL.md`.
-10. Add skill lifecycle metadata using
+10. Add or repair `agentlas.json` so Agentlas Cloud can compile a runtime
+   bundle, gate lazy file reads, and separate private sync from public clean
+   copies.
+11. Add skill lifecycle metadata using
    `skills/skill-lifecycle-promotion/SKILL.md` when the package contains
    reusable skills.
-11. Verify with `scripts/verify-package.sh`.
-12. For ontology runtime changes, also verify with
+12. Verify with `scripts/verify-package.sh`.
+13. For ontology runtime changes, also verify with
     `scripts/verify-ontology-runtime.sh`.
 
 ## Team Roles
@@ -103,6 +109,7 @@ Generated or packaged repos must include the relevant subset of:
 - `.agentlas/agent-card.json`;
 - `.agentlas/company-blueprint.json`;
 - `.agentlas/global-commands.json`;
+- `agentlas.json`;
 - `.agentlas/memory-map.json`;
 - `.agentlas/memory-tickets.jsonl`;
 - `.agentlas/vault-references.json`;
@@ -149,6 +156,11 @@ Generated or packaged repos must include the relevant subset of:
   bridge tickets, or Agent Working Memory;
 - install or verification scripts;
 - public-safety notes if the output is meant for GitHub.
+
+Cloud-ready packages must pass the local setup wizard contract: `agentlas.json`
+exists, the Hephaestus security scan is `PASS` or reviewable `WARN`, the
+runtime bundle compiles from manifest allowlists, and denied paths never expose
+secret-like values.
 
 ## Mode Rules
 

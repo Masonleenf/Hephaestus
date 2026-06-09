@@ -217,8 +217,6 @@ and command views:
 
 ```text
 .agentlas/ontology-gui/index.html
-```
-
 To create agents or teams after install:
 
 ```text
@@ -231,6 +229,23 @@ Every generated or packaged Agentlas agent receives a global command during
 creation. The final handoff must include `global_commands` for Claude Code,
 Codex, Gemini CLI, generic `AGENTS.md` tools, and terminal use. For a team,
 that public command routes to the orchestrator/HQ.
+
+### Agentlas Cloud readiness
+
+Run these local checks before uploading an existing agent to Agentlas Cloud or
+publishing a clean copy to the Hub:
+
+```bash
+bin/hephaestus wizard ./some-agent --name instagram-operator
+bin/hephaestus security scan ./some-agent --strict
+bin/hephaestus runtime bundle ./some-agent
+bin/hephaestus runtime read-agent-file ./some-agent AGENTS.md
+bin/hephaestus field-test
+```
+
+The wizard creates `agentlas.json`, the scan writes
+`.agentlas/security-scan.json`, and the runtime bundle uses manifest allowlists
+instead of sending an entire ZIP to the model.
 
 ### Option C. Copy the files into a project
 
@@ -391,6 +406,11 @@ For knowledge-heavy personal or company agents, Hephaestus now ships a real loca
 
 The Super Ontology files under `.agentlas/` remain the safety/governance layer. They define the source-lineage, privacy, task-coverage, causal, consensus, and memory-write gates around the runtime. The runtime is the implementation layer.
 
+In Agentlas Terminal and Desktop, the same runtime is exposed as
+`agentlas ontology`; in plugin-hosted tools, use `/hephaestus ontology`.
+The runtime never scans your home folder or sibling projects; it only ingests
+explicit approved paths, registered sources, and project-local inbox files.
+
 Supported ingest formats:
 
 | Format | Status |
@@ -496,6 +516,7 @@ Keep private notes, machine paths, raw logs, and secrets out of the public repo.
 | Ask the right setup questions | [`docs/clarify-question-loop.md`](docs/clarify-question-loop.md) |
 | Activate local `.agentlas` workspace files | [`docs/agentlas-auto-activation.md`](docs/agentlas-auto-activation.md) |
 | Review skill lifecycle promotion | [`docs/skill-lifecycle-promotion.md`](docs/skill-lifecycle-promotion.md) |
+| Prepare Cloud runtime bundles | [`docs/agentlas-cloud-runtime.md`](docs/agentlas-cloud-runtime.md) |
 | Run the production ontology runtime | [`docs/ontology-runtime.md`](docs/ontology-runtime.md) |
 | Review Super Ontology candidate contract | [`docs/super-ontology-candidate-contract.md`](docs/super-ontology-candidate-contract.md) |
 | Understand graph and Memory Curator boundaries | [`docs/super-ontology-candidate-contract.md`](docs/super-ontology-candidate-contract.md) |
