@@ -207,6 +207,8 @@ install_gemini() {
 
 antigravity_present() {
   [[ -d "$HOME/.gemini/antigravity" ]] && return 0
+  # "Antigravity IDE" 변형은 별도 데이터 디렉토리(~/.gemini/antigravity-ide)를 쓴다.
+  [[ -d "$HOME/.gemini/antigravity-ide" ]] && return 0
   [[ -n "${HEPHAESTUS_FORCE_ANTIGRAVITY:-}" ]] && return 0
   ls -d /Applications/Antigravity*.app >/dev/null 2>&1 && return 0
   return 1
@@ -226,10 +228,20 @@ install_antigravity() {
     return 1
   fi
 
-  local global_dir="$HOME/.gemini/antigravity/global_workflows"
-  mkdir -p "$global_dir"
-  cp "$workflow_src" "$global_dir/hephaestus.md" || return 1
-  log "Installed Antigravity global workflow: $global_dir/hephaestus.md"
+  # 두 데이터 디렉토리 변형 모두에 설치한다 — 어느 앱을 쓰든 /hephaestus가 보이게.
+  local installed=0
+  local data_dir
+  for data_dir in "$HOME/.gemini/antigravity" "$HOME/.gemini/antigravity-ide"; do
+    # 존재하는 데이터 디렉토리에만 설치하되, 둘 다 없으면 기본 경로를 생성한다.
+    if [[ -d "$data_dir" || ( "$installed" -eq 0 && "$data_dir" == "$HOME/.gemini/antigravity" ) ]]; then
+      local global_dir="$data_dir/global_workflows"
+      mkdir -p "$global_dir"
+      cp "$workflow_src" "$global_dir/hephaestus.md" || return 1
+      log "Installed Antigravity global workflow: $global_dir/hephaestus.md"
+      installed=$((installed + 1))
+    fi
+  done
+  [[ "$installed" -gt 0 ]] || return 1
   ok=$((ok + 1))
 }
 
