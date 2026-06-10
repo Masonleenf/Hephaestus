@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-version="${HEPHAESTUS_REF:-v0.2.10}"
+version="${HEPHAESTUS_REF:-v0.2.12}"
 repo="${HEPHAESTUS_REPO:-agentlas-ai/Hephaestus}"
 github_url="${HEPHAESTUS_GITHUB_URL:-https://github.com/$repo}"
 marketplace_name="${HEPHAESTUS_MARKETPLACE:-agentlas-core-engine}"
@@ -9,6 +9,7 @@ plugin_name="${HEPHAESTUS_PLUGIN:-hephaestus}"
 old_plugin_name="${HEPHAESTUS_OLD_PLUGIN:-agentlas-meta-agent}"
 source_dir="${HEPHAESTUS_SOURCE_DIR:-}"
 force="${HEPHAESTUS_FORCE:-1}"
+mcp_url="${AGENTLAS_MCP_URL:-https://agentlas.cloud/api/mcp/v1}"
 
 ok=0
 failed=0
@@ -116,6 +117,7 @@ install_claude() {
 
   run claude plugin install "$plugin_name@$marketplace_name" || return 1
   try claude plugin enable "$plugin_name@$marketplace_name" >/dev/null 2>&1 || true
+  log "agentlas Hub MCP is bundled with the plugin (.mcp.json) and registers automatically."
   ok=$((ok + 1))
 }
 
@@ -145,7 +147,30 @@ install_codex() {
   fi
 
   run codex plugin add "$plugin_name@$marketplace_name" || return 1
+  register_codex_mcp || warn "Codex MCP registration failed; add it manually to ~/.codex/config.toml."
   ok=$((ok + 1))
+}
+
+# Codex 플러그인은 MCP 번들을 지원하지 않으므로 config.toml에 직접 등록한다.
+# rmcp 클라이언트 플래그가 없으면 HTTP MCP 자체가 붙지 않는다.
+register_codex_mcp() {
+  local cfg="$HOME/.codex/config.toml"
+  mkdir -p "$HOME/.codex"
+  touch "$cfg" || return 1
+
+  if ! grep -q 'experimental_use_rmcp_client' "$cfg"; then
+    if grep -q '^\[features\]' "$cfg"; then
+      awk '{print} /^\[features\]/ && !done {print "experimental_use_rmcp_client = true"; done=1}' \
+        "$cfg" > "$cfg.tmp" && mv "$cfg.tmp" "$cfg" || return 1
+    else
+      printf '\n[features]\nexperimental_use_rmcp_client = true\n' >> "$cfg"
+    fi
+  fi
+
+  if ! grep -q '^\[mcp_servers\.agentlas\]' "$cfg"; then
+    printf '\n[mcp_servers.agentlas]\nurl = "%s"\n' "$mcp_url" >> "$cfg"
+  fi
+  log "Registered agentlas Hub MCP in $cfg (private cargo.* tools: codex mcp login agentlas)"
 }
 
 write_gemini_fallback_command() {
@@ -242,7 +267,35 @@ install_antigravity() {
     fi
   done
   [[ "$installed" -gt 0 ]] || return 1
+  register_antigravity_mcp || warn "Antigravity MCP registration failed; add it manually to ~/.gemini/config/mcp_config.json."
   ok=$((ok + 1))
+}
+
+# Antigravity는 ~/.gemini/config/mcp_config.json에서 MCP 서버를 읽는다 (serverUrl 키).
+register_antigravity_mcp() {
+  local cfg_dir="$HOME/.gemini/config"
+  local cfg="$cfg_dir/mcp_config.json"
+  if ! have python3; then
+    warn "python3 not found; add agentlas MCP to $cfg manually."
+    return 0
+  fi
+  mkdir -p "$cfg_dir"
+  AGENTLAS_MCP_URL="$mcp_url" python3 - "$cfg" <<'PY' || return 1
+import json, os, sys
+path = sys.argv[1]
+url = os.environ["AGENTLAS_MCP_URL"]
+try:
+    with open(path) as f:
+        data = json.load(f)
+except (FileNotFoundError, ValueError):
+    data = {}
+servers = data.setdefault("mcpServers", {})
+servers.setdefault("agentlas", {"serverUrl": url})
+with open(path, "w") as f:
+    json.dump(data, f, indent=2)
+    f.write("\n")
+PY
+  log "Registered agentlas Hub MCP in $cfg"
 }
 
 main() {
@@ -268,6 +321,10 @@ main() {
   log "  Codex:       /plugins, then /hephaestus ontology"
   log "  Gemini CLI:  /extensions list or /commands list, then /hephaestus"
   log "  Antigravity: reopen the workspace, then /hephaestus"
+  log ""
+  log "agentlas Hub MCP (agentlas.search, marketplace.*, agentlas.teams.*) was registered too."
+  log "Try a plain-language prompt in any runtime, e.g.:"
+  log "  \"agentlas에서 ASO 도와주는 에이전트 찾아줘\"  /  \"find an agentlas agent for app store reviews\""
 
   if [[ "$ok" -eq 0 || "$failed" -gt 0 ]]; then
     exit 1

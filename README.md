@@ -73,7 +73,7 @@ tells you the exact command to use next:
 
 ```text
 Set up the Hephaestus Agentlas meta-agent in this workspace. Run
-`curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.10/scripts/install-all-runtimes.sh | bash`
+`curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.12/scripts/install-all-runtimes.sh | bash`
 in the terminal, then tell me the exact /hephaestus command for the tool I am
 using (Claude Code, Codex, Gemini CLI, Antigravity, or Cursor). If anything
 fails, read the error, fix it, and retry.
@@ -117,7 +117,7 @@ common `Already added from a different source` marketplace conflict by removing
 the old `agentlas-core-engine` entry and adding it again from this repo.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.10/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.12/scripts/install-all-runtimes.sh | bash
 ```
 
 After it finishes, restart any open Claude Code, Codex, Gemini, or Antigravity
@@ -157,7 +157,7 @@ If you already installed the old `agentlas-meta-agent` plugin and Claude says
 `hephaestus` is not found, refresh the marketplace and replace the old plugin:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.10/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.12/scripts/install-all-runtimes.sh | bash
 ```
 
 `/hephaestus ontology` opens a local SaaS-style ontology dashboard for the
@@ -192,7 +192,7 @@ Claude also supports `claude plugins ...` as an alias, but this README uses
 Open your normal OS terminal, not the Codex chat box, and run:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.2.10
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.2.12
 codex plugin add hephaestus@agentlas-core-engine
 ```
 
@@ -206,7 +206,7 @@ If Codex still shows `agentlas-meta-agent`, refresh the marketplace and replace
 the old plugin:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.10/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.12/scripts/install-all-runtimes.sh | bash
 ```
 
 The Codex OS-terminal CLI command is singular: `codex plugin`, not
@@ -254,7 +254,7 @@ repo package files in your current project. Open macOS Terminal, Linux terminal,
 Windows Git Bash, or WSL in that project folder and run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.10/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.2.12/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -262,9 +262,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\hephaestus-v0.2.10.zip"
-$extract = "$env:TEMP\hephaestus-v0.2.10"
-Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.2.10.zip" -OutFile $zip
+$zip = "$env:TEMP\hephaestus-v0.2.12.zip"
+$extract = "$env:TEMP\hephaestus-v0.2.12"
+Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.2.12.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -346,6 +346,50 @@ Use this path when the `codex` command is available in your shell:
 | Install Claude plugin by shell | OS terminal | `claude plugin marketplace add ...`, `claude plugin install ...` |
 | Browse installed Codex plugins | Codex app | `/plugins` |
 | Install Codex plugin by shell | OS terminal | `codex plugin marketplace add ...`, `codex plugin add ...` |
+
+## After Install: How To Actually Use It (3 minutes)
+
+Installation also registers the **agentlas Hub MCP** for you — Claude Code gets it
+from the bundled `.mcp.json`, Codex/Antigravity from the one-touch install script,
+and Gemini CLI from the extension manifest. No separate MCP setup needed.
+
+### 1. Where do I type?
+
+| Runtime | Open it | Then |
+|---|---|---|
+| Claude Code | Type `claude` in your OS terminal (or open the desktop app) | `/hephaestus`, or just plain language |
+| Codex | Type `codex` in your OS terminal (or open the Codex app) | `/hephaestus` |
+| Gemini CLI | Type `gemini` in your OS terminal | `/hephaestus` |
+| Antigravity | Open your workspace | `/hephaestus` |
+
+`/hephaestus` is for **building** agents. To **find and pull in** agents that already
+exist, talk to the MCP in plain language as below.
+
+### 2. MCP tools are used in plain language, not commands
+
+You never call MCP tools directly. Just say what you want and the AI picks the
+right tool.
+
+| Say this | Tool that runs underneath |
+|---|---|
+| "Find an agentlas agent that helps with ASO" | `agentlas.search` |
+| "What agents are on the agentlas marketplace? Show them by category" | `marketplace.search_agents` |
+| "Install that team into this project" | `agentlas.get_runtime_bundle` |
+| "Show my agents" (sign-in required) | `cargo.*` |
+
+To verify the registration:
+
+| Runtime | Check |
+|---|---|
+| Claude Code | Type `/mcp` in chat — you should see the `agentlas` server and its tools |
+| Codex | `codex mcp list` in the terminal (for your own agents: `codex mcp login agentlas`) |
+| Gemini CLI | `/mcp` in chat or `gemini mcp list` in the terminal |
+
+### 3. When you don't know what agents exist
+
+- Just ask: **"What agents are on agentlas?"**, **"Recommend agents that could help me launch my app"** — the search tools take it from there.
+- Browse on the web: [agentlas.cloud/marketplace](https://agentlas.cloud/marketplace)
+- Register the MCP manually in other clients (Cursor, Windsurf, VS Code, ...): [agentlas.cloud/mcp](https://agentlas.cloud/mcp)
 
 ## What It Builds
 

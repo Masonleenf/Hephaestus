@@ -42,12 +42,14 @@ for path in "${scan_files[@]}"; do
   [[ -e "$path" ]] || fail "missing scan file: $path"
 done
 
+expected_version="$(python3 -c 'import json;print(json.load(open("manifest.json"))["version"])')"
+expected_tag="v${expected_version}"
+expected_tag_re="${expected_tag//./\\.}"
+
 bad_patterns=(
   '/plugin marketplace add agentlas-ai/Hephaestus'
   '/plugin install agentlas-meta-agent'
   'codex plugin install'
-  'v0\.2\.1([^0-9]|$)'
-  'v0\.1\.5'
   'Install Codex plugin by slash command'
   'Codex plugin slash'
   'Codex 플러그인 slash'
@@ -66,6 +68,11 @@ for pattern in "${bad_patterns[@]}"; do
   fi
 done
 
+stale_pins="$(rg -oI 'v0\.[0-9]+\.[0-9]+' "${scan_files[@]}" 2>/dev/null | sort -u | grep -v "^${expected_tag}$" || true)"
+if [[ -n "$stale_pins" ]]; then
+  fail "stale version pins in docs (expected only ${expected_tag}): $(printf '%s ' $stale_pins)"
+fi
+
 if rg -n 'agentlas-meta-agent' README*.md claude/README.md codex/README.md \
   | grep -Ev 'agentlas-meta-agent-architecture|agentlas-meta-agent@agentlas-core-engine|agentlas run agentlas-meta-agent|old `agentlas-meta-agent`|still shows `agentlas-meta-agent`|older install still shows `agentlas-meta-agent`|points at `agentlas-meta-agent`|예전 `agentlas-meta-agent`|아직 `agentlas-meta-agent`' \
   >/tmp/hephaestus-old-name-docs.txt; then
@@ -74,7 +81,7 @@ if rg -n 'agentlas-meta-agent' README*.md claude/README.md codex/README.md \
 fi
 
 for path in README.md README.ko.md codex/README.md; do
-  rg -q 'codex plugin marketplace add agentlas-ai/Hephaestus --ref v0\.2\.10' "$path" || fail "missing Codex marketplace command in $path"
+  rg -q "codex plugin marketplace add agentlas-ai/Hephaestus --ref ${expected_tag_re}" "$path" || fail "missing Codex marketplace command in $path"
   rg -q 'codex plugin add hephaestus@agentlas-core-engine' "$path" || fail "missing Codex add command in $path"
 done
 
@@ -93,12 +100,13 @@ claude = json.loads(Path("claude/plugins/agentlas-core-engine-meta-agent/.claude
 manifest = json.loads(Path("manifest.json").read_text())
 assert codex["id"] == "hephaestus", codex["id"]
 assert codex["name"] == "hephaestus", codex["name"]
-assert codex["version"] == "0.2.10", codex["version"]
+expected_version = manifest["version"]
+assert codex["version"] == expected_version, codex["version"]
 assert codex["interface"]["displayName"] == "Hephaestus", codex["interface"]["displayName"]
 assert claude["name"] == "hephaestus", claude["name"]
-assert claude["version"] == "0.2.10", claude["version"]
+assert claude["version"] == expected_version, claude["version"]
 assert manifest["package"] == "hephaestus", manifest["package"]
-assert manifest["version"] == "0.2.10", manifest["version"]
+
 assert manifest["entrypoints"]["claudeHephaestusCommand"].endswith("hephaestus.md")
 assert manifest["entrypoints"]["codexHephaestusCommand"].endswith("hephaestus.md")
 assert manifest["entrypoints"]["geminiExtension"].endswith("gemini-extension.json")
