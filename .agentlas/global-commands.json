@@ -23,7 +23,7 @@
       "runtime": "gemini-cli",
       "command": "/hephaestus",
       "adapterPath": "gemini/extension/commands/hephaestus.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v0.3.0",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v0.4.0",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hephaestus.toml."
@@ -51,6 +51,66 @@
       "globalInstallPath": "agentlas run hephaestus",
       "scope": "terminal",
       "status": "shell-command"
+    },
+    {
+      "runtime": "claude-code",
+      "command": "/hephaestus-network",
+      "adapterPath": ".claude/commands/hephaestus-network.md",
+      "globalInstallPath": "~/.claude/commands/hephaestus-network.md",
+      "scope": "global",
+      "status": "native-slash-command"
+    },
+    {
+      "runtime": "codex",
+      "command": "/hephaestus-network",
+      "adapterPath": "codex/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-network.md",
+      "globalInstallPath": "codex plugin add hephaestus@agentlas-core-engine",
+      "scope": "plugin",
+      "status": "plugin-slash-command"
+    },
+    {
+      "runtime": "gemini-cli",
+      "command": "/hephaestus-network",
+      "adapterPath": "gemini/extension/commands/hephaestus-network.toml",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v0.4.0",
+      "scope": "global",
+      "status": "extension-custom-command",
+      "notes": "Fallback user command is also installable at ~/.gemini/commands/hephaestus-network.toml."
+    },
+    {
+      "runtime": "antigravity",
+      "command": "/hephaestus-network",
+      "adapterPath": "antigravity/workflows/hephaestus-network.md",
+      "globalInstallPath": "~/.gemini/antigravity/global_workflows/hephaestus-network.md",
+      "scope": "global",
+      "status": "workflow-slash-command",
+      "notes": "Project-scope fallback ships at .agents/workflows/hephaestus-network.md."
+    },
+    {
+      "runtime": "cursor",
+      "command": "@Hephaestus",
+      "adapterPath": "cursor/rules/hephaestus.mdc",
+      "globalInstallPath": "<project>/.cursor/rules/hephaestus.mdc",
+      "scope": "project",
+      "status": "rule-trigger-fallback",
+      "notes": "Cursor has no custom slash commands; the rule reacts to /hephaestus, /hephaestus-network, and @Hephaestus mentions."
+    },
+    {
+      "runtime": "generic-agents-md",
+      "command": "@Hephaestus",
+      "adapterPath": "AGENTS.md",
+      "scope": "project",
+      "status": "adapter-command-alias",
+      "notes": "Generic fallback for AGENTS.md-compatible and local-model runtimes (Gemma, Hermes-like): see docs/runtime-fallback-adapters.md."
+    },
+    {
+      "runtime": "agentlas-terminal",
+      "command": "hephaestus route",
+      "adapterPath": "bin/hephaestus",
+      "globalInstallPath": "hephaestus \"<request>\"",
+      "scope": "terminal",
+      "status": "shell-command",
+      "notes": "hephaestus \"<request>\" is shorthand for hephaestus route \"<request>\"."
     }
   ],
   "postCreationUserMessage": {

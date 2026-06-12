@@ -4,14 +4,14 @@
   </a>
 </p>
 
-<h1 align="center">Hephaestus</h1>
+<h1 align="center">Hephaestus — Network 2.0</h1>
 
 <p align="center">
-  <strong>ラフな agent アイデアを、インストール可能な Agentlas agent/team リポジトリに変換します。</strong>
+  <strong>ローカルファーストのエージェント &amp; プラグイン・ネットワーキング: どの AI ランタイムからでも自分のエージェントを呼び出し、標準化されたルーティングカードでルーティングし、メモリは手元のマシンに保持します。</strong>
 </p>
 
 <p align="center">
-  単体の専門 agent、マルチ agent チーム、既存の Claude/Codex/OpenClaw/Hermes ワークスペースを、公開可能な Agentlas パッケージとして整えます。
+  ラフな agent アイデア 1 つを、インストール可能な Agentlas agent/team リポジトリに変換します — その後は Hephaestus Network がすべてのリクエストを適切なローカル agent にルーティングし、Hub へのフォールバックはあなたの承認がある場合のみ行われます。
 </p>
 
 <p align="center">
@@ -32,6 +32,48 @@
 
 ---
 
+## Hephaestus Network 2.0
+
+<p align="center">
+  <img src="assets/hephaestus-network-architecture.svg" alt="Hephaestus Network 2.0 A2A networking architecture">
+</p>
+
+<p align="center">
+  <sub>図2. Hephaestus Network 2.0 — ランタイム、グローバルなローカルファースト・オーケストレーター、ルーティングカード、承認ゲート、ローカルメモリ、そして Agentlas Hub の A2A/MCP フォールバック。</sub>
+</p>
+
+ひとつのコマンドで、すべてのランタイムから、すべてローカルで:
+
+```text
+/hephaestus-network 인스타그램 마케팅 콘텐츠 만들어줘
+/hephaestus-network review this contract for legal risks
+@Hephaestus plan a wedding photo shoot          # runtimes without slash commands
+hephaestus "summarize this research corpus"      # terminal
+```
+
+- **ルーティングカード。** すべての agent、team、plugin は、標準化された
+  ルーティングカード（トリガー、アンチトリガー、capabilities、リスク
+  プロファイル、メモリ動作）を同梱します。品質ゲートを通らないカードが
+  自動ルーティングされることはありません。
+- **ローカルファースト。** 明示的なコマンド → プロジェクトのオーバーライド →
+  手元のローカルカード、の順で解決します。Agentlas Hub はフォールバックで
+  あり、初回のリモート利用前に必ず確認を求め、送信されるのは redact 済みの
+  キーワードだけです — 生のプロンプトが送られることはありません。
+- **メモリはローカルに残ります。** agent の能力は Hub から取得できますが、
+  user/project メモリは `~/.agentlas/networking/` にあり、明示的なエクスポート
+  承認なしにマシンの外へ出ることはありません。
+- **レシートと承認ゲート。** すべてのルーティング決定はレシートを書き込み
+  ます。ファイル書き込み、クラウド呼び出し、支払い、公開、削除、プライベート
+  データのエクスポート、外部ツールには、常にあなたの承認が必要です。
+- **主張ではなく計測。** ルーティングベンチマーク（韓国語 + 英語）が自動
+  ルーティングをゲートします: top-3 recall ≥ 90%、プライバシースイートで
+  unsafe route ゼロ。
+
+詳細: [docs/hephaestus-network-2.0.md](docs/hephaestus-network-2.0.md) ·
+ランタイム対応マトリクス: [docs/runtime-fallback-adapters.md](docs/runtime-fallback-adapters.md)
+
+---
+
 ## 貼り付けてインストール (AI にやってもらう)
 
 ターミナルが苦手でも、自分で何か実行する必要はありません。AI コーディング
@@ -42,7 +84,7 @@
 ```text
 このワークスペースに Hephaestus Agentlas メタエージェントをセットアップして。
 ターミナルで
-`curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.3.0/scripts/install-all-runtimes.sh | bash`
+`curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.4.0/scripts/install-all-runtimes.sh | bash`
 を実行し、私が使っているツール（Claude Code, Codex, Gemini CLI, Antigravity,
 Cursor）で使う正確な /hephaestus コマンドを教えて。失敗したらエラーを読んで
 直し、もう一度試して。
@@ -123,7 +165,7 @@ agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
 package files を入れたい project folder で macOS Terminal、Linux terminal、Windows Git Bash、または WSL を開きます。
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.3.0/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.4.0/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -131,9 +173,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\hephaestus-v0.3.0.zip"
-$extract = "$env:TEMP\hephaestus-v0.3.0"
-Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.3.0.zip" -OutFile $zip
+$zip = "$env:TEMP\hephaestus-v0.4.0.zip"
+$extract = "$env:TEMP\hephaestus-v0.4.0"
+Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.4.0.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -174,7 +216,7 @@ Codex chat の中では `/plugin marketplace add` は使いません。Codex app
 **`codex` CLI が使える OS terminal で入力**:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.3.0
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.4.0
 codex plugin list
 codex plugin add hephaestus@agentlas-core-engine
 codex plugin list
@@ -248,7 +290,7 @@ Hephaestus は prompt だけを返すものではありません。他の runtim
 | "この workflow の team/company を作って" | `20-multi-agent-team-builder` | HQ、PM Soul、Memory Curator、Policy Gate、eval、QA、handoff を持つ multi-agent team |
 | "既存 agent/repo/workspace を package して" | `30-agentlas-packager` | Desktop import、terminal、Codex、Claude、Gemini、public GitHub release に対応した Agentlas package |
 
-## v0.3.0 の新機能
+## v0.4.0 の新機能
 
 - **CJK 検索が動きます。** tokenizer が日本語/韓国語/中国語の文字 bigram を生成し、FTS index が `trigram` tokenizer を使うため、追加インストールなしで CJK コーパスを検索できます。既存 DB は初回オープン時に自動で再インデックスされます。
 - **RRF hybrid ranking。** full-text と vector の順位を固定重みではなく Reciprocal Rank Fusion で融合し、候補プールを制限して全コーパススキャンを排除しました。

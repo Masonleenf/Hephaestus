@@ -1,0 +1,29 @@
+---
+description: Hephaestus Network routing — apply when the user types /hephaestus, /hephaestus-network, or mentions @Hephaestus in a request. Routes natural-language requests to local Agentlas agents/teams/plugins via the local-first router, with Hub fallback behind user approval.
+alwaysApply: false
+---
+
+# Hephaestus Network (Cursor adapter)
+
+Cursor does not support custom slash commands, so this rule is the adapter:
+when the user writes `/hephaestus <request>`, `/hephaestus-network <request>`,
+or `@Hephaestus <request>`, do the following.
+
+1. Resolve the runner: `./bin/hephaestus` in the workspace, or
+   `~/.claude/plugins/cache/agentlas-core-engine/hephaestus/*/bin/hephaestus`.
+   If none exists, tell the user to run the one-touch installer:
+   `curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash`
+
+2. Run `"$RUNNER" route "<request>" --runtime cursor` in the terminal and act
+   on the JSON decision:
+   - `route`: report the selected card; if `approval_request` is present, ask
+     the user to approve those capabilities before invoking the agent.
+   - `clarify`: ask the `clarify_question` with the candidates.
+   - `hub_fallback`/`hub_candidates`: get explicit approval before any Hub
+     use — only redacted keywords are sent, never the raw prompt.
+   - `propose_new`: offer to build a new agent via the Hephaestus meta-agent.
+   - `refuse`: explain the reasons; never bypass the privacy block or loop guard.
+
+3. Hard rules: local memory stays local unless the user explicitly approves an
+   export; never auto-run file writes, cloud calls, payments, publishing,
+   deletion, private data export, or external tools without approval.

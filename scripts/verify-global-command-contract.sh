@@ -23,6 +23,17 @@ required_files=(
   "antigravity/workflows/hephaestus.md"
   ".agents/workflows/hephaestus.md"
   "AGENTS.md"
+  ".claude/commands/hephaestus-network.md"
+  "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-network.md"
+  "codex/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-network.md"
+  "gemini/extension/commands/hephaestus-network.toml"
+  ".gemini/commands/hephaestus-network.toml"
+  "antigravity/workflows/hephaestus-network.md"
+  ".agents/workflows/hephaestus-network.md"
+  "cursor/rules/hephaestus.mdc"
+  "docs/hephaestus-network-2.0.md"
+  "docs/runtime-fallback-adapters.md"
+  "schemas/routing-card.schema.json"
 )
 
 for path in "${required_files[@]}"; do
@@ -39,7 +50,21 @@ command = registry.get("canonicalCommand")
 if not re.fullmatch(r"/[a-z0-9][a-z0-9-]*(?::[a-z0-9][a-z0-9-]*)?", command or ""):
     raise SystemExit(f"invalid canonicalCommand: {command!r}")
 
-commands = {item["runtime"]: item for item in registry.get("commands", [])}
+# A runtime may expose several commands (e.g. /hephaestus and
+# /hephaestus-network); validate the canonical one per runtime.
+commands = {}
+for item in registry.get("commands", []):
+    commands.setdefault(item["runtime"], item)
+    if item.get("command") == command:
+        commands[item["runtime"]] = item
+
+network_commands = [item for item in registry.get("commands", []) if item.get("command") == "/hephaestus-network"]
+if len(network_commands) < 4:
+    raise SystemExit("expected /hephaestus-network entries for at least claude-code, codex, gemini-cli, antigravity")
+for item in network_commands:
+    adapter = item.get("adapterPath")
+    if not adapter or not Path(adapter).exists():
+        raise SystemExit(f"/hephaestus-network adapter missing: {adapter}")
 required = {
     "claude-code": ".claude/commands/hephaestus.md",
     "codex": "codex/plugins/agentlas-core-engine-meta-agent/commands/hephaestus.md",

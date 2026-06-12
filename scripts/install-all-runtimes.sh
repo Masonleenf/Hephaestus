@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-version="${HEPHAESTUS_REF:-v0.3.0}"
+version="${HEPHAESTUS_REF:-v0.4.0}"
 repo="${HEPHAESTUS_REPO:-agentlas-ai/Hephaestus}"
 github_url="${HEPHAESTUS_GITHUB_URL:-https://github.com/$repo}"
 marketplace_name="${HEPHAESTUS_MARKETPLACE:-agentlas-core-engine}"
@@ -200,6 +200,11 @@ package, verify it, and include \`global_commands\` in the final response.
 """
 EOF
   log "Installed Gemini fallback command: $command_dir/hephaestus.toml"
+
+  if [[ -f "$source_dir/gemini/extension/commands/hephaestus-network.toml" ]]; then
+    cp "$source_dir/gemini/extension/commands/hephaestus-network.toml" "$command_dir/hephaestus-network.toml"
+    log "Installed Gemini fallback command: $command_dir/hephaestus-network.toml"
+  fi
 }
 
 install_gemini() {
@@ -263,6 +268,11 @@ install_antigravity() {
       mkdir -p "$global_dir"
       cp "$workflow_src" "$global_dir/hephaestus.md" || return 1
       log "Installed Antigravity global workflow: $global_dir/hephaestus.md"
+      local network_workflow_src="$source_dir/antigravity/workflows/hephaestus-network.md"
+      if [[ -f "$network_workflow_src" ]]; then
+        cp "$network_workflow_src" "$global_dir/hephaestus-network.md"
+        log "Installed Antigravity global workflow: $global_dir/hephaestus-network.md"
+      fi
       installed=$((installed + 1))
     fi
   done
@@ -298,6 +308,21 @@ PY
   log "Registered agentlas Hub MCP in $cfg"
 }
 
+# Hephaestus Network 2.0: create or migrate ~/.agentlas/networking on every
+# install/upgrade (idempotent; indexes only registered paths, never the home
+# folder).
+bootstrap_networking() {
+  if ! have python3; then
+    warn "python3 not found; skipped Hephaestus Network init."
+    return 0
+  fi
+  ensure_downloaded_source || return 1
+  log "== Hephaestus Network (global routing structure) =="
+  PYTHONPATH="$source_dir${PYTHONPATH:+:$PYTHONPATH}" python3 -m agentlas_cloud network init >/dev/null || return 1
+  PYTHONPATH="$source_dir${PYTHONPATH:+:$PYTHONPATH}" python3 -m agentlas_cloud network reindex >/dev/null || true
+  log "Initialized ~/.agentlas/networking (cards, policies, ledgers, local memory map)."
+}
+
 main() {
   log "Hephaestus one-touch install/update"
   log "repo: $repo"
@@ -310,6 +335,7 @@ main() {
   install_codex || { warn "Codex install failed."; failed=$((failed + 1)); }
   install_gemini || { warn "Gemini install failed."; failed=$((failed + 1)); }
   install_antigravity || { warn "Antigravity install failed."; failed=$((failed + 1)); }
+  bootstrap_networking || warn "Hephaestus Network init failed; run 'hephaestus network init' manually."
 
   log ""
   log "Installed/updated runtimes: $ok"

@@ -59,3 +59,25 @@ global_commands:
 
 If a runtime was not generated, say `not generated` and give the reason. Do not
 leave the user guessing how to run the agent after creation.
+
+## Hephaestus Network 2.0 additions
+
+Every package now exposes a second canonical command,
+`/hephaestus-network <request>` (alias `@Hephaestus <request>`), backed by the
+local-first router (`docs/hephaestus-network-2.0.md`). Required surfaces:
+
+- Claude Code: `.claude/commands/hephaestus-network.md` (+ global symlink).
+- Codex: `codex/plugins/<package-id>/commands/hephaestus-network.md`.
+- Gemini CLI: `gemini/extension/commands/hephaestus-network.toml`
+  (+ `~/.gemini/commands/hephaestus-network.toml` fallback).
+- Antigravity: `antigravity/workflows/hephaestus-network.md`
+  (+ `~/.gemini/antigravity*/global_workflows/`).
+- Cursor (no custom slash commands): `cursor/rules/hephaestus.mdc` copied into
+  `<project>/.cursor/rules/` — reacts to `/hephaestus*` and `@Hephaestus`.
+- Terminal: `hephaestus "<request>"` is shorthand for
+  `bin/hephaestus route "<request>"`.
+- Generic AGENTS.md / local-model runtimes: see
+  `docs/runtime-fallback-adapters.md`.
+
+Install and upgrade must run `hephaestus network init` (idempotent) so the
+global `~/.agentlas/networking/` structure exists before the first routed call.

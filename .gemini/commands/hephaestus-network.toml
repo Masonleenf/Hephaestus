@@ -1,0 +1,29 @@
+description = "Route a request through the Hephaestus Network local-first router (cards, Hub fallback, approval gates)."
+prompt = """
+# /hephaestus-network
+
+Raw arguments:
+{{args}}
+
+Use the Hephaestus Network local-first router.
+
+1. Find the Hephaestus runner (`./bin/hephaestus`, or the installed plugin
+   cache copy) and run:
+   `hephaestus route "{{args}}" --runtime gemini-cli`
+
+2. Act on the JSON decision and never bypass it:
+   - action "route": report the selected card and its canonical command. If an
+     `approval_request` is present, ask the user to approve those capabilities
+     before invoking anything.
+   - action "clarify": ask the `clarify_question` with the candidates.
+   - action "hub_fallback"/"hub_candidates": ask for explicit approval first —
+     only redacted keywords are ever sent to the Hub, never the raw prompt.
+     After approval, re-run with `--approve-hub`.
+   - action "propose_new": offer to build a new agent via /hephaestus.
+   - action "refuse": explain the reasons (loop guard or privacy block).
+
+3. Hard rules: local memory stays local unless the user explicitly approves an
+   export; high-risk capabilities (file writes, cloud calls, payments,
+   publishing, deletion, private data export, external tools) always require a
+   user approval; include the routing `receipt_id` in the final response.
+"""

@@ -1,0 +1,36 @@
+"""Hephaestus Network 2.0 — local-first agent/plugin routing layer.
+
+Contract: docs/hephaestus-network-2.0.md and docs/plans/hephaestus-network-2.0-plan.md.
+
+Local cards under ~/.agentlas/networking/cards/ are the source of truth;
+registry.sqlite is a rebuildable cache. The router is deterministic (no LLM),
+local-first, and never sends raw prompts or local memory to the Hub.
+"""
+
+from .bootstrap import (
+    SCHEMA_VERSION,
+    add_source,
+    init_networking,
+    network_status,
+    networking_home,
+    remove_source,
+)
+from .card_lint import lint_card
+from .card_migrate import migrate_tree
+from .card_store import load_global_cards, reindex, save_card
+from .router import route_request
+
+__all__ = [
+    "SCHEMA_VERSION",
+    "add_source",
+    "init_networking",
+    "lint_card",
+    "load_global_cards",
+    "migrate_tree",
+    "network_status",
+    "networking_home",
+    "reindex",
+    "remove_source",
+    "route_request",
+    "save_card",
+]

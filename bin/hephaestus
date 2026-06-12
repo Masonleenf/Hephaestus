@@ -16,6 +16,12 @@ Usage:
   bin/hephaestus plugins list [--project <dir>]
   bin/hephaestus plugins resolve "<need>" [--project <dir>] [--no-hub]
   bin/hephaestus meta-agent "<request>"
+  bin/hephaestus network init|status|reindex|bench
+  bin/hephaestus network add-source <path> | remove-source <path>
+  bin/hephaestus network grant <capability> --target <id> [--scope ...]
+  bin/hephaestus cards lint [path] | cards migrate <root> --tier free|paid|plugin|local
+  bin/hephaestus route "<request>" [--project <dir>] [--no-hub] [--approve-hub]
+  bin/hephaestus "<request>"            # shorthand for route
 
 Examples:
   bin/hephaestus ontology
@@ -97,9 +103,16 @@ Open Claude Code or Codex with the installed plugin, then run:
 /hephaestus $request
 EOF
     ;;
-  *)
+  network|cards|route)
+    PYTHONPATH="$root${PYTHONPATH:+:$PYTHONPATH}" python3 -m agentlas_cloud "$command" "$@"
+    ;;
+  -*)
     echo "hephaestus: unknown command: $command" >&2
     usage >&2
     exit 2
+    ;;
+  *)
+    # Natural-language shorthand: hephaestus "<request>" routes through the network router.
+    PYTHONPATH="$root${PYTHONPATH:+:$PYTHONPATH}" python3 -m agentlas_cloud route "$command $*"
     ;;
 esac

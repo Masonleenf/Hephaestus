@@ -17,6 +17,10 @@ runtimes.
 - Agentlas Cloud runtime contract: `docs/agentlas-cloud-runtime.md`,
   `agentlas_cloud/`, `schemas/agentlas-manifest.schema.json`, and
   `templates/agentlas.json.tpl`.
+- Hephaestus Network 2.0 contract: `docs/hephaestus-network-2.0.md`,
+  `docs/runtime-fallback-adapters.md`, `agentlas_cloud/networking/`,
+  `schemas/routing-card.schema.json`, `.agentlas/routing-card.json`, and
+  `scripts/verify-routing-cards.sh`.
 - Portable support contracts: `docs/mode-classifier.md`,
   `docs/clarify-question-loop.md`, `docs/agentlas-auto-activation.md`,
   `docs/local-credential-store.md`, and `docs/skill-lifecycle-promotion.md`.
@@ -75,6 +79,20 @@ become separate sources of truth.
 12. Verify with `scripts/verify-package.sh`.
 13. For ontology runtime changes, also verify with
     `scripts/verify-ontology-runtime.sh`.
+
+## Hephaestus Network Commands
+
+`/hephaestus-network <request>` (alias `@Hephaestus <request>`, terminal
+`hephaestus "<request>"`) routes a natural-language request through the
+local-first router: explicit commands → project `.agentlas/routing-overrides.json`
+→ local routing cards (`routing_ready`+ only) → Agentlas Hub fallback behind a
+user approval → propose building a new agent. Honor the decision JSON exactly:
+ask the `clarify_question` on `clarify`, surface `approval_request` before any
+high-risk capability (file writes, cloud calls, payments, publishing, deletion,
+private data export, external tools), never send raw prompts or local memory to
+the Hub, and report the routing `receipt_id`. Generated and packaged repos must
+include `.agentlas/routing-card.json` (see `schemas/routing-card.schema.json`);
+cards below `routing_ready` are excluded from auto routing.
 
 ## Team Roles
 

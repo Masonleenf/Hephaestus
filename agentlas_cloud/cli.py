@@ -44,6 +44,44 @@ def main(argv: list[str] | None = None) -> int:
     plugins_resolve.add_argument("--project", default=".")
     plugins_resolve.add_argument("--no-hub", action="store_true", help="Skip the Agentlas Hub query (local scan only)")
 
+    network = sub.add_parser("network", help="Hephaestus Network 2.0 (~/.agentlas/networking)")
+    network_sub = network.add_subparsers(dest="network_command", required=True)
+    network_sub.add_parser("init", help="Create or migrate the global networking structure (idempotent)")
+    network_sub.add_parser("status", help="Card counts, benchmark state, auto-routing gate")
+    network_add = network_sub.add_parser("add-source", help="Register a folder to index (never the home folder)")
+    network_add.add_argument("path")
+    network_remove = network_sub.add_parser("remove-source", help="Unregister an indexed folder")
+    network_remove.add_argument("path")
+    network_sub.add_parser("reindex", help="Re-import cards from registered sources and rebuild registry.sqlite")
+    network_bench = network_sub.add_parser("bench", help="Run the routing benchmark suites")
+    network_bench.add_argument("--suite", action="append", default=[], help="Path to a .jsonl suite (repeatable)")
+    network_grant = network_sub.add_parser("grant", help="Record a capability grant (user approval)")
+    network_grant.add_argument("capability")
+    network_grant.add_argument("--target", required=True)
+    network_grant.add_argument("--scope", default="per_call")
+    network_grant.add_argument("--ttl", type=int, default=None)
+    network_feedback = network_sub.add_parser("feedback", help="Record a routing correction (boost/suppress, never card promotion)")
+    network_feedback.add_argument("query")
+    network_feedback.add_argument("--chosen", default=None)
+    network_feedback.add_argument("--correct", default=None)
+
+    cards = sub.add_parser("cards", help="Routing card tools")
+    cards_sub = cards.add_subparsers(dest="cards_command", required=True)
+    cards_lint = cards_sub.add_parser("lint", help="Validate routing cards and report quality gates")
+    cards_lint.add_argument("path", nargs="?", default=None, help="Folder to scan for routing-card.json (default: global cards)")
+    cards_migrate = cards_sub.add_parser("migrate", help="Generate draft routing cards from existing packages")
+    cards_migrate.add_argument("root")
+    cards_migrate.add_argument("--tier", required=True, choices=["free", "paid", "plugin", "local"])
+    cards_migrate.add_argument("--overwrite", action="store_true")
+    cards_migrate.add_argument("--no-global", action="store_true", help="Write package-local cards only")
+
+    route = sub.add_parser("route", help="Route a natural-language request to a local agent/team/plugin")
+    route.add_argument("query")
+    route.add_argument("--project", default=".")
+    route.add_argument("--runtime", default="terminal")
+    route.add_argument("--no-hub", action="store_true")
+    route.add_argument("--approve-hub", action="store_true", help="Approve this Hub search (redacted keywords only)")
+
     args = parser.parse_args(argv)
     if args.command == "wizard":
         return emit(run_setup_wizard(args.folder, args.name, write=not args.no_write))
@@ -69,6 +107,90 @@ def main(argv: list[str] | None = None) -> int:
             return emit(scan_local_plugins(args.project))
         if args.plugins_command == "resolve":
             return emit(resolve_plugins(args.query, args.project, use_hub=not args.no_hub))
+    if args.command == "network":
+        from . import networking
+
+        if args.network_command == "init":
+            return emit(networking.init_networking())
+        if args.network_command == "status":
+            return emit(networking.network_status())
+        if args.network_command == "add-source":
+            return emit(networking.add_source(args.path))
+        if args.network_command == "remove-source":
+            return emit(networking.remove_source(args.path))
+        if args.network_command == "reindex":
+            return emit(networking.reindex())
+        if args.network_command == "bench":
+            from .networking.bench import run_bench
+
+            suites = args.suite or [
+                str(Path(__file__).resolve().parent.parent / "benchmarks" / "routing" / name)
+                for name in ("seed.jsonl", "privacy.jsonl", "edges.jsonl")
+            ]
+            report = run_bench(suites)
+            emit(report)
+            return 0 if report["passed"] else 1
+        if args.network_command == "grant":
+            from .networking.approvals import record_grant
+
+            return emit(record_grant(args.capability, args.target, scope=args.scope, ttl_seconds=args.ttl))
+        if args.network_command == "feedback":
+            from .networking.memory import record_feedback
+            from .networking.tokenize import tokenize
+
+            return emit(record_feedback(tokenize(args.query), args.chosen, args.correct))
+    if args.command == "cards":
+        if args.cards_command == "lint":
+            from .networking.bootstrap import networking_home, read_json
+            from .networking.card_lint import lint_card
+
+            reports = []
+            if args.path:
+                for card_file in sorted(Path(args.path).rglob(".agentlas/routing-card.json")):
+                    payload = read_json(card_file)
+                    if isinstance(payload, dict):
+                        report = lint_card(payload)
+                        report["path"] = str(card_file)
+                        reports.append(report)
+                    else:
+                        reports.append({"path": str(card_file), "errors": ["malformed JSON"], "allowed_status": "quarantined"})
+            else:
+                from .networking.card_store import load_global_cards
+
+                cards_loaded, quarantined = load_global_cards(networking_home())
+                for card in cards_loaded:
+                    report = lint_card(card)
+                    report["path"] = card.get("_card_path")
+                    reports.append(report)
+                for item in quarantined:
+                    reports.append({"path": item["path"], "errors": [item["reason"]], "allowed_status": "quarantined"})
+            errors = sum(1 for report in reports if report.get("errors"))
+            emit({"cards": len(reports), "with_errors": errors, "reports": reports})
+            return 1 if errors else 0
+        if args.cards_command == "migrate":
+            from .networking.bootstrap import networking_home
+            from .networking.card_migrate import migrate_tree
+
+            home = None if args.no_global else networking_home()
+            if home is not None:
+                from .networking import init_networking
+
+                init_networking(home)
+            return emit(migrate_tree(args.root, tier=args.tier, home=home, overwrite=args.overwrite))
+    if args.command == "route":
+        from .networking import init_networking, route_request
+        from .networking.bootstrap import networking_home
+
+        init_networking(networking_home())
+        return emit(
+            route_request(
+                args.query,
+                project_dir=args.project,
+                runtime=args.runtime,
+                use_hub=not args.no_hub,
+                hub_approved=args.approve_hub,
+            )
+        )
     parser.error("unhandled command")
     return 2
 
