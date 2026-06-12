@@ -2,8 +2,9 @@
 
 This repository is a portable three-agent meta-agent team. Use it to create or
 package Agentlas-compatible single agents and multi-agent teams for Codex,
-Claude Code, Gemini CLI, Antigravity, Cursor, and `AGENTS.md`-compatible
-runtimes.
+Claude Code, Gemini CLI, Antigravity, Cursor, OpenCode, OpenClaw, Hermes
+Agent, Ollama-served local models (Gemma, DeepSeek — see
+`docs/local-models.md`), and `AGENTS.md`-compatible runtimes.
 
 ## Source Of Truth
 

@@ -21,6 +21,7 @@ Usage:
   bin/hephaestus network grant <capability> --target <id> [--scope ...]
   bin/hephaestus cards lint [path] | cards migrate <root> --tier free|paid|plugin|local
   bin/hephaestus route "<request>" [--project <dir>] [--no-hub] [--approve-hub]
+  bin/hephaestus mcp serve              # stdio MCP server (hephaestus_route tool)
   bin/hephaestus "<request>"            # shorthand for route
 
 Examples:
@@ -103,7 +104,7 @@ Open Claude Code or Codex with the installed plugin, then run:
 /hephaestus $request
 EOF
     ;;
-  network|cards|route)
+  network|cards|route|mcp)
     PYTHONPATH="$root${PYTHONPATH:+:$PYTHONPATH}" python3 -m agentlas_cloud "$command" "$@"
     ;;
   -*)

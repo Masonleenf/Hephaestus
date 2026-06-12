@@ -8,10 +8,11 @@ approval). Also triggered by `@Hephaestus <request>`.
 
 Use the first executable found:
 
-1. `./bin/hephaestus` (workspace copy)
-2. `~/.claude/plugins/cache/agentlas-core-engine/hephaestus/*/bin/hephaestus`
-3. `${CODEX_HOME:-~/.codex}/plugins/cache/agentlas-core-engine/hephaestus/*/bin/hephaestus`
-4. `./claude/plugins/agentlas-core-engine-meta-agent/bin/hephaestus`
+1. `~/.agentlas/runtime/current/bin/hephaestus` (runtime-neutral install)
+2. `./bin/hephaestus` (workspace copy)
+3. `~/.claude/plugins/cache/agentlas-core-engine/hephaestus/*/bin/hephaestus` (newest, sort -V)
+4. `${CODEX_HOME:-~/.codex}/plugins/cache/agentlas-core-engine/hephaestus/*/bin/hephaestus` (newest, sort -V)
+5. `./claude/plugins/agentlas-core-engine-meta-agent/bin/hephaestus`
 
 ## Steps
 

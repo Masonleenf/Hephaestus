@@ -16,7 +16,7 @@ required_files=(
   "templates/global-commands.json.tpl"
   "templates/antigravity-workflow.md.tpl"
   ".claude/commands/hephaestus.md"
-  "codex/plugins/agentlas-core-engine-meta-agent/commands/hephaestus.md"
+  "codex/prompts/hephaestus.md"
   "gemini/extension/commands/hephaestus.toml"
   ".gemini/commands/hephaestus.toml"
   "gemini/extension/gemini-extension.json"
@@ -25,12 +25,21 @@ required_files=(
   "AGENTS.md"
   ".claude/commands/hephaestus-network.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-network.md"
-  "codex/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-network.md"
+  "codex/prompts/hephaestus-network.md"
+  "codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-network/SKILL.md"
   "gemini/extension/commands/hephaestus-network.toml"
   ".gemini/commands/hephaestus-network.toml"
   "antigravity/workflows/hephaestus-network.md"
   ".agents/workflows/hephaestus-network.md"
+  "skills/hephaestus-network/SKILL.md"
+  ".agents/skills/hephaestus-network/SKILL.md"
   "cursor/rules/hephaestus.mdc"
+  "cursor/plugin/commands/hephaestus-network.md"
+  "opencode/commands/hephaestus-network.md"
+  "openclaw/skills/hephaestus-network/SKILL.md"
+  "hermes/skills/hephaestus-network/SKILL.md"
+  "agentlas_cloud/mcp_stdio.py"
+  "docs/local-models.md"
   "docs/hephaestus-network-2.0.md"
   "docs/runtime-fallback-adapters.md"
   "schemas/routing-card.schema.json"
@@ -67,7 +76,7 @@ for item in network_commands:
         raise SystemExit(f"/hephaestus-network adapter missing: {adapter}")
 required = {
     "claude-code": ".claude/commands/hephaestus.md",
-    "codex": "codex/plugins/agentlas-core-engine-meta-agent/commands/hephaestus.md",
+    "codex": "codex/prompts/hephaestus.md",
     "gemini-cli": "gemini/extension/commands/hephaestus.toml",
     "antigravity": "antigravity/workflows/hephaestus.md",
     "generic-agents-md": "AGENTS.md",
@@ -82,8 +91,11 @@ for runtime, adapter in required.items():
     if not Path(adapter).exists():
         raise SystemExit(f"{runtime} adapter file does not exist: {adapter}")
 
+# Codex plugins cannot register slash commands; the explicit surface is the
+# /prompts: namespace, so the canonical command appears as /prompts:<name>.
+prompt_namespaced = "/prompts:" + command.lstrip("/")
 for runtime in ("claude-code", "codex", "gemini-cli", "antigravity", "generic-agents-md"):
-    if commands[runtime].get("command") != command:
+    if commands[runtime].get("command") not in (command, prompt_namespaced):
         raise SystemExit(f"{runtime} command does not match canonical command")
 
 message = registry.get("postCreationUserMessage", {})

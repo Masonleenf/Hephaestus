@@ -82,6 +82,10 @@ def main(argv: list[str] | None = None) -> int:
     route.add_argument("--no-hub", action="store_true")
     route.add_argument("--approve-hub", action="store_true", help="Approve this Hub search (redacted keywords only)")
 
+    mcp = sub.add_parser("mcp", help="MCP integration")
+    mcp_sub = mcp.add_subparsers(dest="mcp_command", required=True)
+    mcp_sub.add_parser("serve", help="Serve the network router as a local stdio MCP server")
+
     args = parser.parse_args(argv)
     if args.command == "wizard":
         return emit(run_setup_wizard(args.folder, args.name, write=not args.no_write))
@@ -177,6 +181,10 @@ def main(argv: list[str] | None = None) -> int:
 
                 init_networking(home)
             return emit(migrate_tree(args.root, tier=args.tier, home=home, overwrite=args.overwrite))
+    if args.command == "mcp" and args.mcp_command == "serve":
+        from .mcp_stdio import serve
+
+        return serve()
     if args.command == "route":
         from .networking import init_networking, route_request
         from .networking.bootstrap import networking_home

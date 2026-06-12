@@ -32,11 +32,28 @@ code_files=(
 
 # Byte-mirrored skill copies at the repo root (.agents/skills); plugin skill
 # files are condensed adapters and excluded on purpose.
+#
+# Exception: hephaestus-network is byte-identical EVERYWHERE — it is the
+# universal AgentSkills-spec surface (Codex, OpenCode, OpenClaw, Cursor, Crush,
+# Hermes all read ~/.agents/skills), so the canonical copy is mirrored into
+# every runtime adapter. The OpenClaw copy is NOT mirrored (it carries an extra
+# metadata frontmatter line); keep its body in sync manually.
 skill_mirrors=(
   "skills/mode-classification/SKILL.md:.agents/skills/mode-classification/SKILL.md"
   "skills/clarify-question-loop/SKILL.md:.agents/skills/clarify-question-loop/SKILL.md"
   "skills/agentlas-auto-activation/SKILL.md:.agents/skills/agentlas-auto-activation/SKILL.md"
   "skills/skill-lifecycle-promotion/SKILL.md:.agents/skills/skill-lifecycle-promotion/SKILL.md"
+  "skills/hephaestus-network/SKILL.md:.agents/skills/hephaestus-network/SKILL.md"
+  "skills/hephaestus-network/SKILL.md:claude/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-network/SKILL.md"
+  "skills/hephaestus-network/SKILL.md:codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-network/SKILL.md"
+  "skills/hephaestus-network/SKILL.md:gemini/extension/skills/hephaestus-network/SKILL.md"
+  "skills/hephaestus-network/SKILL.md:cursor/plugin/skills/hephaestus-network/SKILL.md"
+  "skills/hephaestus-network/SKILL.md:hermes/skills/hephaestus-network/SKILL.md"
+  "cursor/rules/hephaestus.mdc:cursor/plugin/rules/hephaestus.mdc"
+  "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus.md:.claude/commands/hephaestus.md"
+  "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-network.md:.claude/commands/hephaestus-network.md"
+  "antigravity/workflows/hephaestus.md:.agents/workflows/hephaestus.md"
+  "antigravity/workflows/hephaestus-network.md:.agents/workflows/hephaestus-network.md"
 )
 
 drift=0

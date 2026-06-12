@@ -13,17 +13,18 @@
     },
     {
       "runtime": "codex",
-      "command": "/hephaestus",
-      "adapterPath": "codex/plugins/agentlas-core-engine-meta-agent/commands/hephaestus.md",
-      "globalInstallPath": "codex plugin add hephaestus@agentlas-core-engine",
-      "scope": "plugin",
-      "status": "plugin-slash-command"
+      "command": "/prompts:hephaestus",
+      "adapterPath": "codex/prompts/hephaestus.md",
+      "globalInstallPath": "~/.codex/prompts/hephaestus.md",
+      "scope": "global",
+      "status": "custom-prompt-slash-command",
+      "notes": "Codex plugins cannot register slash commands (skills only). The plugin ships the skills; the explicit slash surface is this custom prompt, namespaced as /prompts:hephaestus."
     },
     {
       "runtime": "gemini-cli",
       "command": "/hephaestus",
       "adapterPath": "gemini/extension/commands/hephaestus.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v0.4.2",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v0.4.3",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hephaestus.toml."
@@ -62,17 +63,18 @@
     },
     {
       "runtime": "codex",
-      "command": "/hephaestus-network",
-      "adapterPath": "codex/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-network.md",
-      "globalInstallPath": "codex plugin add hephaestus@agentlas-core-engine",
-      "scope": "plugin",
-      "status": "plugin-slash-command"
+      "command": "/prompts:hephaestus-network",
+      "adapterPath": "codex/prompts/hephaestus-network.md",
+      "globalInstallPath": "~/.codex/prompts/hephaestus-network.md",
+      "scope": "global",
+      "status": "custom-prompt-slash-command",
+      "notes": "Implicit/skill surface: codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-network/SKILL.md ($hephaestus-network). Tool surface: mcp_servers.hephaestus-network in ~/.codex/config.toml."
     },
     {
       "runtime": "gemini-cli",
       "command": "/hephaestus-network",
       "adapterPath": "gemini/extension/commands/hephaestus-network.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v0.4.2",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v0.4.3",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hephaestus-network.toml."
@@ -88,12 +90,57 @@
     },
     {
       "runtime": "cursor",
+      "command": "/hephaestus-network",
+      "adapterPath": "cursor/plugin/commands/hephaestus-network.md",
+      "globalInstallPath": "~/.cursor/commands/hephaestus-network.md",
+      "scope": "global",
+      "status": "native-slash-command",
+      "notes": "Cursor ≥1.6 supports commands (~/.cursor/commands), Cursor ≥2.4 skills (~/.cursor/skills, ~/.agents/skills). cursor/plugin/ is the marketplace-ready bundle."
+    },
+    {
+      "runtime": "cursor",
       "command": "@Hephaestus",
       "adapterPath": "cursor/rules/hephaestus.mdc",
       "globalInstallPath": "<project>/.cursor/rules/hephaestus.mdc",
       "scope": "project",
       "status": "rule-trigger-fallback",
-      "notes": "Cursor has no custom slash commands; the rule reacts to /hephaestus, /hephaestus-network, and @Hephaestus mentions."
+      "notes": "Per-project rule fallback; reacts to /hephaestus, /hephaestus-network, and @Hephaestus mentions."
+    },
+    {
+      "runtime": "opencode",
+      "command": "/hephaestus-network",
+      "adapterPath": "opencode/commands/hephaestus-network.md",
+      "globalInstallPath": "~/.config/opencode/commands/hephaestus-network.md",
+      "scope": "global",
+      "status": "native-slash-command",
+      "notes": "OpenCode also reads the universal skill at ~/.agents/skills/hephaestus-network and supports MCP (opencode/README.md)."
+    },
+    {
+      "runtime": "openclaw",
+      "command": "/skill hephaestus-network",
+      "adapterPath": "openclaw/skills/hephaestus-network/SKILL.md",
+      "globalInstallPath": "~/.openclaw/skills/hephaestus-network/SKILL.md",
+      "scope": "global",
+      "status": "skill-slash-command",
+      "notes": "AgentSkills spec; native /hephaestus-network registration follows commands.nativeSkills. Also loaded from ~/.agents/skills."
+    },
+    {
+      "runtime": "hermes-agent",
+      "command": "hephaestus-network",
+      "adapterPath": "hermes/skills/hephaestus-network/SKILL.md",
+      "globalInstallPath": "~/.hermes/skills/hephaestus-network/SKILL.md",
+      "scope": "global",
+      "status": "skill",
+      "notes": "AgentSkills spec skill; MCP server registration in ~/.hermes/config.yaml (hermes/README.md)."
+    },
+    {
+      "runtime": "mcp",
+      "command": "hephaestus_route",
+      "adapterPath": "agentlas_cloud/mcp_stdio.py",
+      "globalInstallPath": "~/.agentlas/runtime/current/bin/hephaestus mcp serve",
+      "scope": "global",
+      "status": "mcp-tool",
+      "notes": "stdio MCP server for any MCP-capable harness, incl. Ollama-launched local models (Gemma, DeepSeek): docs/local-models.md."
     },
     {
       "runtime": "generic-agents-md",
@@ -115,6 +162,6 @@
   ],
   "postCreationUserMessage": {
     "required": true,
-    "template": "global_commands: Claude Code /hephaestus; Codex /hephaestus; Gemini CLI /hephaestus; Antigravity /hephaestus; Agentlas terminal hephaestus or agentlas run hephaestus"
+    "template": "global_commands: Claude Code /hephaestus; Codex /prompts:hephaestus (or $hephaestus-network skill); Gemini CLI /hephaestus; Antigravity /hephaestus; Cursor /hephaestus-network; OpenCode /hephaestus-network; OpenClaw /skill hephaestus-network; Agentlas terminal hephaestus or agentlas run hephaestus"
   }
 }

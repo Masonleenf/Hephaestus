@@ -7,8 +7,10 @@ Raw arguments:
 
 Use the Hephaestus Network local-first router.
 
-1. Find the Hephaestus runner (`./bin/hephaestus`, or the installed plugin
-   cache copy) and run:
+1. Find the Hephaestus runner — first executable wins:
+   `~/.agentlas/runtime/current/bin/hephaestus`, `./bin/hephaestus`, or the
+   newest `~/.claude/plugins/cache/agentlas-core-engine/hephaestus/*/bin/hephaestus`
+   (sort -V). Then run:
    `hephaestus route "{{args}}" --runtime gemini-cli`
 
 2. Act on the JSON decision and never bypass it:
