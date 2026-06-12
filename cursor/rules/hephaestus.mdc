@@ -19,6 +19,8 @@ or `@Hephaestus <request>`, do the following.
    - `route`: report the selected card; if `approval_request` is present, ask
      the user to approve those capabilities before invoking the agent.
    - `clarify`: ask the `clarify_question` with the candidates.
+   - `pipeline`: execute `stages` in order behind per-stage approvals, saving
+     artifacts under `handoff_dir`; stop and report on any stage failure.
    - `hub_fallback`/`hub_candidates`: get explicit approval before any Hub
      use — only redacted keywords are sent, never the raw prompt.
    - `propose_new`: offer to build a new agent via the Hephaestus meta-agent.

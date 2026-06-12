@@ -16,6 +16,8 @@ Use the Hephaestus Network local-first router.
      `approval_request` is present, ask the user to approve those capabilities
      before invoking anything.
    - action "clarify": ask the `clarify_question` with the candidates.
+   - action "pipeline": execute `stages` in order behind per-stage approvals,
+     saving artifacts under `handoff_dir`; stop and report on stage failure.
    - action "hub_fallback"/"hub_candidates": ask for explicit approval first —
      only redacted keywords are ever sent to the Hub, never the raw prompt.
      After approval, re-run with `--approve-hub`.

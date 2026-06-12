@@ -20,6 +20,10 @@ Use the first executable found:
    - `route` — report the selected card and canonical command; if
      `approval_request` exists, get explicit user approval before invoking.
    - `clarify` — ask the `clarify_question` with candidates, then re-route.
+   - `pipeline` — a multi-team plan (PRD → build → QA). Execute `stages` in
+     order behind each stage's approval gate, save artifacts under
+     `handoff_dir/<order>-<kind>/`, pass paths to the next stage; on failure
+     stop and report — never retry silently.
    - `hub_fallback` / `hub_candidates` — ask the user to approve the Hub
      search/use first (only redacted keywords are sent, never raw prompts);
      re-run with `--approve-hub` after approval.

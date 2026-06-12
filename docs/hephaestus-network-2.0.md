@@ -64,6 +64,7 @@ hephaestus route "<request>"     # or just: hephaestus "<request>"
 | action | meaning |
 |--------|---------|
 | `route` | confident local match; may carry an `approval_request` for high-risk capabilities |
+| `pipeline` | plan-anchored composite request ("기획부터 구현, QA까지") — a multi-team stage plan chained by the cards' `produces`/`consumes` artifact contracts; each stage runs behind its own approval gate and hands artifacts to the next via `handoff_dir` |
 | `clarify` | low confidence or ambiguous high-risk request — answer the question to continue |
 | `hub_fallback` / `hub_candidates` | no local match; Hub search/use needs your approval first |
 | `propose_new` | nothing matched locally or on the Hub — build a new agent with `/hephaestus` |

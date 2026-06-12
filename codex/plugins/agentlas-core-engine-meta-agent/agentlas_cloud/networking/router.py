@@ -23,6 +23,7 @@ from .card_lint import effective_status, lint_card
 from .card_store import load_global_cards
 from .hub_fallback import search_hub
 from .memory import load_profile, profile_adjustment, redact_tokens
+from .pipeline import plan_pipeline
 from .receipts import write_receipt
 from .tokenize import has_hangul, snake_tokens, token_set, tokenize, word_token_set
 
@@ -126,6 +127,7 @@ def _score_card(
     query_is_korean: bool,
     t_high: float,
     common: set[str] | None = None,
+    min_shared_words: int = 2,
 ) -> tuple[float, list[str]]:
     index = _cached_index(card)
     common = common or set()
@@ -157,7 +159,7 @@ def _score_card(
         shared_words = query_tokens & trigger_word_set
         word_count = max(1, len(trigger_word_set))
         ratio = min(1.0, len(shared) / word_count)
-        if len(shared_words) < 2:
+        if len(shared_words) < min_shared_words:
             continue
         distinct_fraction = len(shared - common) / len(shared) if shared else 0.0
         damp = 1.0 if ratio >= 0.9 else (0.4 + 0.6 * distinct_fraction)
@@ -378,9 +380,14 @@ def route_request(
 
     profile = load_profile(base)
     common = _common_tokens(usable)
+    # A one-content-word query ("웹사이트 만들어줘") can never share two words;
+    # scale the trigger qualification down to the query's own word count.
+    min_shared_words = min(2, max(1, len(word_token_set(query))))
     scored: list[tuple[float, list[str], dict[str, Any]]] = []
     for card in usable:
-        score, reasons = _score_card(card, query_tokens, profile, locale == "ko", t_high, common=common)
+        score, reasons = _score_card(
+            card, query_tokens, profile, locale == "ko", t_high, common=common, min_shared_words=min_shared_words
+        )
         if score > 0:
             scored.append((score, reasons, card))
     scored.sort(key=lambda item: item[0], reverse=True)
@@ -418,6 +425,34 @@ def route_request(
             },
             [],
             ["privacy_export_block"],
+        )
+
+    # Pipeline routing (Network 2.0 feature): a plan-anchored composite request
+    # ("기획부터 구현, QA까지") becomes a multi-team stage plan chained by the
+    # cards' produces/consumes artifact contracts. Takes precedence over a
+    # single route; single-intent requests are never decomposed.
+    # Stage producers don't need to match the query text themselves — any
+    # routing_ready card with the right artifact contract is a candidate.
+    ready_cards = [card for card in usable if statuses[str(card.get("id"))] in ("routing_ready", "trusted")]
+    score_by_id = {str(item[2].get("id")): item[0] for item in auto_eligible}
+    plan = plan_pipeline(query, ready_cards, lambda card: score_by_id.get(str(card.get("id")), 0.0))
+    if plan is not None:
+        eligible_by_id = {str(card.get("id")): card for card in ready_cards}
+        stage_candidates = []
+        for stage in plan["stages"]:
+            stage_card = eligible_by_id.get(str(stage["card"]))
+            stage_approvals = required_approvals(stage_card) if stage_card else []
+            stage["approval_request"] = (
+                build_approval_request(stage_approvals, str(stage["card"]), "stage capability requires user approval")
+                if stage_approvals
+                else None
+            )
+            stage_candidates.append({"id": stage["card"], "score": score_by_id.get(str(stage["card"]), 0.0)})
+        chain = chain + [f"pipeline:{plan['pipeline_id']}"]
+        return finish(
+            {"action": "pipeline", "selected": None, **plan, "reasons": ["plan-anchored composite request → multi-team pipeline plan"]},
+            stage_candidates,
+            ["pipeline_plan"],
         )
 
     top_score = auto_eligible[0][0] if auto_eligible else 0.0

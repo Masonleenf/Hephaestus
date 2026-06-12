@@ -86,7 +86,11 @@ become separate sources of truth.
 `hephaestus "<request>"`) routes a natural-language request through the
 local-first router: explicit commands → project `.agentlas/routing-overrides.json`
 → local routing cards (`routing_ready`+ only) → Agentlas Hub fallback behind a
-user approval → propose building a new agent. Honor the decision JSON exactly:
+user approval → propose building a new agent. Plan-anchored composite requests
+("기획부터 구현, QA까지") return `action: "pipeline"` — a multi-team stage plan
+chained by the cards' `produces`/`consumes` artifact contracts; execute stages
+in order behind per-stage approvals, handing artifacts through `handoff_dir`.
+Honor the decision JSON exactly:
 ask the `clarify_question` on `clarify`, surface `approval_request` before any
 high-risk capability (file writes, cloud calls, payments, publishing, deletion,
 private data export, external tools), never send raw prompts or local memory to

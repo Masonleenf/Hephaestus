@@ -84,6 +84,7 @@ def run_bench(
     privacy_total = 0
     plugin_total = plugin_wrong = 0
     hub_total = hub_correct = 0
+    pipeline_total = pipeline_ok = 0
     locale_stats: dict[str, dict[str, int]] = {}
     failures: list[dict[str, Any]] = []
 
@@ -119,6 +120,17 @@ def run_bench(
                 hub_total += 1
                 if action in allowed:
                     hub_correct += 1
+
+        if expected.get("stage_kinds") is not None:
+            pipeline_total += 1
+            got_kinds = [
+                (stage.get("produces") or [None])[0]
+                for stage in (result.get("stages") or [])
+            ]
+            if got_kinds == list(expected["stage_kinds"]):
+                pipeline_ok += 1
+            else:
+                case_ok = False
 
         if expected.get("top1"):
             top1_total += 1
@@ -173,6 +185,7 @@ def run_bench(
         "unsafe_routes": unsafe,
         "wrong_plugin_rate": round(plugin_wrong / plugin_total, 4) if plugin_total else None,
         "hub_fallback_correct": round(hub_correct / hub_total, 4) if hub_total else None,
+        "pipeline_plan_accuracy": round(pipeline_ok / pipeline_total, 4) if pipeline_total else None,
         "latency_ms_p50": round(_percentile(latencies, 0.50), 2),
         "latency_ms_p95": round(_percentile(latencies, 0.95), 2),
         "locale_breakdown": {

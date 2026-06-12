@@ -33,6 +33,12 @@ done
      capabilities FIRST; only after explicit approval invoke the selected
      agent's canonical command with the original request.
    - `action: "clarify"` — ask `clarify_question` with the candidate list and re-route with the answer.
+   - `action: "pipeline"` — a multi-team plan (e.g. PRD → build → QA). Execute
+     `stages` in order: get user approval for each stage's `approval_request`
+     first, run that stage card's canonical command, save its artifacts under
+     `handoff_dir/<order>-<kind>/`, and pass those paths to the next stage.
+     On a stage failure: stop and report progress plus the remaining plan —
+     never retry silently.
    - `action: "hub_fallback"` or `"hub_candidates"` — the Hub needs approval.
      Show `approval_request.payload_preview` (redacted keywords only — the raw
      prompt is never sent). After the user explicitly approves, re-run with

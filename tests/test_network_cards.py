@@ -87,6 +87,11 @@ def test_malformed_card_is_quarantined_individually(tmp_path):
 def test_reindex_imports_and_marks_stale(tmp_path):
     home = tmp_path / "networking"
     init_networking(home)
+    # Hermetic: default sources point at real plugin caches (which ship a
+    # bundled meta-agent card since v0.4.1) — restrict to the test source only.
+    from agentlas_cloud.networking.bootstrap import atomic_write_json
+
+    atomic_write_json(home / "sources.json", {"schemaVersion": "2.0", "sources": []})
     package = tmp_path / "packages" / "demo-agent"
     (package / ".agentlas").mkdir(parents=True)
     card = make_ready_card(
