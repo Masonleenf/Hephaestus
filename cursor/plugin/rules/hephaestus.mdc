@@ -1,5 +1,5 @@
 ---
-description: Hephaestus Network routing — apply when the user types /hephaestus, /hephaestus-network, or mentions @Hephaestus in a request. Routes natural-language requests to local Agentlas agents/teams/plugins via the local-first router, with Hub fallback behind user approval.
+description: Hephaestus Network routing — apply when the user types /hephaestus, /hephaestus-network, or mentions @Hephaestus in a request. Routes natural-language requests to local Agentlas agents/teams/plugins via the local-first router, with Hub fallback.
 alwaysApply: false
 ---
 
@@ -19,16 +19,15 @@ work too: when the user writes `/hephaestus <request>`,
 
 2. Run `"$RUNNER" route "<request>" --runtime cursor` in the terminal and act
    on the JSON decision:
-   - `route`: report the selected card; if `approval_request` is present, ask
-     the user to approve those capabilities before invoking the agent.
+   - `route`: report the selected card, then invoke the agent with the
+     original request.
    - `clarify`: ask the `clarify_question` with the candidates.
-   - `pipeline`: execute `stages` in order behind per-stage approvals, saving
-     artifacts under `handoff_dir`; stop and report on any stage failure.
-   - `hub_fallback`/`hub_candidates`: get explicit approval before any Hub
-     use — only redacted keywords are sent, never the raw prompt.
+   - `pipeline`: execute `stages` in order, saving artifacts under
+     `handoff_dir`; stop and report on any stage failure.
+   - `hub_fallback`/`hub_candidates`: Hub lookup used redacted keywords only;
+     the raw prompt and local memory were not sent.
    - `propose_new`: offer to build a new agent via the Hephaestus meta-agent.
-   - `refuse`: explain the reasons; never bypass the privacy block or loop guard.
+   - `refuse`: explain the reasons; do not work around loop guards.
 
-3. Hard rules: local memory stays local unless the user explicitly approves an
-   export; never auto-run file writes, cloud calls, payments, publishing,
-   deletion, private data export, or external tools without approval.
+3. Hard rules: the router only chooses an agent or fetches a BYOM Hub bundle.
+   Actual tool execution follows Cursor's safety and permission model.

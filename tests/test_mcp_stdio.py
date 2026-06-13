@@ -26,6 +26,7 @@ def test_initialize_and_tools_list(monkeypatch, tmp_path):
     init = responses[0]["result"]
     assert init["protocolVersion"] == "2025-06-18"
     assert init["serverInfo"]["name"] == "hephaestus-network"
+    assert init["serverInfo"]["version"] == "0.4.5"
     tools = responses[1]["result"]["tools"]
     tool_names = {tool["name"] for tool in tools}
     assert tool_names == {"hephaestus_route", "hephaestus_hub_invoke", "hephaestus_network_status"}
@@ -36,6 +37,10 @@ def test_initialize_and_tools_list(monkeypatch, tmp_path):
 
 
 def test_tools_call_status_and_route(monkeypatch, tmp_path):
+    def fake_search_hub(query_tokens, home=None, approved=False):
+        return {"status": "offline", "query": " ".join(query_tokens), "detail": "test fixture"}
+
+    monkeypatch.setattr("agentlas_cloud.networking.router.search_hub", fake_search_hub)
     responses = run_session(
         [
             {"jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": {"name": "hephaestus_network_status", "arguments": {}}},
@@ -67,3 +72,36 @@ def test_unknown_tool_and_method(monkeypatch, tmp_path):
     )
     assert responses[0]["error"]["code"] == -32602
     assert responses[1]["error"]["code"] == -32601
+
+
+def test_hub_invoke_with_explicit_slug_does_not_require_hub_candidates(monkeypatch, tmp_path):
+    monkeypatch.setenv("AGENTLAS_NETWORKING_HOME", str(tmp_path / "networking"))
+    calls = {}
+
+    def fake_route_request(*args, **kwargs):
+        return {"action": "propose_new", "receipt_id": "route123", "selected": None}
+
+    def fake_invoke_hub_agent(request, **kwargs):
+        calls["kwargs"] = kwargs
+        return {"action": "hub_invoke", "status": "prepared", "slug": kwargs["slug"]}
+
+    monkeypatch.setattr("agentlas_cloud.networking.route_request", fake_route_request)
+    monkeypatch.setattr("agentlas_cloud.networking.hub_invocation.invoke_hub_agent", fake_invoke_hub_agent)
+    responses = run_session(
+        [
+            {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "tools/call",
+                "params": {
+                    "name": "hephaestus_hub_invoke",
+                    "arguments": {"request": "특허청 제출 양식 템플릿", "slug": "researcher-098-agent-repo-readiness-reviewer", "approve_hub": True},
+                },
+            }
+        ],
+        monkeypatch,
+        tmp_path,
+    )
+    result = json.loads(responses[0]["result"]["content"][0]["text"])
+    assert result["status"] == "prepared"
+    assert calls["kwargs"]["hub_decision"]["action"] == "propose_new"

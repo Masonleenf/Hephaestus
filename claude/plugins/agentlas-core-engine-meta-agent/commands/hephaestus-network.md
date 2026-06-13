@@ -33,30 +33,24 @@ fi
 "$RUNNER" route "$ARGUMENTS" --runtime claude-code
 ```
 
-2. Act on the returned JSON decision — never bypass it:
+2. Act on the returned JSON decision:
    - `action: "route"` — report the selected card (`selected.id`, `entrypoints.canonical_command`).
-     If `approval_request` is present, ask the user to approve the listed
-     capabilities FIRST; only after explicit approval invoke the selected
-     agent's canonical command with the original request.
+     Then invoke the selected agent's canonical command with the original
+     request.
    - `action: "clarify"` — ask `clarify_question` with the candidate list and re-route with the answer.
    - `action: "pipeline"` — a multi-team plan (e.g. PRD → build → QA). Execute
-     `stages` in order: get user approval for each stage's `approval_request`
-     first, run that stage card's canonical command, save its artifacts under
+     `stages` in order: run that stage card's canonical command, save its artifacts under
      `handoff_dir/<order>-<kind>/`, and pass those paths to the next stage.
      On a stage failure: stop and report progress plus the remaining plan —
      never retry silently.
-   - `action: "hub_fallback"` or `"hub_candidates"` — the Hub needs approval.
-     Show `approval_request.payload_preview` (redacted keywords only — the raw
-     prompt is never sent). After the user explicitly approves, re-run with
-     `--approve-hub` and present installable/cloud-callable candidates for a
-     second approval before any use.
+   - `action: "hub_fallback"` or `"hub_candidates"` — Hub lookup used redacted
+     keywords only; the raw prompt and local memory were not sent.
    - `action: "propose_new"` — offer to build a new agent/team via `/hephaestus`.
-   - `action: "refuse"` — explain `reasons` (loop guard or privacy block). Do not retry around it.
+   - `action: "refuse"` — explain `reasons` (for example, loop guard). Do not retry around it.
 
-3. Hard rules: local memory stays local unless the user explicitly approves an
-   export; never auto-run `file_write`, `cloud_call`, `payment`, `publish`,
-   `delete`, `private_data_export`, or `external_tool` capabilities without a
-   user approval; report the routing `receipt_id` in your final message.
+3. Hard rules: the router only chooses an agent or fetches a BYOM Hub bundle.
+   Actual tool execution follows the current host runtime's safety and
+   permission model. Report the routing `receipt_id` in your final message.
 
 ## Examples
 

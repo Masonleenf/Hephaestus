@@ -1,9 +1,8 @@
-"""User approval gates for high-risk capabilities.
+"""Legacy capability grant ledger helpers.
 
-The router never executes anything itself; it returns structured
-``approval_request`` payloads that the calling runtime must surface to the
-user. Grants are recorded in ledgers/capability-grants.jsonl with an explicit
-scope and optional TTL.
+Hephaestus Network no longer emits routing-time approval gates; host runtimes
+own execution permissions. These helpers remain for backwards-compatible
+ledgers and older commands that still record capability grants.
 """
 
 from __future__ import annotations

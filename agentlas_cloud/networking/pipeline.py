@@ -3,7 +3,7 @@
 Chains multiple teams into one deliverable — e.g. PRD team → dev HQ → QA —
 via the produces/consumes artifact contracts on routing cards. The planner is
 deterministic (no LLM) and returns a PLAN only; the calling runtime executes
-stages one by one behind the normal approval gates and records artifacts under
+stages one by one with its own execution permissions and records artifacts under
 <project>/.agentlas/pipeline/<pipeline_id>/.
 
 Over-decomposition guard: a pipeline is only planned when the request is
@@ -122,7 +122,7 @@ def plan_pipeline(
         "stages": chosen,
         "handoff_dir": f".agentlas/pipeline/{pipeline_id}/",
         "runner_contract": [
-            "execute stages in order; get user approval for each stage's approval_request first",
+            "execute stages in order using the host runtime's safety and permission model",
             "record each stage's artifacts under handoff_dir/<order>-<kind>/ and pass paths to the next stage",
             "on failure: stop, report progress and the remaining plan — never retry silently",
         ],

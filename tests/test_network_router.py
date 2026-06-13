@@ -1,7 +1,6 @@
 import json
 
 from agentlas_cloud.networking import init_networking, load_global_cards, route_request, save_card
-from agentlas_cloud.networking.approvals import record_grant
 from agentlas_cloud.networking.bench import run_bench
 from test_network_cards import make_ready_card
 
@@ -111,24 +110,32 @@ def test_korean_query_against_english_only_card_clarifies(tmp_path):
     assert result["action"] != "route"
 
 
-def test_privacy_query_is_blocked_from_hub(tmp_path):
+def test_privacy_keywords_do_not_block_hub_lookup(tmp_path, monkeypatch):
     home = setup_home(tmp_path)
+
+    def fake_search_hub(query_tokens, home=None, approved=False):
+        assert approved is True
+        return {
+            "status": "ok",
+            "query": " ".join(query_tokens),
+            "results": [{"slug": "memory-safe-agent", "name": "Memory Safe Agent", "kind": "cloud-callable"}],
+        }
+
+    monkeypatch.setattr("agentlas_cloud.networking.router.search_hub", fake_search_hub)
     result = route_request("내 프로젝트 메모리 전부 클라우드로 업로드해줘", home=home, use_hub=True)
-    assert result["action"] in ("refuse", "clarify")
-    if result["action"] == "refuse":
-        assert "private_data_export" in result["approval_request"]["capabilities"]
+    assert result["action"] == "hub_candidates"
+    assert result.get("approval_request") is None
 
 
-def test_high_risk_ambiguous_request_clarifies(tmp_path):
+def test_payment_keywords_do_not_add_router_approval(tmp_path):
     home = setup_home(tmp_path)
     result = route_request("인스타그램 마케팅 콘텐츠 만들어서 바로 결제 처리까지 해줘", home=home, use_hub=False)
     assert result["action"] in ("clarify", "route")
     if result["action"] == "route":
-        assert result["approval_request"] is not None
-        assert "payment" in result["approval_request"]["capabilities"]
+        assert result.get("approval_request") is None
 
 
-def test_granted_card_does_not_repeat_approval_request(tmp_path):
+def test_card_approval_requirements_do_not_gate_routing(tmp_path):
     home = setup_home(tmp_path)
     cards, _ = load_global_cards(home)
     insta = next(card for card in cards if card["id"] == "local/insta-team")
@@ -136,18 +143,10 @@ def test_granted_card_does_not_repeat_approval_request(tmp_path):
     insta["risk_profile"] = {"tier": "medium", "capabilities_at_risk": ["file_write"]}
     save_card(home, insta)
 
-    first = route_request("인스타그램 마케팅 콘텐츠 만들어줘", home=home, use_hub=False)
-    assert first["approval_request"]["capabilities"] == ["file_write"]
-
-    grant = record_grant("file_write", "local/insta-team", home=home)
-    assert grant["status"] == "granted"
-
-    second = route_request("인스타그램 마케팅 콘텐츠 만들어줘", home=home, use_hub=False)
-    assert second["action"] == "route"
-    assert second["approval_request"] is None
-
-    third = route_request("인스타그램 마케팅 콘텐츠 만들어줘", home=home, use_hub=False)
-    assert third["approval_request"]["capabilities"] == ["file_write"]
+    result = route_request("인스타그램 마케팅 콘텐츠 만들어줘", home=home, use_hub=False)
+    assert result["action"] == "route"
+    assert result["selected"]["id"] == "local/insta-team"
+    assert result.get("approval_request") is None
 
 
 def test_explicit_command_routes_directly(tmp_path):
@@ -164,12 +163,21 @@ def test_loop_guard_refuses(tmp_path):
     assert "loop" in result["reasons"][0]
 
 
-def test_hub_fallback_requires_approval(tmp_path):
+def test_hub_fallback_searches_without_approval_gate(tmp_path, monkeypatch):
     home = setup_home(tmp_path)
+
+    def fake_search_hub(query_tokens, home=None, approved=False):
+        assert approved is True
+        return {
+            "status": "ok",
+            "query": " ".join(query_tokens),
+            "results": [{"slug": "chemistry-simulator", "name": "Chemistry Simulator", "kind": "cloud-callable"}],
+        }
+
+    monkeypatch.setattr("agentlas_cloud.networking.router.search_hub", fake_search_hub)
     result = route_request("quantum chemistry simulation pipeline", home=home, use_hub=True)
-    assert result["action"] in ("hub_fallback", "propose_new")
-    if result["action"] == "hub_fallback":
-        assert result["approval_request"]["capabilities"] == ["cloud_call"]
+    assert result["action"] == "hub_candidates"
+    assert result.get("approval_request") is None
 
 
 def test_hub_only_skips_strong_local_match(tmp_path, monkeypatch):
@@ -189,7 +197,7 @@ def test_hub_only_skips_strong_local_match(tmp_path, monkeypatch):
     assert result["selected"] is None
     assert result["candidates"] == []
     assert result["suggestions"] == []
-    assert result["approval_request"] is None
+    assert result.get("approval_request") is None
     assert result["hub"]["results"][0]["slug"] == "hub-instagram-agent"
     assert result["reasons"] == ["hub_only_results_found"]
 
@@ -208,6 +216,67 @@ def test_secretary_does_not_trigger_secret_privacy_gate(tmp_path, monkeypatch):
     result = route_request("marketer-schedule-secretary content calendar", home=home, use_hub=True, hub_approved=True, hub_only=True)
     assert result["action"] == "hub_candidates"
     assert result["hub"]["results"][0]["slug"] == "marketer-schedule-secretary"
+
+
+def test_patent_claim_template_does_not_trigger_payment_or_submit_gate(tmp_path, monkeypatch):
+    home = setup_home(tmp_path)
+
+    def fake_search_hub(query_tokens, home=None, approved=False):
+        assert approved is True
+        return {
+            "status": "ok",
+            "query": " ".join(query_tokens),
+            "results": [{"slug": "korean-patent-document-writer", "name": "Patent Writer", "kind": "cloud-callable"}],
+        }
+
+    monkeypatch.setattr("agentlas_cloud.networking.router.search_hub", fake_search_hub)
+    result = route_request(
+        "특허 명세서 청구항 작성 화면과 특허청 제출 양식 템플릿을 만들어줘",
+        home=home,
+        use_hub=True,
+        hub_approved=True,
+        hub_only=True,
+    )
+    assert result["action"] == "hub_candidates"
+    assert result["reasons"] == ["hub_only_results_found"]
+
+
+def test_reply_or_form_templates_do_not_trigger_action_gates(tmp_path, monkeypatch):
+    home = setup_home(tmp_path)
+
+    def fake_search_hub(query_tokens, home=None, approved=False):
+        return {
+            "status": "ok",
+            "query": " ".join(query_tokens),
+            "results": [{"slug": "template-writer", "name": "Template Writer", "kind": "cloud-callable"}],
+        }
+
+    monkeypatch.setattr("agentlas_cloud.networking.router.search_hub", fake_search_hub)
+    for query in (
+        "환불 답변 템플릿을 작성해줘",
+        "파일 전송 화면 UI를 구현해줘",
+        "공개특허 문서 편집 화면을 만들어줘",
+    ):
+        result = route_request(query, home=home, use_hub=True, hub_approved=True, hub_only=True)
+        assert result["action"] == "hub_candidates", query
+
+
+def test_submit_or_payment_words_do_not_block_hub_bundle_lookup(tmp_path, monkeypatch):
+    home = setup_home(tmp_path)
+    def fake_search_hub(query_tokens, home=None, approved=False):
+        return {
+            "status": "ok",
+            "query": " ".join(query_tokens),
+            "results": [{"slug": "action-word-agent", "name": "Action Word Agent", "kind": "cloud-callable"}],
+        }
+
+    monkeypatch.setattr("agentlas_cloud.networking.router.search_hub", fake_search_hub)
+
+    submit = route_request("특허 명세서 파일을 특허청에 바로 제출해줘", home=home, use_hub=True, hub_approved=True, hub_only=True)
+    assert submit["action"] == "hub_candidates"
+
+    payment = route_request("고객 환불 결제를 바로 처리해줘", home=home, use_hub=True, hub_approved=True, hub_only=True)
+    assert payment["action"] == "hub_candidates"
 
 
 def test_project_override_wins(tmp_path):
@@ -244,7 +313,7 @@ def test_bench_runner_reports_metrics(tmp_path):
             "query": "내 메모리 전부 클라우드로 업로드해줘",
             "locale": "ko",
             "tags": ["privacy"],
-            "expected": {"action": "refuse_or_ask"},
+            "expected": {"action": "propose_new"},
         },
         {
             "id": "h1",

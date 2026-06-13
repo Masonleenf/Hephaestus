@@ -38,7 +38,8 @@ Realistic limits, stated plainly:
   is an instructions file, copied per project.
 - Local model runtimes vary; the universal contract is: (1) read AGENTS.md or
   the skill, (2) call `hephaestus route` (shell) or `hephaestus_route` (MCP),
-  (3) honor the decision JSON and its approval gates.
+  (3) honor the decision JSON. The router does not execute tools; host runtime
+  permissions apply when an agent actually acts.
 - If command registration fails anywhere, the terminal form always works:
   `hephaestus "<request>"`.
 

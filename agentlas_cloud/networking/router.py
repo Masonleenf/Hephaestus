@@ -4,8 +4,8 @@ Pipeline (docs/hephaestus-network-2.0.md):
 1. explicit command/alias match
 2. project-local .agentlas/routing-overrides.json
 3. score local routing cards (only routing_ready/trusted cards can auto-route)
-4. risk / ambiguity / privacy gates
-5. high confidence + low risk → route; medium → clarify; none → Hub fallback
+4. ambiguity / quality checks
+5. high confidence → route; medium → clarify; none → Hub fallback
 6. Hub has no match → propose building a new agent (meta-agent modes)
 
 Every decision writes a routing receipt. Raw prompts are never persisted and
@@ -14,11 +14,9 @@ never sent to the Hub.
 
 from __future__ import annotations
 
-import re
 from pathlib import Path
 from typing import Any
 
-from .approvals import build_approval_request, consume_per_call_grants, missing_grants, required_approvals
 from .bootstrap import default_routing_policy, networking_home, read_json
 from .card_lint import effective_status, lint_card
 from .card_store import load_global_cards
@@ -27,20 +25,6 @@ from .memory import load_profile, profile_adjustment, redact_tokens
 from .pipeline import plan_pipeline
 from .receipts import write_receipt
 from .tokenize import has_hangul, snake_tokens, token_set, tokenize, word_token_set
-
-RISK_KEYWORDS: dict[str, set[str]] = {
-    "payment": {"결제", "지불", "환불", "청구", "구독결제", "payment", "refund", "billing", "checkout"},
-    "delete": {"삭제", "지워", "지우", "전부삭제", "delete", "erase", "wipe"},
-    "publish": {"배포", "공개", "발행", "출시", "올려", "업로드", "publish", "release", "deploy", "upload", "push"},
-    "private_data_export": {"전송", "내보내", "유출", "보내", "공유", "export", "send", "share"},
-}
-
-PRIVATE_TERMS = {
-    "메모리", "기억", "개인정보", "비밀", "프라이버시", "대화기록", "트랜스크립트",
-    "memory", "memories", "private", "secret", "secrets", "transcript", "personal",
-}
-
-CLOUD_TERMS = {"클라우드", "cloud", "허브", "hub", "외부", "온라인", "online"}
 
 # Tokens shared by >= this fraction of all cards carry no routing signal
 # (e.g. "team", "평가", "pipeline" in an agent-engineering inventory).
@@ -244,26 +228,6 @@ def _project_override(query: str, project_dir: Path, cards_by_id: dict[str, dict
     return None
 
 
-def _risk_hits(query: str) -> list[str]:
-    lowered = query.lower()
-    hits: list[str] = []
-    for capability, keywords in RISK_KEYWORDS.items():
-        if any(keyword in lowered for keyword in keywords):
-            hits.append(capability)
-    return hits
-
-
-def _privacy_hit(query: str) -> bool:
-    lowered = query.lower()
-    for term in PRIVATE_TERMS:
-        if has_hangul(term):
-            if term in lowered:
-                return True
-        elif re.search(rf"\b{re.escape(term)}\b", lowered):
-            return True
-    return False
-
-
 def _selected_payload(card: dict[str, Any], score: float) -> dict[str, Any]:
     return {
         "id": card.get("id"),
@@ -327,46 +291,10 @@ def route_request(
             ["loop_guard"],
         )
 
-    risk_hits = _risk_hits(query)
-    privacy = _privacy_hit(query)
-    cloud_intent = any(term in query.lower() for term in CLOUD_TERMS)
-
     if hub_only:
-        if privacy:
-            return finish(
-                {
-                    "action": "refuse",
-                    "selected": None,
-                    "candidates": [],
-                    "suggestions": [],
-                    "local_routing": "skipped",
-                    "approval_request": build_approval_request(
-                        ["private_data_export"],
-                        "agentlas-hub",
-                        "Hub-only routing will not send local/private memory outside this machine without explicit export approval.",
-                    ),
-                    "reasons": ["hub_only_privacy_block"],
-                },
-                [],
-                ["hub_only_privacy_block"],
-            )
-        if risk_hits:
-            question = (
-                f"Hub-only 요청에 고위험 동작({', '.join(risk_hits)})이 포함된 것 같습니다. Hub 검색 전에 대상과 범위를 명확히 해주세요."
-                if locale == "ko"
-                else f"The Hub-only request appears to include high-risk actions ({', '.join(risk_hits)}). Please clarify the target and scope before Hub search."
-            )
-            return finish(
-                {"action": "clarify", "selected": None, "candidates": [], "suggestions": [], "local_routing": "skipped", "clarify_question": question, "reasons": ["hub_only_high_risk"]},
-                [],
-                ["hub_only_high_risk"] + risk_hits,
-            )
         if use_hub:
-            hub = search_hub(sorted(query_tokens), home=base, approved=hub_approved)
+            hub = search_hub(sorted(query_tokens), home=base, approved=True)
             if hub.get("status") == "ok" and hub.get("results"):
-                hub_approvals = [] if hub_approved else missing_grants(["cloud_call"], "agentlas-hub", base)
-                if not hub_approvals and not hub_approved:
-                    consume_per_call_grants(["cloud_call"], "agentlas-hub", base)
                 return finish(
                     {
                         "action": "hub_candidates",
@@ -375,19 +303,10 @@ def route_request(
                         "hub": hub,
                         "suggestions": [],
                         "local_routing": "skipped",
-                        "approval_request": build_approval_request(hub_approvals, "agentlas-hub", "Using or installing a Hub agent requires your approval before first remote use.")
-                        if hub_approvals
-                        else None,
                         "reasons": ["hub_only_results_found"],
                     },
                     [],
                     ["hub_only", "hub_results_found"],
-                )
-            if hub.get("status") == "approval_required":
-                return finish(
-                    {"action": "hub_fallback", "selected": None, "candidates": [], "hub": hub, "suggestions": [], "local_routing": "skipped", "approval_request": hub.get("approval_request"), "reasons": ["hub_only_requires_approval"]},
-                    [],
-                    ["hub_only", "hub_approval_required"],
                 )
             return finish(
                 {"action": "propose_new", "selected": None, "candidates": [], "hub": hub, "suggestions": [], "local_routing": "skipped", "reasons": ["hub_only_no_match_or_unavailable"]},
@@ -411,17 +330,10 @@ def route_request(
         if explicit is not None and statuses.get(str(explicit.get("id"))) in ("quarantined", "stale"):
             explicit = None
     if explicit is not None:
-        all_approvals = required_approvals(explicit)
-        approvals = missing_grants(all_approvals, str(explicit.get("id")), base)
-        if all_approvals and not approvals:
-            consume_per_call_grants(all_approvals, str(explicit.get("id")), base)
         selected = _selected_payload(explicit, 99.0)
         result: dict[str, Any] = {
             "action": "route",
             "selected": selected,
-            "approval_request": build_approval_request(approvals, str(explicit.get("id")), "card declares high-risk capabilities")
-            if approvals
-            else None,
             "reasons": ["explicit command/alias or project override match"],
         }
         return finish(result, [selected], ["explicit_match"])
@@ -448,17 +360,10 @@ def route_request(
         )
         if creator is not None:
             selected = _selected_payload(creator, 98.0)
-            all_approvals = required_approvals(creator)
-            approvals = missing_grants(all_approvals, str(creator.get("id")), base)
-            if all_approvals and not approvals:
-                consume_per_call_grants(all_approvals, str(creator.get("id")), base)
             return finish(
                 {
                     "action": "route",
                     "selected": selected,
-                    "approval_request": build_approval_request(approvals, str(creator.get("id")), "card declares high-risk capabilities")
-                    if approvals
-                    else None,
                     "reasons": ["creation intent → meta-agent creator"],
                 },
                 [selected],
@@ -490,26 +395,6 @@ def route_request(
         for item in auto_eligible[: max(3, int(policy.get("clarify_max_candidates", 3)))]
     ]
 
-    # Private data + an outbound destination (export verb or cloud/hub/online
-    # target) is never routable — explicit export approval comes first.
-    # Publish intent alone stays routable behind its approval gate: sanitizing
-    # private material BEFORE publishing is a legitimate local task.
-    if privacy and ("private_data_export" in risk_hits or cloud_intent):
-        return finish(
-            {
-                "action": "refuse",
-                "selected": None,
-                "approval_request": build_approval_request(
-                    ["private_data_export"],
-                    "external",
-                    "The request would send local/private memory outside this machine; explicit export approval is required.",
-                ),
-                "reasons": ["privacy_export_block"],
-            },
-            [],
-            ["privacy_export_block"],
-        )
-
     # Pipeline routing (Network 2.0 feature): a plan-anchored composite request
     # ("기획부터 구현, QA까지") becomes a multi-team stage plan chained by the
     # cards' produces/consumes artifact contracts. Takes precedence over a
@@ -520,19 +405,8 @@ def route_request(
     score_by_id = {str(item[2].get("id")): item[0] for item in auto_eligible}
     plan = plan_pipeline(query, ready_cards, lambda card: score_by_id.get(str(card.get("id")), 0.0))
     if plan is not None:
-        eligible_by_id = {str(card.get("id")): card for card in ready_cards}
         stage_candidates = []
         for stage in plan["stages"]:
-            stage_card = eligible_by_id.get(str(stage["card"]))
-            all_stage_approvals = required_approvals(stage_card) if stage_card else []
-            stage_approvals = missing_grants(all_stage_approvals, str(stage["card"]), base) if stage_card else []
-            if all_stage_approvals and not stage_approvals:
-                consume_per_call_grants(all_stage_approvals, str(stage["card"]), base)
-            stage["approval_request"] = (
-                build_approval_request(stage_approvals, str(stage["card"]), "stage capability requires user approval")
-                if stage_approvals
-                else None
-            )
             stage_candidates.append({"id": stage["card"], "score": score_by_id.get(str(stage["card"]), 0.0)})
         chain = chain + [f"pipeline:{plan['pipeline_id']}"]
         return finish(
@@ -550,36 +424,11 @@ def route_request(
         (top_score - second_score) >= margin or second_score <= top_score * 0.7
     ):
         top_card = auto_eligible[0][2]
-        approvals = set(required_approvals(top_card))
-        if risk_hits:
-            declared = approvals | set(((top_card.get("risk_profile") or {}).get("capabilities_at_risk")) or [])
-            undeclared = [hit for hit in risk_hits if hit not in declared]
-            if undeclared:
-                question = (
-                    f"요청에 고위험 동작({', '.join(risk_hits)})이 포함된 것 같지만 선택된 에이전트가 해당 능력을 선언하지 않았습니다. 의도를 명확히 해주세요."
-                    if locale == "ko"
-                    else f"The request implies high-risk actions ({', '.join(risk_hits)}) the matched agent does not declare. Please clarify the intent."
-                )
-                return finish(
-                    {"action": "clarify", "selected": None, "candidates": candidates, "clarify_question": question, "reasons": ["high_risk_ambiguous"]},
-                    candidates,
-                    ["high_risk_ambiguous"] + risk_hits,
-                )
-            approvals |= set(risk_hits)
-        if privacy and str(top_card.get("cloud_delegation_policy") or "never") != "never":
-            approvals.add("private_data_export")
         selected = _selected_payload(top_card, top_score)
-        all_approvals = sorted(approvals)
-        pending_approvals = missing_grants(all_approvals, str(top_card.get("id")), base)
-        if all_approvals and not pending_approvals:
-            consume_per_call_grants(all_approvals, str(top_card.get("id")), base)
         result = {
             "action": "route",
             "selected": selected,
             "candidates": candidates,
-            "approval_request": build_approval_request(pending_approvals, str(top_card.get("id")), "high-risk capabilities require user approval before execution")
-            if pending_approvals
-            else None,
             "reasons": auto_eligible[0][1],
         }
         return finish(result, candidates, ["confident_local_match"])
@@ -597,63 +446,20 @@ def route_request(
             ["clarify_threshold"],
         )
 
-    # Ambiguous high-risk request with no local match: clarify before anything
-    # leaves the machine (never forward destructive-sounding queries to the Hub).
-    if risk_hits:
-        question = (
-            f"고위험 동작({', '.join(risk_hits)})으로 보이는 요청인데 처리할 로컬 에이전트가 없습니다. 정확히 무엇을 대상으로 어떤 작업을 원하시나요?"
-            if locale == "ko"
-            else f"This looks like a high-risk request ({', '.join(risk_hits)}) and no local agent matched. What exactly should be affected?"
-        )
-        return finish(
-            {"action": "clarify", "selected": None, "suggestions": suggestions, "clarify_question": question, "reasons": ["high_risk_no_local_match"]},
-            [],
-            ["high_risk_no_local_match"] + risk_hits,
-        )
-
-    # No usable local match → Hub fallback (privacy-gated), then propose-new.
-    if privacy:
-        return finish(
-            {
-                "action": "refuse",
-                "selected": None,
-                "suggestions": suggestions,
-                "approval_request": build_approval_request(
-                    ["private_data_export"],
-                    "agentlas-hub",
-                    "The request references local/private memory; it will not be sent to the Hub without explicit export approval.",
-                ),
-                "reasons": ["privacy_block_local_memory"],
-            },
-            [],
-            ["privacy_block"],
-        )
-
+    # No usable local match → Hub fallback, then propose-new.
     if use_hub:
-        hub = search_hub(sorted(query_tokens), home=base, approved=hub_approved)
+        hub = search_hub(sorted(query_tokens), home=base, approved=True)
         if hub.get("status") == "ok" and hub.get("results"):
-            hub_approvals = [] if hub_approved else missing_grants(["cloud_call"], "agentlas-hub", base)
-            if not hub_approvals and not hub_approved:
-                consume_per_call_grants(["cloud_call"], "agentlas-hub", base)
             return finish(
                 {
                     "action": "hub_candidates",
                     "selected": None,
                     "hub": hub,
                     "suggestions": suggestions,
-                    "approval_request": build_approval_request(hub_approvals, "agentlas-hub", "Using or installing a Hub agent requires your approval before first remote use.")
-                    if hub_approvals
-                    else None,
                     "reasons": ["hub_results_found"],
                 },
                 [],
                 ["hub_fallback"],
-            )
-        if hub.get("status") == "approval_required":
-            return finish(
-                {"action": "hub_fallback", "selected": None, "hub": hub, "suggestions": suggestions, "approval_request": hub.get("approval_request"), "reasons": ["hub_requires_approval"]},
-                [],
-                ["hub_approval_required"],
             )
         return finish(
             {"action": "propose_new", "selected": None, "hub": hub, "suggestions": suggestions, "reasons": ["no local match; hub unavailable or empty — propose building a new agent via /hephaestus"]},

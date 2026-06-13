@@ -2,7 +2,7 @@
 
 Privacy contract:
 - the raw prompt is never sent to the Hub — only redacted, normalized tokens;
-- the first remote use requires an explicit user approval (cloud_call grant);
+- Hub lookup is a router operation, not final tool execution;
 - offline machines degrade to the local cache, then to local-only routing.
 """
 
@@ -14,7 +14,6 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
-from .approvals import build_approval_request, has_grant
 from .bootstrap import append_jsonl, networking_home, read_json, read_jsonl, utc_now
 from .memory import redact_tokens
 
@@ -34,19 +33,9 @@ def search_hub(
     approved: bool = False,
 ) -> dict[str, Any]:
     base = Path(home) if home else networking_home()
+    _ = approved  # Kept for backwards-compatible callers; routing no longer gates Hub lookup.
     safe_tokens = [token for token in redact_tokens(query_tokens) if token != "[redacted]"]
     redacted_query = " ".join(dict.fromkeys(safe_tokens))[:200]
-
-    if not approved and not has_grant("cloud_call", HUB_TARGET, base):
-        return {
-            "status": "approval_required",
-            "approval_request": build_approval_request(
-                ["cloud_call"],
-                HUB_TARGET,
-                "No local card matched. Searching Agentlas Hub sends the redacted keywords below (never your raw prompt or local memory).",
-                payload_preview=redacted_query,
-            ),
-        }
 
     url = _hub_url(base) + "/api/mcp/v1"
     body = json.dumps(

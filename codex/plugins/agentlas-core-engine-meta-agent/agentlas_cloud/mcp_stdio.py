@@ -6,9 +6,8 @@ Ollama-launched harnesses running local models such as Gemma or DeepSeek) can
 call routing without a runtime-specific command surface.
 
 Transport: newline-delimited JSON-RPC 2.0 on stdin/stdout (MCP stdio). No
-third-party dependencies. Raw prompts are routed locally only — the same
-privacy rules as `hephaestus route` apply (Hub fallback stays behind
-`approve_hub`, redacted keywords only).
+third-party dependencies. Raw prompts are routed locally first; Hub lookup uses
+only redacted keywords and does not add a routing-time safety gate.
 """
 
 from __future__ import annotations
@@ -18,7 +17,7 @@ import sys
 from typing import Any
 
 PROTOCOL_VERSION = "2025-06-18"
-SERVER_INFO = {"name": "hephaestus-network", "version": "0.4.4"}
+SERVER_INFO = {"name": "hephaestus-network", "version": "0.4.5"}
 
 TOOLS: list[dict[str, Any]] = [
     {
@@ -27,7 +26,7 @@ TOOLS: list[dict[str, Any]] = [
             "Route a natural-language request through the Hephaestus Network "
             "local-first router. Returns a JSON decision (route, clarify, "
             "pipeline, hub_fallback, propose_new, or refuse) with a receipt_id. "
-            "Act on the decision; never bypass approval_request entries."
+            "The router does not execute tools; the caller runtime owns execution safety."
         ),
         "inputSchema": {
             "type": "object",
@@ -36,7 +35,7 @@ TOOLS: list[dict[str, Any]] = [
                 "project_dir": {"type": "string", "description": "Project directory for context (default: cwd)."},
                 "approve_hub": {
                     "type": "boolean",
-                    "description": "Set true only after the user explicitly approved a Hub search (redacted keywords only).",
+                    "description": "Backward-compatible no-op; Hub lookup already sends redacted keywords only.",
                 },
                 "hub_only": {
                     "type": "boolean",
@@ -69,7 +68,7 @@ TOOLS: list[dict[str, Any]] = [
                 "memory_root": {"type": "string", "description": "Optional Agentlas memory root to bootstrap/update missing-only."},
                 "approve_hub": {
                     "type": "boolean",
-                    "description": "Set true only after the user explicitly approved Hub use.",
+                    "description": "Backward-compatible no-op; host runtimes gate actual execution.",
                 },
                 "version": {"type": "string", "description": "Hub package hash or latest."},
                 "reject_paid_slug": {
@@ -113,7 +112,7 @@ def _call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
             hub_approved=bool(arguments.get("approve_hub", False)),
             hub_only=True,
         )
-        if decision.get("action") != "hub_candidates":
+        if decision.get("action") != "hub_candidates" and not arguments.get("slug"):
             return {
                 "action": "hub_invoke",
                 "status": "routing_not_ready",

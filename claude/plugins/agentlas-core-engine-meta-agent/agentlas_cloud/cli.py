@@ -55,7 +55,7 @@ def main(argv: list[str] | None = None) -> int:
     network_sub.add_parser("reindex", help="Re-import cards from registered sources and rebuild registry.sqlite")
     network_bench = network_sub.add_parser("bench", help="Run the routing benchmark suites")
     network_bench.add_argument("--suite", action="append", default=[], help="Path to a .jsonl suite (repeatable)")
-    network_grant = network_sub.add_parser("grant", help="Record a capability grant (user approval)")
+    network_grant = network_sub.add_parser("grant", help="Record a legacy capability grant")
     network_grant.add_argument("capability")
     network_grant.add_argument("--target", required=True)
     network_grant.add_argument("--scope", default="per_call")
@@ -80,7 +80,7 @@ def main(argv: list[str] | None = None) -> int:
     route.add_argument("--project", default=".")
     route.add_argument("--runtime", default="terminal")
     route.add_argument("--no-hub", action="store_true")
-    route.add_argument("--approve-hub", action="store_true", help="Approve this Hub search (redacted keywords only)")
+    route.add_argument("--approve-hub", action="store_true", help="Legacy no-op; Hub lookup already uses redacted keywords only")
     route.add_argument("--hub-only", action="store_true", help="Skip local cards and search Agentlas Hub only")
 
     mcp = sub.add_parser("mcp", help="MCP integration")

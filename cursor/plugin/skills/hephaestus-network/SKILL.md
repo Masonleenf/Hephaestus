@@ -1,6 +1,6 @@
 ---
 name: hephaestus-network
-description: "Use when the user types /hephaestus-network, mentions @Hephaestus, or asks to find/route to the right local agent, team, or plugin for a task. Routes natural-language requests through the Hephaestus Network local-first router with Hub fallback behind user approval."
+description: "Use when the user types /hephaestus-network, mentions @Hephaestus, or asks to find/route to the right local agent, team, or plugin for a task. Routes natural-language requests through the Hephaestus Network local-first router with Hub fallback."
 ---
 
 # Hephaestus Network Routing
@@ -40,44 +40,42 @@ If shell execution is unavailable in this harness but MCP is, call the
 "$RUNNER" route "<the user's request>" --runtime "<this runtime's name>"
 ```
 
-## 3. Act on the JSON decision — never bypass it
+## 3. Act on the JSON decision
 
 - `action: "route"` — report the selected card (`selected.id`,
-  `entrypoints.canonical_command`). If `approval_request` is present, get the
-  user's explicit approval for the listed capabilities FIRST, then invoke the
-  selected agent's canonical command with the original request. If
+  `entrypoints.canonical_command`), then invoke the selected agent's canonical
+  command with the original request. If
   `entrypoints.canonical_command` is null but `entrypoints.agent` and
   `selected.source` are present, use `selected.source/entrypoints.agent` as the
   AGENTS.md runtime entrypoint: read it, follow its routing rules, and report
   that AGENTS fallback path.
 - `action: "clarify"` — ask `clarify_question` with the candidate list and
   re-route with the answer.
-- `action: "pipeline"` — a multi-team plan. Execute `stages` in order: per-stage
-  approval first, run the stage card's canonical command, save artifacts under
+- `action: "pipeline"` — a multi-team plan. Execute `stages` in order: run the
+  stage card's canonical command, save artifacts under
   `handoff_dir/<order>-<kind>/`, pass those paths to the next stage. On a stage
   failure: stop and report progress plus the remaining plan — never retry
   silently.
-- `action: "hub_fallback"` or `"hub_candidates"` — the Hub needs approval. Show
-  `approval_request.payload_preview` (redacted keywords only — the raw prompt is
-  never sent). Only after explicit approval re-run with `--approve-hub`.
+- `action: "hub_fallback"` or `"hub_candidates"` — Hub lookup already used
+  redacted keywords only; the raw prompt and local memory were not sent.
   If the user explicitly asks to avoid all local agents/cards, pass
   `hub_only: true` to the MCP tool or `--hub-only` to the CLI so local
   paid/free/plugin cards are skipped entirely.
   If the user asks to actually invoke an Agentlas Hub agent through this MCP
-  surface, use `hephaestus_hub_invoke` with `approve_hub: true`,
-  `local_inventory: []`, and `reject_paid_slug: true`. This tool still skips
-  local routing; it calls Hub MCP (`marketplace.search_agents`,
+  surface, use `hephaestus_hub_invoke` with `local_inventory: []` and
+  `reject_paid_slug: true`. This tool still skips local routing; it calls Hub MCP (`marketplace.search_agents`,
   `agentlas.get_runtime_bundle`, `agentlas.resolve_plugins`) and writes a
   Hephaestus execution receipt. Hub public agents are BYOM runtime bundles —
   the Hub returns instructions, not a server-side LLM completion.
 - `action: "propose_new"` — offer to build a new agent/team via the Hephaestus
   meta-agent (`/hephaestus`).
-- `action: "refuse"` — explain `reasons` (loop guard or privacy block). Do not
+- `action: "refuse"` — explain `reasons` (for example, loop guard). Do not
   retry around it.
 
 ## 4. Hard rules
 
-- Local memory stays local unless the user explicitly approves an export.
-- Never auto-run `file_write`, `cloud_call`, `payment`, `publish`, `delete`,
-  `private_data_export`, or `external_tool` capabilities without user approval.
+- The router only chooses an agent or fetches a BYOM Hub bundle; it does not
+  execute payments, deletes, publishes, file writes, or external submissions.
+- For actual tool execution, follow the host runtime's safety and permission
+  model (Claude Code, Codex, Cursor, etc.).
 - Report the routing `receipt_id` in your final message.

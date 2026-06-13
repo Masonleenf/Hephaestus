@@ -86,6 +86,7 @@ the OpenAI-compatible type 400s on agent workloads because thinking mode needs
 
 ## Privacy
 
-The MCP server and the skill follow the same rules as `hephaestus route`: raw
-prompts never leave the machine, Hub fallback stays behind explicit
-`approve_hub` approval, and every decision writes a routing receipt.
+The MCP server and the skill follow the same routing contract as
+`hephaestus route`: raw prompts never leave the machine, Hub lookup uses
+redacted keywords only, and every decision writes a routing receipt. Actual
+tool execution follows the host runtime's safety and permission model.
