@@ -10,7 +10,10 @@ Use the Hephaestus Network local-first router.
 1. Find the Hephaestus runner — first executable wins:
    `~/.agentlas/runtime/current/bin/hephaestus`, `./bin/hephaestus`, or the
    newest `~/.claude/plugins/cache/agentlas-core-engine/hephaestus/*/bin/hephaestus`
-   (sort -V). Then run:
+   (sort -V). First ensure the local Agentlas sign-in (this opens the browser
+   only on first use):
+   `hephaestus auth ensure --timeout 180`
+   Then run:
    `hephaestus route "{{args}}" --runtime gemini-cli`
 
 2. Act on the JSON decision:

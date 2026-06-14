@@ -35,6 +35,15 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("field-test", help="Run local fixture field test")
 
+    auth = sub.add_parser("auth", help="Agentlas account sign-in for local runtimes")
+    auth_sub = auth.add_subparsers(dest="auth_command", required=True)
+    for auth_name in ("status", "login", "ensure", "logout"):
+        auth_cmd = auth_sub.add_parser(auth_name)
+        auth_cmd.add_argument("--base-url", default=None)
+        if auth_name in {"login", "ensure"}:
+            auth_cmd.add_argument("--no-open", action="store_true", help="Print the authorization URL instead of opening a browser")
+            auth_cmd.add_argument("--timeout", type=int, default=180)
+
     plugins = sub.add_parser("plugins", help="Plugin discovery (local installs + Agentlas Hub)")
     plugins_sub = plugins.add_subparsers(dest="plugins_command", required=True)
     plugins_list = plugins_sub.add_parser("list", help="Scan locally installed plugins")
@@ -105,6 +114,35 @@ def main(argv: list[str] | None = None) -> int:
         return emit(read_agent_file(args.folder, args.path))
     if args.command == "field-test":
         return emit(run_field_test())
+    if args.command == "auth":
+        from .auth import AgentlasAuthError, auth_status, ensure_access_token, login, logout, normalize_base_url, token_path
+
+        if args.auth_command == "status":
+            return emit(auth_status(args.base_url))
+        if args.auth_command == "logout":
+            return emit(logout(args.base_url))
+        try:
+            if args.auth_command == "login":
+                result = login(args.base_url, open_browser=not args.no_open, timeout_seconds=args.timeout)
+            elif args.auth_command == "ensure":
+                token = ensure_access_token(
+                    args.base_url,
+                    interactive=True,
+                    open_browser=not args.no_open,
+                    timeout_seconds=args.timeout,
+                )
+                result = {
+                    "status": "authenticated" if token else "signed_out",
+                    "base_url": normalize_base_url(args.base_url),
+                    "token_path": str(token_path(args.base_url)),
+                }
+            else:
+                parser.error("unhandled auth command")
+        except AgentlasAuthError as exc:
+            return emit({"status": "error", "error": str(exc), "token_path": str(token_path(args.base_url))}) or 1
+        # Never print token values from the CLI.
+        result.pop("access_token", None)
+        return emit(result)
     if args.command == "plugins":
         from .plugin_discovery import resolve_plugins, scan_local_plugins
 

@@ -16,8 +16,11 @@ Use the first executable found:
 
 ## Steps
 
-1. Run `"$RUNNER" route "<request>" --runtime antigravity` and parse the JSON.
-2. Act on `action`:
+1. Run `"$RUNNER" auth ensure --timeout 180` first. It opens the user's default
+   browser only on first use; existing Agentlas saved sign-ins are reused
+   silently.
+2. Run `"$RUNNER" route "<request>" --runtime antigravity` and parse the JSON.
+3. Act on `action`:
    - `route` — report the selected card and canonical command; if
      present, invoke it with the original request.
    - `clarify` — ask the `clarify_question` with candidates, then re-route.
@@ -30,6 +33,6 @@ Use the first executable found:
    - `propose_new` — offer to build a new agent/team via `/hephaestus`.
    - `refuse` — explain `reasons`; do not work around the loop guard or
      equivalent technical guard.
-3. Hard rules: the router only chooses an agent or fetches a BYOM Hub bundle.
+4. Hard rules: the router only chooses an agent or fetches a BYOM Hub bundle.
    Actual tool execution follows the current host runtime's safety and
    permission model. Include the routing `receipt_id` in the final answer.

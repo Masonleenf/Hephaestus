@@ -3,7 +3,7 @@ set -euo pipefail
 
 repo="${HEPHAESTUS_REPO:-https://github.com/agentlas-ai/Hephaestus}"
 codex_repo="${HEPHAESTUS_CODEX_REPO:-agentlas-ai/Hephaestus}"
-version="${HEPHAESTUS_VERSION:-v0.4.7}"
+version="${HEPHAESTUS_VERSION:-v0.4.8}"
 keep="${HEPHAESTUS_KEEP_SMOKE_DIR:-0}"
 
 fail() {
@@ -37,7 +37,7 @@ echo "version: $version"
 echo "workdir: $tmp"
 echo
 
-echo "1/6 macOS/git preflight"
+echo "1/7 macOS/git preflight"
 git --version
 if [[ "$(uname -s)" == "Darwin" ]]; then
   xcode-select -p >/dev/null 2>&1 || fail "macOS Command Line Tools are not installed. Run: xcode-select --install"
@@ -45,32 +45,64 @@ fi
 echo "PASS preflight"
 echo
 
-echo "2/6 One-touch all-runtime install script"
+echo "2/7 One-touch all-runtime install script"
 HOME="$shell_home" CODEX_HOME="$codex_home" HEPHAESTUS_SOURCE_DIR="$PWD" HEPHAESTUS_REF="$version" scripts/install-all-runtimes.sh | tee "$tmp/install-all-runtimes.txt"
 rg -q 'Installed/updated runtimes: 5' "$tmp/install-all-runtimes.txt" || fail "one-touch installer did not update the expected five runtimes"
 echo "PASS one-touch installer"
 echo
 
-echo "3/6 Claude plugin installed by one-touch script"
+echo "3/7 Claude plugin installed by one-touch script"
 HOME="$shell_home" claude plugin list | tee "$tmp/claude-plugin-list.txt"
 rg -q 'hephaestus@agentlas-core-engine' "$tmp/claude-plugin-list.txt" || fail "Claude plugin list does not show Hephaestus"
 echo "PASS Claude install"
 echo
 
-echo "4/6 Codex plugin installed by one-touch script"
+echo "4/7 Codex plugin installed by one-touch script"
 HOME="$shell_home" CODEX_HOME="$codex_home" codex plugin list | tee "$tmp/codex-plugin-list.txt"
 rg -q 'hephaestus@agentlas-core-engine' "$tmp/codex-plugin-list.txt" || fail "Codex plugin list does not show Hephaestus"
 echo "PASS Codex install"
 echo
 
-echo "5/6 Gemini extension and command installed by one-touch script"
+echo "5/7 Gemini extension and command installed by one-touch script"
 HOME="$shell_home" gemini extensions list 2>&1 | tee "$tmp/gemini-extensions-list.txt"
 rg -q 'hephaestus' "$tmp/gemini-extensions-list.txt" || fail "Gemini extension list does not show Hephaestus"
 [[ -f "$shell_home/.gemini/commands/hephaestus.toml" ]] || fail "Gemini fallback command was not installed"
 echo "PASS Gemini install"
 echo
 
-echo "6/6 Ontology GUI from installed Codex plugin cache"
+echo "6/7 First-run Agentlas sign-in surface"
+runtime_runner="$shell_home/.agentlas/runtime/current/bin/hephaestus"
+[[ -x "$runtime_runner" ]] || fail "runtime runner is not executable: $runtime_runner"
+rg -q 'auth ensure --timeout' "$shell_home/.agents/skills/hephaestus-network/SKILL.md" || fail "universal skill does not auto-trigger Agentlas sign-in"
+rg -q 'auth ensure --timeout' "$codex_home/prompts/hephaestus-network.md" || fail "Codex prompt does not auto-trigger Agentlas sign-in"
+HOME="$shell_home" "$runtime_runner" auth status | tee "$tmp/auth-status.json"
+python3 - "$tmp/auth-status.json" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+payload = json.loads(Path(sys.argv[1]).read_text())
+if payload.get("status") not in {"signed_out", "refreshable", "authenticated"}:
+    raise SystemExit(f"unexpected auth status: {payload.get('status')}")
+if not str(payload.get("token_path") or "").endswith("/.agentlas/auth/agentlas.cloud.json"):
+    raise SystemExit(f"unexpected token path: {payload.get('token_path')}")
+PY
+printf '{"jsonrpc":"2.0","id":1,"method":"tools/list"}\n' | HOME="$shell_home" "$runtime_runner" mcp serve | tee "$tmp/mcp-tools.jsonl"
+python3 - "$tmp/mcp-tools.jsonl" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+lines = [json.loads(line) for line in Path(sys.argv[1]).read_text().splitlines() if line.strip()]
+tools = {tool["name"] for tool in lines[0]["result"]["tools"]}
+for name in ("agentlas_authenticate", "agentlas_auth_status", "hephaestus_hub_invoke"):
+    if name not in tools:
+        raise SystemExit(f"missing MCP tool: {name}")
+PY
+echo "PASS first-run sign-in surface"
+echo
+
+echo "7/7 Ontology GUI from installed Codex plugin cache"
 runner="$(find "$codex_home/plugins/cache/agentlas-core-engine/hephaestus" -path '*/bin/hephaestus' -type f | sort | tail -1)"
 [[ -n "$runner" ]] || fail "installed Hephaestus runner not found"
 [[ -x "$runner" ]] || fail "installed Hephaestus runner is not executable: $runner"

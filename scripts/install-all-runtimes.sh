@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-version="${HEPHAESTUS_REF:-v0.4.7}"
+version="${HEPHAESTUS_REF:-v0.4.8}"
 repo="${HEPHAESTUS_REPO:-agentlas-ai/Hephaestus}"
 github_url="${HEPHAESTUS_GITHUB_URL:-https://github.com/$repo}"
 marketplace_name="${HEPHAESTUS_MARKETPLACE:-agentlas-core-engine}"
@@ -493,7 +493,7 @@ main() {
   log "Installed/updated runtimes: $ok"
   log "Failed runtimes: $failed"
   log ""
-  log "Restart open Claude Code, Codex, Gemini, Antigravity, Cursor, OpenCode, OpenClaw, and Hermes sessions."
+  log "Restart open Claude Code, Codex, Gemini, Antigravity, Cursor, OpenCode, OpenClaw, and Hermes apps."
   log "Then use:"
   log "  Claude Code: /reload-plugins, then /hephaestus ontology"
   log "  Codex:       /prompts:hephaestus-network, \$hephaestus-network skill, or /plugins"

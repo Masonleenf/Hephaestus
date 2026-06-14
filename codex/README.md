@@ -15,7 +15,9 @@ therefore exposes three Codex surfaces:
    only — Codex ignores subdirectories there.
 3. **MCP**: the installer registers the local stdio server
    (`hephaestus mcp serve`) as `mcp_servers.hephaestus-network` in
-   `~/.codex/config.toml`, exposing the `hephaestus_route` tool.
+   `~/.codex/config.toml`, exposing the `hephaestus_route` and
+   `agentlas_authenticate` tools. First use opens the browser sign-in if the
+   local Agentlas sign-in is not ready yet.
 
 ## Install
 
@@ -30,13 +32,13 @@ git --version
 One-command install or update for every supported runtime:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.4.7/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.4.8/scripts/install-all-runtimes.sh | bash
 ```
 
 Codex-only manual install:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.4.7
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.4.8
 codex plugin add hephaestus@agentlas-core-engine
 cp codex/prompts/*.md ~/.codex/prompts/
 ```

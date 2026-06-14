@@ -50,7 +50,23 @@ fi
 If no runner exists, tell the user to run the one-touch installer:
 `curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash`
 
-## 2. Route
+## 2. Agentlas sign-in
+
+Before routing, ensure Agentlas is signed in:
+
+```bash
+if [ "${HEPHAESTUS_AUTH_AUTOPOPUP:-1}" != "0" ]; then
+  "$RUNNER" auth ensure --timeout 180 >/dev/null 2>&1 || true
+fi
+```
+
+This opens the user's default browser only when there is no valid local
+Agentlas sign-in yet. If a saved sign-in already exists, it silently reuses
+it. Do not ask the user to copy values or understand sign-in internals.
+For CI/headless checks only, set `HEPHAESTUS_AUTH_AUTOPOPUP=0`
+and skip this step.
+
+## 3. Route
 
 ```bash
 "$RUNNER" route "<the user's request>" --runtime openclaw
@@ -62,7 +78,7 @@ For demo/distribution/Hub-only requests:
 "$RUNNER" route "<the user's request>" --runtime openclaw --hub-only
 ```
 
-## 3. Act on the JSON decision
+## 4. Act on the JSON decision
 
 - `action: "route"` — if the current task is explicitly local-inventory
   testing, report the selected card (`selected.id`,
@@ -94,7 +110,7 @@ For demo/distribution/Hub-only requests:
 - `action: "refuse"` — explain `reasons` (for example, loop guard). Do not
   retry around it.
 
-## 4. Hard rules
+## 5. Hard rules
 
 - The router only chooses an agent or fetches a BYOM Hub bundle; it does not
   execute payments, deletes, publishes, file writes, or external submissions.

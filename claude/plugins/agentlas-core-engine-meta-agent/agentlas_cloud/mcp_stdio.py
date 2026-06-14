@@ -17,7 +17,7 @@ import sys
 from typing import Any
 
 PROTOCOL_VERSION = "2025-06-18"
-SERVER_INFO = {"name": "hephaestus-network", "version": "0.4.7"}
+SERVER_INFO = {"name": "hephaestus-network", "version": "0.4.8"}
 
 TOOLS: list[dict[str, Any]] = [
     {
@@ -49,6 +49,38 @@ TOOLS: list[dict[str, Any]] = [
         "name": "hephaestus_network_status",
         "description": "Report Hephaestus Network state: card counts, benchmark state, auto-routing gate.",
         "inputSchema": {"type": "object", "properties": {}},
+    },
+    {
+        "name": "agentlas_authenticate",
+        "description": (
+            "Open the user's browser for a one-time Agentlas Google/sign-in flow, "
+            "store the local signed-in state under ~/.agentlas/auth, and reuse it "
+            "for Claude Code, Codex, Gemini, and other Hephaestus Hub calls."
+        ),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "base_url": {"type": "string", "description": "Agentlas Hub base URL. Defaults to https://agentlas.cloud."},
+                "open_browser": {
+                    "type": "boolean",
+                    "description": "Open the default browser automatically. Defaults to true.",
+                },
+                "timeout_seconds": {
+                    "type": "integer",
+                    "description": "Seconds to wait for browser sign-in. Defaults to 180.",
+                },
+            },
+        },
+    },
+    {
+        "name": "agentlas_auth_status",
+        "description": "Report whether this machine already has a reusable Agentlas sign-in for Hephaestus Hub calls.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "base_url": {"type": "string", "description": "Agentlas Hub base URL. Defaults to https://agentlas.cloud."}
+            },
+        },
     },
     {
         "name": "hephaestus_hub_invoke",
@@ -131,6 +163,33 @@ def _call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         )
     if name == "hephaestus_network_status":
         return network_status()
+    if name == "agentlas_auth_status":
+        from .auth import auth_status
+
+        return auth_status(arguments.get("base_url"))
+    if name == "agentlas_authenticate":
+        from .auth import AgentlasAuthError, ensure_access_token, token_path
+
+        base_url = arguments.get("base_url")
+        try:
+            token = ensure_access_token(
+                str(base_url) if base_url else None,
+                interactive=True,
+                open_browser=arguments.get("open_browser", True) is not False,
+                timeout_seconds=int(arguments.get("timeout_seconds") or 180),
+            )
+        except AgentlasAuthError as exc:
+            return {
+                "action": "agentlas_authenticate",
+                "status": "error",
+                "error": str(exc),
+                "token_path": str(token_path(str(base_url) if base_url else None)),
+            }
+        return {
+            "action": "agentlas_authenticate",
+            "status": "authenticated" if token else "signed_out",
+            "token_path": str(token_path(str(base_url) if base_url else None)),
+        }
     raise KeyError(name)
 
 

@@ -8,6 +8,7 @@ import urllib.request
 from pathlib import Path
 from typing import Any
 
+from ..auth import ensure_access_token
 from .bootstrap import networking_home, read_json
 
 _HUB_TIMEOUT_SECONDS = 15
@@ -15,6 +16,10 @@ _HUB_TIMEOUT_SECONDS = 15
 
 class HubToolError(RuntimeError):
     """Raised when the Hub MCP endpoint returns a protocol or tool error."""
+
+
+class HubAuthRequiredError(HubToolError):
+    """Raised when the Hub says this tool needs an Agentlas sign-in."""
 
 
 def hub_url(home: Path | str | None = None) -> str:
@@ -29,10 +34,32 @@ def call_hub_tool(
     *,
     home: Path | str | None = None,
     timeout: int = _HUB_TIMEOUT_SECONDS,
+    auto_auth: bool = True,
 ) -> dict[str, Any]:
     """Call an Agentlas Hub MCP tool and return its parsed JSON payload."""
 
-    url = hub_url(home) + "/api/mcp/v1"
+    base_url = hub_url(home)
+    token = ensure_access_token(base_url, interactive=False)
+    try:
+        return _call_hub_tool_once(name, arguments or {}, base_url=base_url, timeout=timeout, token=token)
+    except HubAuthRequiredError:
+        if not auto_auth:
+            raise
+        token = ensure_access_token(base_url, interactive=True)
+        if not token:
+            raise
+        return _call_hub_tool_once(name, arguments or {}, base_url=base_url, timeout=timeout, token=token)
+
+
+def _call_hub_tool_once(
+    name: str,
+    arguments: dict[str, Any],
+    *,
+    base_url: str,
+    timeout: int,
+    token: str | None,
+) -> dict[str, Any]:
+    url = base_url + "/api/mcp/v1"
     body = json.dumps(
         {
             "jsonrpc": "2.0",
@@ -48,18 +75,25 @@ def call_hub_tool(
             "Content-Type": "application/json",
             "Accept": "application/json",
             "User-Agent": "hephaestus-network-hub-invoke",
+            **({"Authorization": f"Bearer {token}"} if token else {}),
         },
         method="POST",
     )
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             payload = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        if exc.code == 401:
+            raise HubAuthRequiredError(f"hub tool {name} requires Agentlas sign-in") from exc
+        raise HubToolError(f"hub tool {name} failed: HTTP {exc.code}") from exc
     except (urllib.error.URLError, TimeoutError, ValueError, OSError) as exc:
         raise HubToolError(f"hub tool {name} failed: {exc}") from exc
 
     if not isinstance(payload, dict):
         raise HubToolError(f"hub tool {name} returned a non-object response")
     if payload.get("error"):
+        if _is_auth_required(payload.get("error")):
+            raise HubAuthRequiredError(f"hub tool {name} requires Agentlas sign-in")
         raise HubToolError(f"hub tool {name} error: {payload['error']}")
 
     result = payload.get("result")
@@ -67,6 +101,8 @@ def call_hub_tool(
         raise HubToolError(f"hub tool {name} returned no result object")
     if result.get("isError"):
         text = _first_text(result)
+        if _is_auth_required(text or result):
+            raise HubAuthRequiredError(f"hub tool {name} requires Agentlas sign-in")
         raise HubToolError(f"hub tool {name} error: {text or result}")
 
     text = _first_text(result)
@@ -79,6 +115,20 @@ def call_hub_tool(
             return parsed
         return {"value": parsed}
     return result
+
+
+def _is_auth_required(value: Any) -> bool:
+    if isinstance(value, dict):
+        haystack = json.dumps(value, ensure_ascii=False).lower()
+    else:
+        haystack = str(value or "").lower()
+        try:
+            parsed = json.loads(haystack)
+        except ValueError:
+            parsed = None
+        if isinstance(parsed, dict):
+            haystack = json.dumps(parsed, ensure_ascii=False).lower()
+    return "auth_required" in haystack or "authentication required" in haystack or "sign-in" in haystack
 
 
 def _first_text(result: dict[str, Any]) -> str | None:

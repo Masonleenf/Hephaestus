@@ -23,6 +23,9 @@ if [ -z "$RUNNER" ]; then
   done
 fi
 [ -n "$RUNNER" ] || { echo "Hephaestus runtime not found. Run the installer first." >&2; exit 1; }
+if [ "${HEPHAESTUS_AUTH_AUTOPOPUP:-1}" != "0" ]; then
+  "$RUNNER" auth ensure --timeout 180 >/dev/null 2>&1 || true
+fi
 "$RUNNER" route "$ARGUMENTS" --runtime opencode
 ```
 
