@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-version="${HEPHAESTUS_REF:-v0.4.6}"
+version="${HEPHAESTUS_REF:-v0.4.7}"
 repo="${HEPHAESTUS_REPO:-agentlas-ai/Hephaestus}"
 github_url="${HEPHAESTUS_GITHUB_URL:-https://github.com/$repo}"
 marketplace_name="${HEPHAESTUS_MARKETPLACE:-agentlas-core-engine}"
 plugin_name="${HEPHAESTUS_PLUGIN:-hephaestus}"
 old_plugin_name="${HEPHAESTUS_OLD_PLUGIN:-agentlas-meta-agent}"
-source_dir="${HEPHAESTUS_SOURCE_DIR:-}"
+requested_source_dir="${HEPHAESTUS_SOURCE_DIR:-}"
+source_dir="$requested_source_dir"
 force="${HEPHAESTUS_FORCE:-1}"
 mcp_url="${AGENTLAS_MCP_URL:-https://agentlas.cloud/api/mcp/v1}"
 
@@ -137,7 +138,7 @@ install_claude() {
     try claude plugin marketplace update "$marketplace_name" >/dev/null 2>&1 || true
   fi
 
-  if [[ -n "$source_dir" ]]; then
+  if [[ -n "$requested_source_dir" ]]; then
     run claude plugin marketplace add "$source_dir/claude" || return 1
   else
     run claude plugin marketplace add "$github_url" --sparse .claude-plugin claude/plugins || return 1
@@ -198,7 +199,7 @@ install_codex() {
     try codex plugin marketplace upgrade "$marketplace_name" >/dev/null 2>&1 || true
   fi
 
-  if [[ -n "$source_dir" ]]; then
+  if [[ -n "$requested_source_dir" ]]; then
     run codex plugin marketplace add "$source_dir" || return 1
   else
     run codex plugin marketplace add "$repo" --ref "$version" || return 1
