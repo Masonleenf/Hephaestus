@@ -4,14 +4,14 @@
   </a>
 </p>
 
-<h1 align="center">Hephaestus — Network 2.0</h1>
+<h1 align="center">Hephaestus — Agent OS</h1>
 
 <p align="center">
-  <strong>로컬 우선 에이전트·플러그인 네트워킹: 어떤 AI 런타임에서든 내 에이전트를 호출하고, 표준화된 라우팅 카드로 연결하며, 메모리는 내 컴퓨터에 둡니다.</strong>
+  <strong>Claude Code, Codex, Cursor를 위한 open Agent OS: meta-agent builder, A2A Hub routing, local ontology, memory/security gate로 개발자 소유 에이전트를 운영합니다.</strong>
 </p>
 
 <p align="center">
-  거친 에이전트 아이디어 하나를 설치 가능한 Agentlas agent/team 저장소로 바꾸고, Hephaestus Network가 모든 요청을 알맞은 로컬 에이전트로 라우팅합니다. Hub 폴백은 마스킹된 키워드만 사용합니다.
+  에이전트를 만들고, 런타임 사이에서 라우팅하고, 프로젝트 문맥을 연결하고, memory·skill·verification·security gate를 통과한 변화만 오래 남깁니다.
 </p>
 
 <p align="center">
@@ -29,6 +29,20 @@
 <p align="center">
   <img src="assets/agentlas-meta-agent-architecture.svg" alt="Agentlas Meta-Agent architecture decomposition">
 </p>
+
+Hephaestus는 Agentlas가 단순 prompt generator가 아니라 agent operating
+system처럼 동작하게 만드는 공개 core engine입니다. 개발자가 제어해야 하는
+네 가지 축을 하나로 묶습니다.
+
+- **Meta-agent builder.** 의도를 분류하고 빠진 설정 질문을 채운 뒤 single
+  agent, multi-agent team, 또는 runtime adapter가 포함된 package로 만듭니다.
+- **A2A Hub router.** local routing card를 먼저 보고, 승인된 경우에만
+  Agentlas Hub fallback을 쓰며, 모든 handoff에 receipt를 남깁니다.
+- **Project ontology.** 승인된 프로젝트 소스를 local graph, search,
+  source-lineage context로 바꿔 에이전트가 필요한 문맥만 질의하게 합니다.
+- **Memory, self-evolution, security gates.** durable memory, skill promotion,
+  install verification, package scan, publish block을 통해 에이전트가 무엇을
+  오래 기억하고 배워도 되는지 통제합니다.
 
 ---
 

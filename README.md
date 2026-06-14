@@ -4,14 +4,14 @@
   </a>
 </p>
 
-<h1 align="center">Hephaestus — Network 2.0</h1>
+<h1 align="center">Hephaestus — Agent OS</h1>
 
 <p align="center">
-  <strong>Local-first agent &amp; plugin networking: call your agents from any AI runtime, route by standardized cards, keep memory on your machine.</strong>
+  <strong>Open Agent OS for Claude Code, Codex, and Cursor: meta-agent builder, A2A Hub routing, local ontology, and governed memory/security gates.</strong>
 </p>
 
 <p align="center">
-  Turn one rough agent idea into an installable Agentlas agent or team repository — then let the Hephaestus Network route every request to the right local agent, with Hub fallback only on your approval.
+  Build developer-owned agents, route them across runtimes, give them project context, and let them evolve only through explicit memory, skill, verification, and security gates.
 </p>
 
 <p align="center">
@@ -61,6 +61,21 @@
 <p align="center">
   <sub>Figure 1. Request shaping, three builders, generated package contracts, memory curation, skill lifecycle, runtime adapters, and sync boundaries.</sub>
 </p>
+
+Hephaestus is the open core engine that makes Agentlas behave like an agent
+operating system instead of a one-off prompt generator. It gives developers
+four connected control planes:
+
+- **Meta-agent builder.** Classify intent, ask the missing setup questions, and
+  emit one agent, a multi-agent team, or a clean package with runtime adapters.
+- **A2A Hub router.** Route requests through local routing cards first, then
+  approved Agentlas Hub fallback, with receipts for every handoff.
+- **Project ontology.** Turn approved project sources into local graph, search,
+  and source-lineage context agents can query without sweeping unrelated
+  folders.
+- **Memory, self-evolution, and security gates.** Admit durable memory, promote
+  skills, verify installs, scan packages, and block unsafe publish paths before
+  agents are allowed to keep or ship new behavior.
 
 ---
 

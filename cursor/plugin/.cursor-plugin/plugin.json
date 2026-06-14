@@ -1,5 +1,5 @@
 {
   "name": "hephaestus",
   "version": "0.4.8",
-  "description": "Hephaestus meta-agent team for creating Agentlas agents and teams, packaging existing agents, and routing requests through the Hephaestus Network local-first router."
+  "description": "Open Agent OS for Claude Code, Codex, and Cursor: meta-agent builder, A2A Hub routing, local ontology, memory/security gates."
 }
