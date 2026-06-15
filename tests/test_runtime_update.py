@@ -24,7 +24,7 @@ class FakeResponse:
 def test_update_check_uses_ttl_cache_and_reports_newer_release(tmp_path, monkeypatch):
     monkeypatch.setenv("HEPHAESTUS_RUNTIME_BASE", str(tmp_path / "runtime"))
     calls = []
-    release = {"tag_name": "v0.4.9", "tarball_url": "https://example.test/source.tar.gz", "html_url": "https://example.test/v0.4.9"}
+    release = {"tag_name": "v9.9.9", "tarball_url": "https://example.test/source.tar.gz", "html_url": "https://example.test/v9.9.9"}
 
     def fake_urlopen(request, timeout):
         calls.append((request.full_url, timeout))
@@ -32,19 +32,19 @@ def test_update_check_uses_ttl_cache_and_reports_newer_release(tmp_path, monkeyp
 
     monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
 
-    assert fetch_latest_release(force=False)["tag_name"] == "v0.4.9"
-    assert fetch_latest_release(force=False)["tag_name"] == "v0.4.9"
+    assert fetch_latest_release(force=False)["tag_name"] == "v9.9.9"
+    assert fetch_latest_release(force=False)["tag_name"] == "v9.9.9"
     assert len(calls) == 1
 
-    root = tmp_path / "runtime" / "0.4.8"
+    root = tmp_path / "runtime" / "0.4.9"
     root.mkdir(parents=True)
-    (root / "RELEASE").write_text("v0.4.8\n", encoding="utf-8")
+    (root / "RELEASE").write_text("v0.4.9\n", encoding="utf-8")
     monkeypatch.setattr("agentlas_cloud.update.fetch_latest_release", lambda force=True: release)
     result = run_update(check_only=True, root=root)
 
     assert result["status"] == "update_available"
-    assert result["current"] == "v0.4.8"
-    assert result["latest"] == "v0.4.9"
+    assert result["current"] == "v0.4.9"
+    assert result["latest"] == "v9.9.9"
 
 
 def test_install_latest_runtime_flips_current_and_writes_shims(tmp_path, monkeypatch):
