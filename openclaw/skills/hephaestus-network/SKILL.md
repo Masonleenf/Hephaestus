@@ -19,8 +19,7 @@ Use Agentlas Hub invocation only:
 - Prefer the MCP tool `hephaestus_hub_invoke` with
   `local_inventory: []` and `reject_paid_slug: true`.
 - If using the CLI, pass `--hub-only`.
-- Do not report or rely on paths such as
-  `/Users/mason/Documents/Hephaestus_agent_forge/Paid/...`.
+- Do not report or rely on machine-local Paid/Free folder paths.
 - A bundled local agent folder is applied separately by opening/reading its
   `AGENTS.md`; it is not the same thing as a Hephaestus Network Hub call.
 
