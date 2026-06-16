@@ -64,15 +64,16 @@
 
 Hephaestus is the open core engine that makes Agentlas behave like an agent
 operating system instead of a one-off prompt generator. It gives developers
-four connected control planes:
+five connected control planes:
 
 - **Meta-agent builder.** Classify intent, ask the missing setup questions, and
   emit one agent, a multi-agent team, or a clean package with runtime adapters.
 - **A2A Hub router.** Route requests through local routing cards first, then
   approved Agentlas Hub fallback, with receipts for every handoff.
-- **Robust execution protocol.** Keep long-running work inside a scope lock,
-  plan lock, evidence loop, review gate, and final gate so agents cannot
-  silently stop or claim completion before checks pass.
+- **Hephaestus Stormbreaker.** Keep long-running work inside a scope lock,
+  failure-memory check, verifier-first plan, evidence loop, review gate, and
+  final gate so agents cannot silently stop or claim completion before checks
+  pass.
 - **Project ontology.** Turn approved project sources into local graph, search,
   and source-lineage context agents can query without sweeping unrelated
   folders.
@@ -123,22 +124,64 @@ hephaestus "find the right agent for this task"               # terminal
   permissions when tools actually execute.
 - **Measured, not claimed.** A routing benchmark (Korean + English) gates
   auto-routing: top-3 recall ≥ 90%, zero unsafe routes in the privacy suite.
-- **Execution robustness evals.** A separate scorecard compares native Codex,
-  Hephaestus Network routing, and the upgraded Robustness Protocol on the same
+- **Stormbreaker operational evals.** A separate scorecard compares native
+  Codex, Hephaestus Network routing, and Hephaestus Stormbreaker on the same
   task fixtures.
 
 Details: [docs/hephaestus-network-2.0.md](docs/hephaestus-network-2.0.md) ·
 runtime support matrix: [docs/runtime-fallback-adapters.md](docs/runtime-fallback-adapters.md) ·
-robustness protocol: [docs/robustness-protocol.md](docs/robustness-protocol.md)
+Stormbreaker protocol: [docs/robustness-protocol.md](docs/robustness-protocol.md)
+
+### Hephaestus Stormbreaker
+
+Stormbreaker is the execution discipline inside Hephaestus: the part that keeps
+agent work from looking done before it is actually verified. It is not a new
+foundation model and it is not a benchmark leaderboard claim. It is the
+operating envelope around coding agents: scope, evidence, failure memory,
+review, and final proof.
+
+Current public-safe evaluation signal:
+
+| Scorecard | Native Codex | Network Baseline | Stormbreaker |
+| --- | ---: | ---: | ---: |
+| Local macro operational robustness | 76.48 | 92.22 | **99.26** |
+| Local micro operational robustness | 76.67 | 91.85 | **98.52** |
+| Local holdout operational robustness | 80.00 | 91.67 | **100.00** |
+| Local stress operational robustness | 73.33 | 93.33 | **100.00** |
+
+Stormbreaker also preserved the operational ladder across `6/6` process-aware
+metric variants, beat native on `9/9` paired local task units, and beat the
+Network baseline on `8/9` paired local task units. The strict 30-task
+SWE-bench Lite pilot is kept as the honesty boundary: native resolved `22/30`,
+baseline `21/30`, and Stormbreaker `21/30`, so Hephaestus does not claim public
+benchmark superiority from that pilot.
+
+The v2 loop is:
+
+```text
+scope lock
+-> issue contract extraction
+-> failure-memory check
+-> verifier-first plan
+-> bounded evidence loop
+-> adversarial review gate
+-> outcome ledger
+-> final gate
+```
+
+The point is practical: Stormbreaker turns "the agent probably handled it" into
+"the agent left enough evidence that a developer can trust, audit, resume, or
+reject the work."
 
 ### Robustness Protocol
 
-Hephaestus Robustness Protocol is a global operating protocol, not a standalone
-agent or skill. It applies to native runtime work, Hephaestus Network-selected
-agents, and Hub bundles:
+Hephaestus Robustness Protocol is the generic name for the Stormbreaker
+operating protocol. It is global infrastructure, not a standalone agent or
+skill. It applies to native runtime work, Hephaestus Network-selected agents,
+and Hub bundles:
 
 ```text
-scope lock -> plan lock -> evidence loop -> review gate -> final gate
+scope lock -> issue contract -> failure memory -> verifier-first plan -> evidence loop -> review gate -> final gate
 ```
 
 The first benchmark topic is **public agent repo repair** because it tests file

@@ -1,8 +1,8 @@
 # Robustness Evaluation
 
-This eval measures whether the Hephaestus Robustness Protocol improves
-agentic work quality compared with a native runtime and the existing
-Hephaestus Network flow.
+This eval measures whether Hephaestus Stormbreaker improves operational
+robustness compared with a native runtime and the existing Hephaestus Network
+flow.
 
 ## Recommended Topic
 
@@ -25,7 +25,7 @@ failure modes Hephaestus is meant to fix:
 | --- | --- | --- |
 | A | `codex_native` | Codex only. No explicit skills, no subagents, no Hephaestus Network call, no Robustness Protocol prompt. |
 | B | `hephaestus_network` | Existing Hephaestus Network routing is allowed. Agent or Hub bundle calls are allowed. No new Robustness Protocol gates. |
-| C | `hephaestus_robustness_protocol` | Hephaestus Network plus the Robustness Protocol states: scope lock, plan lock, evidence loop, review gate, final gate. |
+| C | `hephaestus_stormbreaker` | Hephaestus Network plus Stormbreaker states: scope lock, issue contract, failure memory, verifier-first plan, evidence loop, review gate, outcome ledger, final gate. |
 
 Keep the model, tool access, working tree, time limit, and token budget as close
 as possible across all three arms.
@@ -103,5 +103,8 @@ Expected tradeoff:
 - Arm C should cost more time/tool calls, but should reduce false completion,
   scope drift, and unrecovered validation failures.
 
-The protocol is worth shipping when Arm C improves robust completion rate or
-false completion rate enough to justify its extra cost.
+Stormbreaker is worth shipping when Arm C improves robust completion rate,
+false completion rate, scope drift, or unrecovered validation failures enough
+to justify its extra cost. It should not be marketed as public benchmark
+superiority unless a sufficiently powered public benchmark run actually shows
+that result.

@@ -1,12 +1,18 @@
-# Hephaestus Robustness Protocol
+# Hephaestus Stormbreaker Robustness Protocol
 
-Hephaestus Robustness Protocol is a global operating protocol for coding
-agents. It is not a model, standalone agent, skill, leaked prompt, or
-Hephaestus Network routing card.
+Hephaestus Stormbreaker is the public name for the Hephaestus Robustness
+Protocol. It is a global operating protocol for coding agents. It is not a
+model, standalone agent, skill, leaked prompt, or Hephaestus Network routing
+card.
 
 The protocol sits above local agents, Hub bundles, skills, and tools. Its job
 is to make long-running work harder to abandon, harder to falsely declare done,
 and easier to recover after context loss or a failed verification pass.
+
+The strongest current claim is operational robustness, not raw benchmark
+correctness. Local scorecards show Stormbreaker leading native Codex and a
+baseline Hephaestus Network arm on process-aware robustness metrics, while the
+strict 30-task SWE-bench Lite pilot does not show public benchmark superiority.
 
 ## Research Sources
 
@@ -23,6 +29,13 @@ research notes:
   evidence checkpoints, final verification gates, and model-aware delegation.
 - NightWatch-style recorders: logs are claims; independent replay or artifact
   checks are stronger proof.
+- Reflexion (<https://arxiv.org/abs/2303.11366>): failed checks become verbal
+  failure memory for later attempts.
+- Self-Refine (<https://arxiv.org/abs/2303.17651>): feedback and refinement
+  form a bounded test-time improvement loop without model retraining.
+- SWE-agent / Agent-Computer Interface
+  (<https://arxiv.org/abs/2405.15793>): agent-computer interface design
+  matters; agents need stable navigation, edit, diff, and test surfaces.
 
 These are used as engineering precedents, not as private system prompts or
 vendor behavior clones.
@@ -36,23 +49,42 @@ Every substantial task should move through these states:
    - Clarify before mutation when a missing answer would change files, costs,
      security posture, or public release state.
 
-2. `plan_lock`
+2. `issue_contract`
+   - Extract behavior that must change, behavior that must not change, files
+     likely in scope, public checks, and issue-implied edge classes.
+   - Treat this as the bridge between a natural-language request and verifier
+     evidence.
+
+3. `failure_memory`
+   - Check the task against public-safe failure classes before patching:
+     Unicode normalization, length limits, migration/defaulting, retry timing,
+     atomic writes, parser edge cases, time/date APIs, package metadata gaps,
+     and unsupported README claims.
+   - This is not private-oracle leakage; it is a reusable checklist built from
+     observed failure modes.
+
+4. `verifier_first_plan`
    - Produce a short staged plan for risky or multi-file work.
    - Define the verification command, expected artifact, and final exit gate
      before implementation begins.
 
-3. `evidence_loop`
+5. `evidence_loop`
    - Execute one bounded change batch at a time.
    - After each failure, record the failing evidence, change one hypothesis, and
      retry within a declared cap.
    - Tests are evidence, not the whole definition of done.
 
-4. `review_gate`
+6. `review_gate`
    - Check scope drift, destructive changes, unrelated file edits, secret
      exposure, and unsupported claims.
    - For high-risk work, run a reviewer path or independent verification script.
 
-5. `final_gate`
+7. `outcome_ledger`
+   - Record final evidence, failed attempts, unresolved risks, and follow-up
+     gates in a short durable note or result row.
+   - Make continuation after context loss possible.
+
+8. `final_gate`
    - Do not finish unless required checks passed, blockers are empty or clearly
      reported, artifacts exist, and the final answer separates verified facts
      from remaining risk.
@@ -100,4 +132,4 @@ This makes it suitable for three-way evaluation:
 
 1. native runtime with no added protocol;
 2. Hephaestus Network routing and agent calls;
-3. Hephaestus Network plus Robustness Protocol gates.
+3. Hephaestus Network plus Stormbreaker gates.
