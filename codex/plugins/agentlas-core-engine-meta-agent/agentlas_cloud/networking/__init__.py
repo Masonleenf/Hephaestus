@@ -19,6 +19,7 @@ from .card_lint import lint_card
 from .card_migrate import migrate_tree
 from .card_store import load_global_cards, reindex, save_card
 from .router import route_request
+from .search_call import call_agents, search_agents
 
 __all__ = [
     "SCHEMA_VERSION",
@@ -32,5 +33,7 @@ __all__ = [
     "reindex",
     "remove_source",
     "route_request",
+    "call_agents",
+    "search_agents",
     "save_card",
 ]

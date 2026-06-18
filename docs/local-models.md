@@ -8,8 +8,9 @@ reaches them through two universal surfaces installed by
 1. **AgentSkills skill** — `~/.agents/skills/hephaestus-network/SKILL.md` is
    read natively by OpenCode, Crush, Cursor, Codex, OpenClaw, and Hermes Agent,
    regardless of which model they run.
-2. **MCP stdio server** — `hephaestus mcp serve` exposes `hephaestus_route` and
-   `hephaestus_network_status` as tools for any MCP-capable harness.
+2. **MCP stdio server** — `hephaestus mcp serve` exposes `hephaestus_route`,
+   `hephaestus_search`, `hephaestus_call`, and `hephaestus_network_status` as
+   tools for any MCP-capable harness.
 
 ## Ollama
 

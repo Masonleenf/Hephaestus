@@ -17,7 +17,7 @@ import sys
 from typing import Any
 
 PROTOCOL_VERSION = "2025-06-18"
-SERVER_INFO = {"name": "hephaestus-network", "version": "0.7.5"}
+SERVER_INFO = {"name": "hephaestus-network", "version": "0.7.6"}
 
 TOOLS: list[dict[str, Any]] = [
     {
@@ -92,6 +92,56 @@ TOOLS: list[dict[str, Any]] = [
                 "project_dir": {"type": "string", "description": "Project directory for context (default: cwd)."},
             },
             "required": ["request"],
+        },
+    },
+    {
+        "name": "hephaestus_search",
+        "description": (
+            "Power-user search: return top Agentlas Cloud (owner packages) and "
+            "public Hub candidates side by side without invoking any agent. Use "
+            "when the user asks to find agents and compare choices."
+        ),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "request": {"type": "string", "description": "Search request, for example: 시장 리포트 쓸 에이전트 찾아줘."},
+                "project_dir": {"type": "string", "description": "Project directory for context (default: cwd)."},
+                "limit": {"type": "integer", "description": "Candidates per section. Default 10."},
+            },
+            "required": ["request"],
+        },
+    },
+    {
+        "name": "hephaestus_call",
+        "description": (
+            "Prepare explicitly named Agentlas Hub/cloud agents. This fetches BYOM "
+            "runtime bundles and writes receipts; the caller runtime still runs "
+            "the actual LLM/tool work."
+        ),
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "agents": {
+                    "oneOf": [
+                        {"type": "string"},
+                        {"type": "array", "items": {"type": "string"}},
+                    ],
+                    "description": "Comma list or array of slugs. Prefix with cloud: for owner packages or hub: for public Hub.",
+                },
+                "context": {"type": "string", "description": "Task context passed to each named agent."},
+                "project_dir": {"type": "string", "description": "Project directory for context (default: cwd)."},
+                "version": {"type": "string", "description": "Hub package hash or latest."},
+                "reject_paid_slug": {
+                    "type": "boolean",
+                    "description": "Block if a selected Hub slug also exists in local Paid cards (default true).",
+                },
+                "local_inventory": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Installed plugin slugs/names to pass to agentlas.resolve_plugins. Use [] to avoid local plugin matches.",
+                },
+            },
+            "required": ["agents", "context"],
         },
     },
     {
@@ -194,6 +244,27 @@ def _call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
             use_hub=True,
             hub_approved=False,
             scope="cloud",
+        )
+    if name == "hephaestus_search":
+        from .networking import search_agents
+
+        return search_agents(
+            arguments["request"],
+            project_dir=arguments.get("project_dir", "."),
+            runtime="mcp",
+            limit=int(arguments.get("limit") or 10),
+        )
+    if name == "hephaestus_call":
+        from .networking import call_agents
+
+        return call_agents(
+            arguments.get("agents") or [],
+            str(arguments.get("context") or ""),
+            project_dir=arguments.get("project_dir", "."),
+            runtime="mcp",
+            version=str(arguments.get("version") or "latest"),
+            reject_paid_slug=arguments.get("reject_paid_slug", True) is not False,
+            local_inventory=arguments.get("local_inventory") or [],
         )
     if name == "hephaestus_hub_invoke":
         from .networking.hub_invocation import invoke_hub_agent

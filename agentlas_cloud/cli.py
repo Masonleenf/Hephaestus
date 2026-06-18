@@ -180,6 +180,22 @@ def main(argv: list[str] | None = None) -> int:
         help="JSON array of active host sessions for Stormbreaker pipeline scheduling (for example Codex, Claude, GLM, DeepSeek).",
     )
 
+    search = sub.add_parser("search", help="Show top owner-cloud and public Hub agent candidates without invoking")
+    search.add_argument("query")
+    search.add_argument("--project", default=".")
+    search.add_argument("--runtime", default="terminal")
+    search.add_argument("--limit", type=int, default=10, help="Candidates per section (default 10, max 25)")
+
+    call = sub.add_parser("call", help="Prepare explicitly named Hub/cloud agents")
+    call.add_argument("agents", help="Comma-separated slugs, for example: hub:agent-a, cloud:agent-b")
+    call.add_argument("context", nargs="*", help="Task context passed to the named agents")
+    call.add_argument("--context", dest="context_text", default=None, help="Context string (alternative to positional context)")
+    call.add_argument("--project", default=".")
+    call.add_argument("--runtime", default="terminal")
+    call.add_argument("--version", default="latest")
+    call.add_argument("--allow-paid-overlap", action="store_true", help="Do not block a Hub slug that also exists in local Paid cards")
+    call.add_argument("--local-inventory", default=None, help="JSON array or comma list of installed plugin names for Hub plugin resolution")
+
     mcp = sub.add_parser("mcp", help="MCP integration")
     mcp_sub = mcp.add_subparsers(dest="mcp_command", required=True)
     mcp_sub.add_parser("serve", help="Serve the network router as a local stdio MCP server")
@@ -316,6 +332,41 @@ def main(argv: list[str] | None = None) -> int:
         from .mcp_stdio import serve
 
         return serve()
+    if args.command == "search":
+        from .networking import init_networking, search_agents
+        from .networking.bootstrap import networking_home
+
+        maybe_print_update_notice()
+        init_networking(networking_home())
+        return emit(
+            search_agents(
+                args.query,
+                project_dir=args.project,
+                runtime=args.runtime,
+                limit=args.limit,
+            )
+        )
+    if args.command == "call":
+        from .networking import call_agents, init_networking
+        from .networking.bootstrap import networking_home
+        from .networking.search_call import parse_local_inventory
+
+        maybe_print_update_notice()
+        init_networking(networking_home())
+        context = args.context_text or " ".join(args.context).strip()
+        if not context:
+            return emit({"action": "agent_call", "status": "error", "error": "context is required"}) or 2
+        return emit(
+            call_agents(
+                args.agents,
+                context,
+                project_dir=args.project,
+                runtime=args.runtime,
+                version=args.version,
+                reject_paid_slug=not args.allow_paid_overlap,
+                local_inventory=parse_local_inventory(args.local_inventory),
+            )
+        )
     if args.command == "route":
         from .networking import init_networking, route_request
         from .networking.bootstrap import networking_home

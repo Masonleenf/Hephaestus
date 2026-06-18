@@ -177,10 +177,14 @@ required_files=(
   "gemini/extension/commands/hephaestus-build.toml"
   "gemini/extension/commands/hephaestus-network.toml"
   "gemini/extension/commands/hephaestus-cloud.toml"
+  "gemini/extension/commands/hephaestus-search.toml"
+  "gemini/extension/commands/hephaestus-call.toml"
   ".claude-plugin/marketplace.json"
   ".claude/commands/hephaestus-build.md"
   ".claude/commands/hephaestus-network.md"
   ".claude/commands/hephaestus-cloud.md"
+  ".claude/commands/hephaestus-search.md"
+  ".claude/commands/hephaestus-call.md"
   ".claude/commands/meta-agent.md"
   ".claude/agents/agentlas-core-engine-meta-agent.md"
   ".claude/skills/agentlas-core-engine-meta-agent/SKILL.md"
@@ -189,6 +193,8 @@ required_files=(
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-build.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-network.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-cloud.md"
+  "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-search.md"
+  "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-call.md"
   "claude/plugins/agentlas-core-engine-meta-agent/bin/hephaestus"
   "claude/plugins/agentlas-core-engine-meta-agent/agentlas_cloud/__main__.py"
   "claude/plugins/agentlas-core-engine-meta-agent/agentlas_cloud/cli.py"
@@ -199,10 +205,14 @@ required_files=(
   ".gemini/commands/hephaestus-build.toml"
   ".gemini/commands/hephaestus-network.toml"
   ".gemini/commands/hephaestus-cloud.toml"
+  ".gemini/commands/hephaestus-search.toml"
+  ".gemini/commands/hephaestus-call.toml"
   "codex/plugins/agentlas-core-engine-meta-agent/.codex-plugin/plugin.json"
   "codex/prompts/hephaestus-build.md"
   "codex/prompts/hephaestus-network.md"
   "codex/prompts/hephaestus-cloud.md"
+  "codex/prompts/hephaestus-search.md"
+  "codex/prompts/hephaestus-call.md"
   "codex/plugins/agentlas-core-engine-meta-agent/bin/hephaestus"
   "codex/plugins/agentlas-core-engine-meta-agent/agentlas_cloud/__main__.py"
   "codex/plugins/agentlas-core-engine-meta-agent/agentlas_cloud/cli.py"
@@ -223,12 +233,16 @@ required_files=(
   "cursor/plugin/commands/hephaestus-build.md"
   "cursor/plugin/commands/hephaestus-network.md"
   "cursor/plugin/commands/hephaestus-cloud.md"
+  "cursor/plugin/commands/hephaestus-search.md"
+  "cursor/plugin/commands/hephaestus-call.md"
   "cursor/plugin/skills/hephaestus-network/SKILL.md"
   "cursor/plugin/skills/hephaestus-cloud/SKILL.md"
   "cursor/plugin/rules/hephaestus.mdc"
   "opencode/commands/hephaestus-build.md"
   "opencode/commands/hephaestus-network.md"
   "opencode/commands/hephaestus-cloud.md"
+  "opencode/commands/hephaestus-search.md"
+  "opencode/commands/hephaestus-call.md"
   "openclaw/skills/hephaestus-network/SKILL.md"
   "openclaw/skills/hephaestus-cloud/SKILL.md"
   "hermes/skills/hephaestus-network/SKILL.md"
@@ -287,12 +301,19 @@ if claude_skills:
 for path in [
     Path("claude/plugins/agentlas-core-engine-meta-agent/SKILL.md"),
     Path("claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus.md"),
+    Path("claude/plugins/agentlas-core-engine-meta-agent/commands/hephaests-network.md"),
     Path("codex/prompts/hephaestus.md"),
+    Path("codex/prompts/hephaests-network.md"),
     Path("gemini/extension/commands/hephaestus.toml"),
+    Path("gemini/extension/commands/hephaests-network.toml"),
     Path("antigravity/workflows/hephaestus.md"),
+    Path("antigravity/workflows/hephaests-network.md"),
     Path(".agents/workflows/hephaestus.md"),
+    Path(".agents/workflows/hephaests-network.md"),
     Path("cursor/plugin/commands/hephaestus.md"),
+    Path("cursor/plugin/commands/hephaests-network.md"),
     Path("opencode/commands/hephaestus.md"),
+    Path("opencode/commands/hephaests-network.md"),
 ]:
     if path.exists():
         raise SystemExit(f"legacy public command/skill surface should be pruned: {path}")

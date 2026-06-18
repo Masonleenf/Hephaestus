@@ -1,0 +1,280 @@
+"""Power-user search and explicit call helpers for Hephaestus Network.
+
+`/hephaestus-network` stays the simple borrow surface: the router decides
+whether a task is single-agent, clarify, or a temporary task force. These
+helpers expose two deliberate advanced moves:
+
+- search: show the top owner-cloud and public-Hub candidates side by side;
+- call: prepare exactly the agent slugs the user named.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from pathlib import Path
+from typing import Any
+
+from .bootstrap import networking_home
+from .hub_fallback import search_hub
+from .hub_invocation import invoke_hub_agent
+from .receipts import write_receipt
+from .tokenize import has_hangul, word_tokens
+
+
+DEFAULT_SEARCH_LIMIT = 10
+
+
+def search_agents(
+    query: str,
+    *,
+    home: Path | str | None = None,
+    project_dir: Path | str = ".",
+    runtime: str | None = "terminal",
+    limit: int = DEFAULT_SEARCH_LIMIT,
+) -> dict[str, Any]:
+    """Return owner-cloud and public-Hub search sections without invoking."""
+
+    base = Path(home) if home else networking_home()
+    tokens = word_tokens(query)
+    limit = _normalize_limit(limit)
+    cloud_raw = search_hub(tokens, home=base, approved=True, scope="cloud")
+    hub_raw = search_hub(tokens, home=base, approved=True, scope="network")
+    sections = {
+        "cloud": _section("cloud", cloud_raw, query, limit),
+        "hub": _section("hub", hub_raw, query, limit),
+    }
+    candidates = [
+        {"id": f"{section}/{item.get('slug')}", "score": item.get("score")}
+        for section, payload in sections.items()
+        for item in payload.get("results", [])
+        if isinstance(item, dict) and item.get("slug")
+    ]
+    receipt_id = write_receipt(
+        action="agent_search",
+        query_tokens=tokens,
+        candidates=candidates,
+        selected=None,
+        reasons=["cloud_and_hub_sections", "candidate_only"],
+        locale="ko" if has_hangul(query) else "en",
+        runtime=runtime,
+        router_chain=["hephaestus-search"],
+        match_reason="explicit_candidate_search",
+        allowed_by=["redacted_hub_search", "owner_cloud_search"],
+        fallback_scope=None,
+        home=base,
+    )
+    return {
+        "action": "agent_search",
+        "query": query,
+        "project_dir": str(project_dir),
+        "limit_per_section": limit,
+        "sections": sections,
+        "receipt_id": receipt_id,
+        "notes": [
+            "No agent was invoked.",
+            "cloud = signed-in owner's own saved/shared packages.",
+            "hub = public Agentlas Hub marketplace.",
+        ],
+    }
+
+
+def call_agents(
+    agents: list[str] | str,
+    context: str,
+    *,
+    home: Path | str | None = None,
+    project_dir: Path | str = ".",
+    runtime: str | None = "terminal",
+    version: str = "latest",
+    reject_paid_slug: bool = True,
+    local_inventory: list[str] | None = None,
+) -> dict[str, Any]:
+    """Prepare exactly the named Hub/cloud agent bundles.
+
+    The caller runtime still owns model execution. This function fetches BYOM
+    runtime bundles and writes execution receipts through `invoke_hub_agent`.
+    """
+
+    base = Path(home) if home else networking_home()
+    refs = parse_agent_refs(agents)
+    if not refs:
+        return {
+            "action": "agent_call",
+            "status": "error",
+            "error": "no agent refs provided",
+            "agents": [],
+            "context": context,
+        }
+    results: list[dict[str, Any]] = []
+    for ref in refs:
+        parsed = _parse_ref(ref)
+        decision = {
+            "action": "hub_candidates",
+            "receipt_id": None,
+            "hub": {
+                "scope": parsed["scope"],
+                "results": [
+                    {
+                        "slug": parsed["slug"],
+                        "kind": "cloud-callable",
+                        "callable": True,
+                        "name": parsed["slug"],
+                    }
+                ],
+            },
+        }
+        result = invoke_hub_agent(
+            context,
+            slug=parsed["slug"],
+            hub_decision=decision,
+            project_dir=project_dir,
+            home=base,
+            version=version,
+            reject_paid_slug=reject_paid_slug,
+            local_inventory=local_inventory or [],
+        )
+        result["requested_ref"] = ref
+        result["requested_scope"] = parsed["scope"]
+        results.append(result)
+
+    statuses = {str(item.get("status") or "unknown") for item in results}
+    tokens = word_tokens(context)
+    receipt_id = write_receipt(
+        action="agent_call",
+        query_tokens=tokens + [item["slug"] for item in (_parse_ref(ref) for ref in refs)],
+        candidates=[{"id": item.get("slug"), "score": None} for item in results],
+        selected=",".join(str(item.get("slug") or item.get("requested_ref") or "") for item in results),
+        reasons=["explicit_agent_call"],
+        locale="ko" if has_hangul(context) else "en",
+        runtime=runtime,
+        router_chain=["hephaestus-call"],
+        match_reason="explicit_agent_refs",
+        allowed_by=["user_named_agents", "hub_runtime_bundle"],
+        fallback_scope=None,
+        home=base,
+    )
+    return {
+        "action": "agent_call",
+        "status": "prepared" if statuses == {"prepared"} else "partial" if "prepared" in statuses else "failed",
+        "context": context,
+        "project_dir": str(project_dir),
+        "receipt_id": receipt_id,
+        "agents": results,
+        "next_step": (
+            "Caller runtime executes each returned bundle with its own model. "
+            "Agentlas Hub returns runtime instructions; it does not run the LLM."
+        ),
+    }
+
+
+def parse_agent_refs(value: list[str] | str) -> list[str]:
+    if isinstance(value, list):
+        raw = ",".join(str(item) for item in value)
+    else:
+        raw = str(value or "")
+    refs = [item.strip() for item in re.split(r"[,\n]+", raw) if item.strip()]
+    return list(dict.fromkeys(refs))
+
+
+def _parse_ref(ref: str) -> dict[str, str]:
+    value = ref.strip().strip("`")
+    value = value.lstrip("@")
+    scope = "hub"
+    if ":" in value:
+        prefix, rest = value.split(":", 1)
+        if prefix.lower() in {"hub", "network", "cloud"}:
+            scope = "cloud" if prefix.lower() == "cloud" else "hub"
+            value = rest
+    return {"slug": _slug(value), "scope": scope}
+
+
+def _slug(value: str) -> str:
+    return re.sub(r"[^a-zA-Z0-9._-]+", "-", value.strip()).strip("-")
+
+
+def _section(scope: str, raw: dict[str, Any], query: str, limit: int) -> dict[str, Any]:
+    results = raw.get("results") if isinstance(raw.get("results"), list) else []
+    return {
+        "scope": scope,
+        "status": raw.get("status"),
+        "query": raw.get("query"),
+        "cached": bool(raw.get("cached", False)),
+        "results": [_candidate(scope, item, index, query) for index, item in enumerate(results[:limit], start=1)],
+        **({"detail": raw.get("detail")} if raw.get("detail") else {}),
+        **({"question": raw.get("question") or raw.get("questionKo")} if raw.get("status") == "clarify" else {}),
+        **({"note": raw.get("note")} if raw.get("note") else {}),
+    }
+
+
+def _candidate(scope: str, item: dict[str, Any], rank: int, query: str) -> dict[str, Any]:
+    slug = str(item.get("slug") or "")
+    name = item.get("nameEn") or item.get("name") or slug
+    description = _description(item)
+    return {
+        "rank": rank,
+        "scope": scope,
+        "slug": slug,
+        "name": name,
+        "description": description,
+        "kind": item.get("kind"),
+        "callable": bool(item.get("callable", item.get("kind") == "cloud-callable")),
+        "routingReady": item.get("routingReady"),
+        "trustGrade": item.get("trustGrade"),
+        "evalPassRate": item.get("evalPassRate"),
+        "rating": item.get("rating"),
+        "installCount": item.get("installCount"),
+        "verifiedInvocations": item.get("verifiedInvocations"),
+        "score": _display_score(item),
+        "why": _why(item, query, description),
+    }
+
+
+def _description(item: dict[str, Any]) -> str:
+    for key in ("taglineEn", "tagline", "summary", "summaryKo", "description", "descriptionKo"):
+        value = item.get(key)
+        if value:
+            return str(value)
+    kind = str(item.get("kind") or "agent")
+    return f"{kind} package from Agentlas."
+
+
+def _why(item: dict[str, Any], query: str, description: str) -> str:
+    bits = []
+    if item.get("routingReady"):
+        bits.append("routing-ready")
+    if item.get("callable") or item.get("kind") == "cloud-callable":
+        bits.append("callable")
+    if item.get("localContextReason"):
+        bits.append(str(item["localContextReason"]))
+    if not bits:
+        bits.append("matched search query")
+    return f"{', '.join(bits)} for: {query[:80]}" if not description else ", ".join(bits)
+
+
+def _display_score(item: dict[str, Any]) -> float | None:
+    for key in ("score", "rating", "evalPassRate"):
+        value = item.get(key)
+        if isinstance(value, (int, float)):
+            return float(value)
+    return None
+
+
+def _normalize_limit(value: int) -> int:
+    try:
+        parsed = int(value)
+    except (TypeError, ValueError):
+        parsed = DEFAULT_SEARCH_LIMIT
+    return max(1, min(25, parsed))
+
+
+def parse_local_inventory(value: str | None) -> list[str]:
+    if not value:
+        return []
+    try:
+        payload = json.loads(value)
+    except ValueError:
+        return parse_agent_refs(value)
+    if isinstance(payload, list):
+        return [str(item) for item in payload if str(item).strip()]
+    return []

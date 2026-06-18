@@ -286,6 +286,144 @@
       "scope": "terminal",
       "status": "shell-command",
       "notes": "hephaestus \"<request>\" is shorthand for hephaestus route \"<request>\"."
+    },
+    {
+      "runtime": "claude-code",
+      "command": "/hephaestus-search",
+      "adapterPath": ".claude/commands/hephaestus-search.md",
+      "globalInstallPath": "~/.claude/commands/hephaestus-search.md",
+      "scope": "global",
+      "status": "native-slash-command",
+      "notes": "Power-user search: show top owner-cloud and public Hub candidates without invoking."
+    },
+    {
+      "runtime": "claude-code",
+      "command": "/hephaestus-call",
+      "adapterPath": ".claude/commands/hephaestus-call.md",
+      "globalInstallPath": "~/.claude/commands/hephaestus-call.md",
+      "scope": "global",
+      "status": "native-slash-command",
+      "notes": "Power-user explicit call: prepare named Hub/cloud agents and return BYOM runtime bundles."
+    },
+    {
+      "runtime": "codex",
+      "command": "/prompts:hephaestus-search",
+      "adapterPath": "codex/prompts/hephaestus-search.md",
+      "globalInstallPath": "~/.codex/prompts/hephaestus-search.md",
+      "scope": "global",
+      "status": "custom-prompt-slash-command",
+      "notes": "Codex prompt surface for candidate-only cloud/hub search."
+    },
+    {
+      "runtime": "codex",
+      "command": "/prompts:hephaestus-call",
+      "adapterPath": "codex/prompts/hephaestus-call.md",
+      "globalInstallPath": "~/.codex/prompts/hephaestus-call.md",
+      "scope": "global",
+      "status": "custom-prompt-slash-command",
+      "notes": "Codex prompt surface for explicit named-agent BYOM bundle preparation."
+    },
+    {
+      "runtime": "gemini-cli",
+      "command": "/hephaestus-search",
+      "adapterPath": "gemini/extension/commands/hephaestus-search.toml",
+      "globalInstallPath": "~/.gemini/commands/hephaestus-search.toml",
+      "scope": "global",
+      "status": "extension-custom-command",
+      "notes": "Fallback user command installed by scripts/install-all-runtimes.sh."
+    },
+    {
+      "runtime": "gemini-cli",
+      "command": "/hephaestus-call",
+      "adapterPath": "gemini/extension/commands/hephaestus-call.toml",
+      "globalInstallPath": "~/.gemini/commands/hephaestus-call.toml",
+      "scope": "global",
+      "status": "extension-custom-command",
+      "notes": "Fallback user command installed by scripts/install-all-runtimes.sh."
+    },
+    {
+      "runtime": "antigravity",
+      "command": "/hephaestus-search",
+      "adapterPath": "antigravity/workflows/hephaestus-search.md",
+      "globalInstallPath": "~/.gemini/antigravity/global_workflows/hephaestus-search.md",
+      "scope": "global",
+      "status": "workflow-slash-command"
+    },
+    {
+      "runtime": "antigravity",
+      "command": "/hephaestus-call",
+      "adapterPath": "antigravity/workflows/hephaestus-call.md",
+      "globalInstallPath": "~/.gemini/antigravity/global_workflows/hephaestus-call.md",
+      "scope": "global",
+      "status": "workflow-slash-command"
+    },
+    {
+      "runtime": "cursor",
+      "command": "/hephaestus-search",
+      "adapterPath": "cursor/plugin/commands/hephaestus-search.md",
+      "globalInstallPath": "~/.cursor/commands/hephaestus-search.md",
+      "scope": "global",
+      "status": "native-slash-command"
+    },
+    {
+      "runtime": "cursor",
+      "command": "/hephaestus-call",
+      "adapterPath": "cursor/plugin/commands/hephaestus-call.md",
+      "globalInstallPath": "~/.cursor/commands/hephaestus-call.md",
+      "scope": "global",
+      "status": "native-slash-command"
+    },
+    {
+      "runtime": "opencode",
+      "command": "/hephaestus-search",
+      "adapterPath": "opencode/commands/hephaestus-search.md",
+      "globalInstallPath": "~/.config/opencode/commands/hephaestus-search.md",
+      "scope": "global",
+      "status": "native-slash-command"
+    },
+    {
+      "runtime": "opencode",
+      "command": "/hephaestus-call",
+      "adapterPath": "opencode/commands/hephaestus-call.md",
+      "globalInstallPath": "~/.config/opencode/commands/hephaestus-call.md",
+      "scope": "global",
+      "status": "native-slash-command"
+    },
+    {
+      "runtime": "mcp",
+      "command": "hephaestus_search",
+      "adapterPath": "agentlas_cloud/mcp_stdio.py",
+      "globalInstallPath": "~/.agentlas/runtime/current/bin/hephaestus mcp serve",
+      "scope": "global",
+      "status": "mcp-tool",
+      "notes": "Cloud + Hub candidate search; no invocation."
+    },
+    {
+      "runtime": "mcp",
+      "command": "hephaestus_call",
+      "adapterPath": "agentlas_cloud/mcp_stdio.py",
+      "globalInstallPath": "~/.agentlas/runtime/current/bin/hephaestus mcp serve",
+      "scope": "global",
+      "status": "mcp-tool",
+      "notes": "Prepare exact named Hub/cloud agents as BYOM runtime bundles."
+    },
+    {
+      "runtime": "agentlas-terminal",
+      "command": "hephaestus search",
+      "adapterPath": "bin/hephaestus",
+      "globalInstallPath": "Hephaestus-search \"<request>\"",
+      "scope": "terminal",
+      "status": "shell-command-alias",
+      "notes": "Candidate-only cloud/hub search."
+    },
+    {
+      "runtime": "agentlas-terminal",
+      "command": "hephaestus call",
+      "adapterPath": "bin/hephaestus",
+      "globalInstallPath": "Hephaestus-call \"agent-a,agent-b\" \"<context>\"",
+      "scope": "terminal",
+      "status": "shell-command-alias",
+      "notes": "Prepare exactly named agents."
     }
   ],
   "postCreationUserMessage": {

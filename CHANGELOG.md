@@ -4,6 +4,21 @@
 
 No unreleased changes yet.
 
+## v0.7.6 - 2026-06-18
+
+- Added power-user `/hephaestus-search` and `/hephaestus-call` surfaces across
+  Claude, Codex prompts, Gemini, Antigravity, Cursor, OpenCode, terminal, and
+  the local MCP server.
+- `hephaestus-search` returns separate top-10 sections for the signed-in
+  user's Agentlas Cloud packages and the public Agentlas Hub without invoking
+  any agent.
+- `hephaestus-call` prepares exactly named Hub/cloud agent slugs as BYOM
+  runtime bundles and writes receipts; the host runtime still owns execution.
+- Clarified that `/hephaestus-build ontology` is the local project
+  knowledge/memory map, not the Hub marketplace search.
+- Hardened the one-touch installer to prune stale visible command files,
+  typo-command remnants, and old `0-7-4`/`0.7.4` plugin cache folders.
+
 ## v0.7.5 - 2026-06-18
 
 - Moved the README first-run path to the top: copy-paste install prompt first,

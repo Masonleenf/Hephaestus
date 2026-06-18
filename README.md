@@ -69,18 +69,22 @@ AI install Hephaestus and tell you which command surface is active in that tool.
 
 ```text
 Install Hephaestus Agentlas for this workspace. Run:
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.5/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.6/scripts/install-all-runtimes.sh | bash
 
-After it finishes, tell me the three commands I should use:
+After it finishes, tell me the three primary commands I should use:
 1. create/build agents
 2. borrow public Hub agents
 3. use agents saved in my Agentlas Cloud
+
+Then also tell me the two power-user commands:
+4. search Cloud and Hub candidates without invoking
+5. call exact agent slugs I name
 
 If anything fails, read the error, fix it, retry, and confirm Claude Code,
 Codex, Gemini CLI, Antigravity, and Cursor registration status.
 ```
 
-## Three Commands
+## Three Primary Commands
 
 | Job | Command | Example prompt |
 |---|---|---|
@@ -88,8 +92,16 @@ Codex, Gemini CLI, Antigravity, and Cursor registration status.
 | Borrow | `/hephaestus-network` | `/hephaestus-network split this launch plan into research, copy, QA, and release agents` |
 | Share | `/hephaestus-cloud` | `/hephaestus-cloud use my saved finance analyst agent to review this report` |
 
+### Power-User Commands
+
+| Job | Command | Example prompt |
+|---|---|---|
+| Search | `/hephaestus-search` | `/hephaestus-search 시장 리포트 써야 하는데 쓸만한 에이전트 찾아줘` |
+| Call | `/hephaestus-call` | `/hephaestus-call market-researcher, report-writer {시장 리포트 초안 만들어줘}` |
+
 Fresh installs and updates prune the old visible `/hephaestus` chat command so
-new users see the three-command surface above.
+new users see the clean command surface above: three primary commands, plus two
+power-user commands when they need explicit search/call control.
 
 Hephaestus is the open core engine that makes Agentlas behave like an agent
 operating system instead of a one-off prompt generator. It gives developers
@@ -105,7 +117,9 @@ five connected control planes:
   completion before checks pass.
 - **Project ontology.** Turn approved project sources into local graph, search,
   and source-lineage context agents can query without sweeping unrelated
-  folders.
+  folders. This is not the Hub marketplace search. It is the project-local
+  knowledge/memory map that routed agents may consult when a task needs
+  grounding.
 - **Memory, self-evolution, and security gates.** Admit durable memory, promote
   skills, verify installs, scan packages, and block unsafe publish paths before
   agents are allowed to keep or ship new behavior.
@@ -136,6 +150,8 @@ One command, every runtime, all local:
 /hephaestus-build create a customer support agent
 /hephaestus-network borrow the right agents for this launch plan
 /hephaestus-cloud use the agent I shared to my Agentlas Cloud
+/hephaestus-search find agents for an ASO review workflow
+/hephaestus-call aso-researcher, reply-writer {draft replies for these reviews}
 ```
 
 - **Routing cards.** Every agent, team, and plugin ships a standardized
@@ -150,11 +166,13 @@ One command, every runtime, all local:
 - **Receipts, not execution.** Every routing decision writes a receipt. The
   router only selects agents or Hub bundles; the host runtime enforces
   permissions when tools actually execute.
-- **Three plain commands.** Use `/hephaestus-build` to create or repair agents,
+- **Three primary commands.** Use `/hephaestus-build` to create or repair agents,
   `/hephaestus-network` to borrow public Hub agents into a temporary task
   force, and `/hephaestus-cloud` to use agents you saved or shared through
-  Agentlas Cloud. The lower-level `ao`, `network`, `cards`, and `mcp` commands stay available for
-  automation and debugging.
+  Agentlas Cloud. Heavy users can add `/hephaestus-search` to compare Cloud and
+  Hub candidates without invoking, and `/hephaestus-call` to prepare exact
+  named agents. The lower-level `ao`, `network`, `cards`, and `mcp` commands
+  stay available for automation and debugging.
 - **Temporary task forces.** Composite `/hephaestus-network` requests are
   decomposed only when needed, then returned as a Hub/local TF plan with
   Stormbreaker packets, session hints, ontology graph paths, Local Operator
@@ -264,15 +282,17 @@ tells you the exact command to use next:
 
 ```text
 Set up the Hephaestus Agentlas meta-agent in this workspace. Run
-`curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.5/scripts/install-all-runtimes.sh | bash`
+`curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.6/scripts/install-all-runtimes.sh | bash`
 in the terminal, then tell me the exact three-command surface for the tool I am
-using (Claude Code, Codex, Gemini CLI, Antigravity, or Cursor). If anything
-fails, read the error, fix it, and retry.
+using (Claude Code, Codex, Gemini CLI, Antigravity, or Cursor). Also tell me
+the optional search/call power-user commands. If anything fails, read the
+error, fix it, and retry.
 ```
 
 When it finishes, use `/hephaestus-build`, `/hephaestus-network`, or
-`/hephaestus-cloud` in your tool. Prefer to run the commands yourself? Use the
-terminal **Quickstart** below.
+`/hephaestus-cloud` in your tool. Use `/hephaestus-search` and
+`/hephaestus-call` when you want to compare candidates or call exact slugs.
+Prefer to run the commands yourself? Use the terminal **Quickstart** below.
 
 ---
 
@@ -312,18 +332,18 @@ OpenCode, OpenClaw, and Hermes Agent surfaces. It also fixes the common
 old `agentlas-core-engine` entry and adding it again from this repo.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.5/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.6/scripts/install-all-runtimes.sh | bash
 ```
 
 After it finishes, restart any open AI apps. Then use:
 
 ```text
-Claude Code: /reload-plugins, then /hephaestus-build
-Codex:       /prompts:hephaestus-build, /prompts:hephaestus-network, or /prompts:hephaestus-cloud
-Gemini CLI:  /extensions list or /commands list, then /hephaestus-build
-Antigravity: reopen the workspace, then /hephaestus-build
-Cursor:      /hephaestus-build, /hephaestus-network, /hephaestus-cloud
-OpenCode:    /hephaestus-build, /hephaestus-network, /hephaestus-cloud
+Claude Code: /reload-plugins, then /hephaestus-build, /hephaestus-network, /hephaestus-cloud, /hephaestus-search, /hephaestus-call
+Codex:       /prompts:hephaestus-build, /prompts:hephaestus-network, /prompts:hephaestus-cloud, /prompts:hephaestus-search, or /prompts:hephaestus-call
+Gemini CLI:  /extensions list or /commands list, then /hephaestus-build, /hephaestus-network, /hephaestus-cloud, /hephaestus-search, /hephaestus-call
+Antigravity: reopen the workspace, then /hephaestus-build, /hephaestus-network, /hephaestus-cloud, /hephaestus-search, /hephaestus-call
+Cursor:      /hephaestus-build, /hephaestus-network, /hephaestus-cloud, /hephaestus-search, /hephaestus-call
+OpenCode:    /hephaestus-build, /hephaestus-network, /hephaestus-cloud, /hephaestus-search, /hephaestus-call
 OpenClaw:    /skill hephaestus-network <request>
 Hermes:      hephaestus-network skill (+ MCP, hermes/README.md)
 Ollama/Gemma/DeepSeek local models: docs/local-models.md
@@ -356,7 +376,7 @@ If you already installed the old `agentlas-meta-agent` plugin and Claude says
 `hephaestus` is not found, refresh the marketplace and replace the old plugin:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.5/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.6/scripts/install-all-runtimes.sh | bash
 ```
 
 `/hephaestus-build ontology` is now the Knowledge/Memory panel, not the main Agent OS
@@ -393,7 +413,7 @@ Claude also supports `claude plugins ...` as an alias, but this README uses
 Open your normal OS terminal, not the Codex chat box, and run:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.5
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.6
 codex plugin add hephaestus@agentlas-core-engine
 ```
 
@@ -407,7 +427,7 @@ If Codex still shows `agentlas-meta-agent` or internal support names like
 `mode-classification`, refresh the marketplace and replace the old plugin:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.5/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.6/scripts/install-all-runtimes.sh | bash
 ```
 
 The Codex OS-terminal CLI command is singular: `codex plugin`, not
@@ -455,7 +475,7 @@ repo package files in your current project. Open macOS Terminal, Linux terminal,
 Windows Git Bash, or WSL in that project folder and run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.5/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.6/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -463,9 +483,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\hephaestus-v0.7.5.zip"
-$extract = "$env:TEMP\hephaestus-v0.7.5"
-Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.7.5.zip" -OutFile $zip
+$zip = "$env:TEMP\hephaestus-v0.7.6.zip"
+$extract = "$env:TEMP\hephaestus-v0.7.6"
+Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.7.6.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -558,15 +578,17 @@ and Gemini CLI from the extension manifest. No separate MCP setup needed.
 
 | Runtime | Open it | Then |
 |---|---|---|
-| Claude Code | Type `claude` in your OS terminal (or open the desktop app) | `/hephaestus-build`, `/hephaestus-network`, `/hephaestus-cloud` |
-| Codex | Type `codex` in your OS terminal (or Codex app) | `/prompts:hephaestus-build`, `/prompts:hephaestus-network`, `/prompts:hephaestus-cloud` |
-| Gemini CLI | Type `gemini` in your OS terminal | `/hephaestus-build`, `/hephaestus-network`, `/hephaestus-cloud` |
-| Antigravity | Open your workspace | `/hephaestus-build`, `/hephaestus-network`, `/hephaestus-cloud` |
+| Claude Code | Type `claude` in your OS terminal (or open the desktop app) | `/hephaestus-build`, `/hephaestus-network`, `/hephaestus-cloud`, `/hephaestus-search`, `/hephaestus-call` |
+| Codex | Type `codex` in your OS terminal (or Codex app) | `/prompts:hephaestus-build`, `/prompts:hephaestus-network`, `/prompts:hephaestus-cloud`, `/prompts:hephaestus-search`, `/prompts:hephaestus-call` |
+| Gemini CLI | Type `gemini` in your OS terminal | `/hephaestus-build`, `/hephaestus-network`, `/hephaestus-cloud`, `/hephaestus-search`, `/hephaestus-call` |
+| Antigravity | Open your workspace | `/hephaestus-build`, `/hephaestus-network`, `/hephaestus-cloud`, `/hephaestus-search`, `/hephaestus-call` |
 
 `/hephaestus-build` is for **creating** agents. `/hephaestus-network` is for
 **borrowing** public Hub agents. `/hephaestus-cloud` is for **sharing/using**
-agents in your own Agentlas Cloud. Fresh chat installs no longer expose the old
-general `/hephaestus` command as a visible command.
+agents in your own Agentlas Cloud. `/hephaestus-search` lists Cloud and Hub
+candidates without invoking. `/hephaestus-call` prepares the exact agent slugs
+you name. Fresh chat installs no longer expose the old general `/hephaestus`
+command as a visible command.
 
 ### 2. MCP tools are used in plain language, not commands
 

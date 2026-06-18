@@ -11,8 +11,9 @@ therefore exposes one clear Codex product surface in three places:
 2. **Custom prompts** (explicit slash surface): `codex/prompts/*.md` are
    copied to `~/.codex/prompts/` by the installer and appear as
    `/prompts:hephaestus-build`, `/prompts:hephaestus-network`, and
-   `/prompts:hephaestus-cloud`. Top-level files only — Codex ignores
-   subdirectories there.
+   `/prompts:hephaestus-cloud`, with power-user prompts
+   `/prompts:hephaestus-search` and `/prompts:hephaestus-call`. Top-level
+   files only — Codex ignores subdirectories there.
 3. **MCP**: the installer registers the local stdio server
    (`hephaestus mcp serve`) as `mcp_servers.hephaestus-network` in
    `~/.codex/config.toml`, exposing the `hephaestus_route` and
@@ -32,16 +33,16 @@ git --version
 One-command install or update for every supported runtime:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.5/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.6/scripts/install-all-runtimes.sh | bash
 ```
 
 Codex-only manual install:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.5
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.6
 codex plugin add hephaestus@agentlas-core-engine
 mkdir -p ~/.codex/prompts
-cp codex/prompts/hephaestus-build.md codex/prompts/hephaestus-network.md codex/prompts/hephaestus-cloud.md ~/.codex/prompts/
+cp codex/prompts/hephaestus-build.md codex/prompts/hephaestus-network.md codex/prompts/hephaestus-cloud.md codex/prompts/hephaestus-search.md codex/prompts/hephaestus-call.md ~/.codex/prompts/
 ```
 
 The OS-terminal Codex CLI command is singular: `codex plugin`, not
@@ -56,6 +57,8 @@ Open or restart Codex and type:
 /prompts:hephaestus-build create a support operations agent
 /prompts:hephaestus-network find me an agent for app store reviews
 /prompts:hephaestus-cloud use my saved finance analyst agent
+/prompts:hephaestus-search find agents for market report research
+/prompts:hephaestus-call market-researcher, report-writer {draft a market report brief}
 $hephaestus-network   (skill mention; skill picker should show only the three public Hephaestus skills)
 ```
 

@@ -30,6 +30,8 @@ code_files=(
   "bin/hephaestus"
   "bin/hephaestus-build"
   "bin/hephaests-network"
+  "bin/hephaestus-search"
+  "bin/hephaestus-call"
   "bin/hephaestus.cmd"
 )
 
@@ -63,9 +65,18 @@ skill_mirrors=(
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-build.md:.claude/commands/hephaestus-build.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-network.md:.claude/commands/hephaestus-network.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-cloud.md:.claude/commands/hephaestus-cloud.md"
+  "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-search.md:.claude/commands/hephaestus-search.md"
+  "claude/plugins/agentlas-core-engine-meta-agent/commands/hephaestus-call.md:.claude/commands/hephaestus-call.md"
+  "gemini/extension/commands/hephaestus-build.toml:.gemini/commands/hephaestus-build.toml"
+  "gemini/extension/commands/hephaestus-network.toml:.gemini/commands/hephaestus-network.toml"
+  "gemini/extension/commands/hephaestus-cloud.toml:.gemini/commands/hephaestus-cloud.toml"
+  "gemini/extension/commands/hephaestus-search.toml:.gemini/commands/hephaestus-search.toml"
+  "gemini/extension/commands/hephaestus-call.toml:.gemini/commands/hephaestus-call.toml"
   "antigravity/workflows/hephaestus-build.md:.agents/workflows/hephaestus-build.md"
   "antigravity/workflows/hephaestus-network.md:.agents/workflows/hephaestus-network.md"
   "antigravity/workflows/hephaestus-cloud.md:.agents/workflows/hephaestus-cloud.md"
+  "antigravity/workflows/hephaestus-search.md:.agents/workflows/hephaestus-search.md"
+  "antigravity/workflows/hephaestus-call.md:.agents/workflows/hephaestus-call.md"
 )
 
 drift=0

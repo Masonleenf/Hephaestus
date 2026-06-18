@@ -8,13 +8,17 @@ it.
 
 ## What you get
 
-- `/hephaestus-build`, `/hephaestus-network`, and `/hephaestus-cloud` in Claude
-  Code, Codex, Gemini CLI, Antigravity, Cursor, and OpenCode; terminal aliases
-  are `Hephaestus-build`, `hephaests-network`, and `hephaestus cloud`.
-- A three-command user surface: `/hephaestus-build` for creation and repair,
+- `/hephaestus-build`, `/hephaestus-network`, `/hephaestus-cloud`,
+  `/hephaestus-search`, and `/hephaestus-call` in Claude Code, Codex, Gemini
+  CLI, Antigravity, Cursor, and OpenCode; terminal aliases are
+  `Hephaestus-build`, `hephaests-network`, `hephaestus cloud`,
+  `Hephaestus-search`, and `Hephaestus-call`.
+- A three-primary-command user surface: `/hephaestus-build` for creation and repair,
   `/hephaestus-network` for borrowing public Hub agents into temporary task
   forces, and `/hephaestus-cloud` for using agents saved or shared through the
-  signed-in user's Agentlas Cloud.
+  signed-in user's Agentlas Cloud. Power users add `/hephaestus-search` to
+  compare Cloud/Hub candidates without invoking and `/hephaestus-call` to
+  prepare exact named agents.
 - A global, local-only structure at `~/.agentlas/networking/`:
   `cards/` (routing cards), `policies/`, `memory/` (routing preferences only),
   `ledgers/` (routing receipts, executions, capability grants), `cache/`,
@@ -67,8 +71,12 @@ hephaestus cards migrate <root> --tier free|paid|plugin|local
 hephaestus route "<request>"     # or just: hephaestus "<request>"
 hephaestus hephaestus-build "<request>"     # build/create/package surface
 hephaestus hephaestus-network "<request>"   # Hub-only Network surface
+hephaestus search "<request>"               # show cloud + Hub candidates only
+hephaestus call "agent-a,agent-b" "<ctx>"    # prepare exact named agents
 Hephaestus "<request>"           # human-facing terminal alias
 Hephaestus-build "<request>"     # human-facing build alias
+Hephaestus-search "<request>"    # human-facing search alias
+Hephaestus-call "agent-a,agent-b" "<ctx>"    # human-facing call alias
 hephaests-network "<request>"    # standalone Hub-only Network alias
 ```
 
@@ -89,7 +97,7 @@ redacted tokens — never the raw prompt.
 
 0.7.3 receipts also carry:
 
-- `agent_os_router`: the three-command surface and router version.
+- `agent_os_router`: the primary command surface and router version.
 - `task_force`: single-agent route, local pipeline, or Hub stage candidates.
 - `policy_decision`: Local Operator Mode labels such as `auto_redact` or
   `candidate_only`.
