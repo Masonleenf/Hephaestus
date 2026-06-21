@@ -100,10 +100,13 @@ For demo/distribution/Hub-only requests:
   Before doing the user's substantive task, always send a short fixed
   user-visible receipt line that makes the Hub invocation obvious:
   `Hub 호출: <agent name> (<slug>) · local_routing=skipped · receipt=<routing_receipt_id> · execution=<execution_id>`.
-  If only candidates were returned and no Hub agent was invoked yet, say:
-  `Hub 후보 확인: <top candidate name> (<slug>) · 아직 invoke 전 · receipt=<receipt_id>`,
-  then invoke the chosen callable Hub agent before proceeding whenever the task
-  needs the agent's runtime bundle.
+  If only candidates were returned and no Hub agent was invoked yet, do not stop
+  at candidate reporting when the request is a GUI shortcut such as `startup`.
+  First run `hephaestus local-gui "<request>" --detach --quiet-not-found`; this
+  opens a local GUI if present, or restores the Hub cloud package and launches
+  the packaged GUI on another machine. For non-GUI tasks, invoke the chosen
+  callable Hub agent before proceeding whenever the task needs the agent's
+  runtime bundle.
 - `action: "propose_new"` — offer to build a new agent/team via the Hephaestus
   meta-agent.
 - `action: "refuse"` — explain `reasons` (for example, loop guard). Do not

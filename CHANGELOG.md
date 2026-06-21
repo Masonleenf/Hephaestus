@@ -2,8 +2,15 @@
 
 ## Unreleased
 
-## v0.7.14 - 2026-06-20
+## v0.7.15 - 2026-06-21
 
+- Added deterministic GUI shortcut launch for Hub-distributed packages:
+  `/hep-network startup` now restores the Startup Founder Studio cloud package
+  and launches its packaged GUI even when Mason's local `Paid/` folder is not
+  present.
+- Added the `hephaestus local-gui` runtime command and wired `/hep-network`
+  surfaces to use it before falling back to plain candidate routing for GUI
+  shortcuts.
 - Renamed the visible command surface to the short `/hep-*` family across app,
   web/docs, terminal, and runtime adapters: `/hep-build`, `/hep-network`,
   `/hep-cloud`, `/hep-search`, `/hep-call`, and `/hep-upload`.

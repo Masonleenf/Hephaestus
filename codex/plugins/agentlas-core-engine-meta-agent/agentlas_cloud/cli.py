@@ -230,6 +230,8 @@ def main(argv: list[str] | None = None) -> int:
     local_gui = sub.add_parser("local-gui", help=argparse.SUPPRESS)
     local_gui.add_argument("query")
     local_gui.add_argument("--no-open", action="store_true")
+    local_gui.add_argument("--detach", action="store_true")
+    local_gui.add_argument("--quiet-not-found", action="store_true")
 
     search = sub.add_parser("search", help="Show top owner-cloud and public Hub agent candidates without invoking")
     search.add_argument("query")
@@ -548,11 +550,12 @@ def main(argv: list[str] | None = None) -> int:
         from .networking.gui_shortcut import open_local_gui_shortcut
 
         init_networking(networking_home())
-        result = open_local_gui_shortcut(args.query, no_open=args.no_open)
-        emit(result)
+        result = open_local_gui_shortcut(args.query, no_open=args.no_open, detach=args.detach)
+        if not (args.quiet_not_found and result.get("action") == "no_local_gui_shortcut"):
+            emit(result)
         if result.get("action") == "no_local_gui_shortcut":
             return 4
-        return 0 if result.get("status") == "opened" else 1
+        return 0 if result.get("status") in {"opened", "opening"} else 1
     if args.command == "ao":
         from .agent_graph import (
             describe_graph,

@@ -23,14 +23,19 @@ Use the first executable found:
 3. Act on `action`:
    - `route` — report the selected card and canonical command; if
      present, invoke it with the original request.
-     **GUI:** if `selected.entrypoints.gui_launcher` is set and `selected.source` is a local dir, FIRST launch the web app detached/non-blocking — `python3 <source>/<gui_launcher> &` — so GUI agents always open their interactive app (python3-only, any machine).
+     **GUI:** before reporting a GUI shortcut such as `startup`, run
+     `"$RUNNER" local-gui "<request>" --detach --quiet-not-found`. This opens
+     the local GUI when the source folder exists; on another machine, it restores
+     the Hub cloud package and launches the packaged GUI instead.
    - `clarify` — ask the `clarify_question` with candidates, then re-route.
    - `pipeline` — a multi-team plan (PRD → build → QA). Execute `stages` in
      order, save artifacts under
      `handoff_dir/<order>-<kind>/`, pass paths to the next stage; on failure
      stop and report — never retry silently.
    - `hub_fallback` / `hub_candidates` — Hub lookup used redacted keywords only;
-     the raw prompt and local memory were not sent.
+     the raw prompt and local memory were not sent. For GUI shortcuts, do not
+     stop at candidate reporting; run `local-gui` so the Hub cloud package is
+     installed and opened.
    - `propose_new` — offer to build a new agent/team via `/hep-build`.
    - `refuse` — explain `reasons`; do not work around the loop guard or
      equivalent technical guard.
