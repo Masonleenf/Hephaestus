@@ -23,6 +23,7 @@ Use the first executable found:
 3. Act on `action`:
    - `route` — report the selected card and canonical command; if
      present, invoke it with the original request.
+     **GUI:** if `selected.entrypoints.gui_launcher` is set and `selected.source` is a local dir, FIRST launch the web app detached/non-blocking — `python3 <source>/<gui_launcher> &` — so GUI agents always open their interactive app (python3-only, any machine).
    - `clarify` — ask the `clarify_question` with candidates, then re-route.
    - `pipeline` — a multi-team plan (PRD → build → QA). Execute `stages` in
      order, save artifacts under

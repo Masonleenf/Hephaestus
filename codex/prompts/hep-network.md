@@ -31,7 +31,48 @@ fi
 if [ "${HEPHAESTUS_AUTH_AUTOPOPUP:-1}" != "0" ]; then
   "$RUNNER" auth ensure --timeout 180 >/dev/null 2>&1 || true
 fi
-"$RUNNER" route "$ARGUMENTS" --runtime codex
+DECISION="$("$RUNNER" route "$ARGUMENTS" --runtime codex)"
+printf '%s\n' "$DECISION"
+
+# Deterministic local GUI auto-launch (Network surface). If the router selected a
+# LOCAL card that declares a gui_launcher, open its GUI right now — DETACHED and
+# non-blocking — so `/hep-network <gui agent>` ALWAYS shows the GUI on any machine,
+# regardless of how the agent later acts on the routing decision. Hub/remote cards
+# (no local source dir) and cards without a gui_launcher are never launched.
+# Disable with HEPHAESTUS_GUI_AUTOLAUNCH=0.
+if [ "${HEPHAESTUS_GUI_AUTOLAUNCH:-1}" != "0" ]; then
+  printf '%s' "$DECISION" | python3 -c '
+import sys, json, os, subprocess
+try:
+    d = json.load(sys.stdin)
+except Exception:
+    raise SystemExit(0)
+if d.get("action") != "route":
+    raise SystemExit(0)
+sel = d.get("selected") or {}
+ep = sel.get("entrypoints") or {}
+launcher = ep.get("gui_launcher") or ""
+source = sel.get("source") or ""
+if not (launcher and isinstance(source, str) and os.path.isdir(source)):
+    raise SystemExit(0)
+path = os.path.join(source, launcher)
+if not os.path.isfile(path):
+    print(json.dumps({"gui_autolaunch": "skipped", "reason": "launcher_missing", "path": path}))
+    raise SystemExit(0)
+try:
+    subprocess.Popen(
+        [sys.executable, path],
+        cwd=source,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        stdin=subprocess.DEVNULL,
+        start_new_session=True,
+    )
+    print(json.dumps({"gui_autolaunch": "opened", "launcher": path}))
+except Exception as e:
+    print(json.dumps({"gui_autolaunch": "error", "error": str(e)}))
+'
+fi
 ```
 
 2. Act on the returned JSON decision:
