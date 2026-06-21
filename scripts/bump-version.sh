@@ -41,20 +41,45 @@ old_plain="${old#v}"
 new_plain="${new#v}"
 old_re="${old_plain//./\\.}"
 
-# Optional: path to the Agentlas Web InstallGuide.tsx (ONE_TOUCH_CMD pin).
-# Set AGENTLAS_WEB_INSTALL_GUIDE locally; unset means the web pin is skipped.
-web_file="${AGENTLAS_WEB_INSTALL_GUIDE:-}"
+# Path to the Agentlas Web InstallGuide.tsx (ONE_TOUCH_CMD pin). The web app lives
+# in a SIBLING repo, so default to that layout; AGENTLAS_WEB_INSTALL_GUIDE overrides.
+# It must be defaulted (not left empty) — a release that forgets to export it is how
+# the web pin first fell behind and then got stuck.
+web_file="${AGENTLAS_WEB_INSTALL_GUIDE:-../agentlas/AgentsAtlas/app/src/components/install/InstallGuide.tsx}"
 
 # Tag form (vX.Y.Z) in shell scripts + docs; quoted plain form ("X.Y.Z") in JSON manifests.
+# NOTE: the web file is handled separately below (pattern replace, not literal old→new)
+# so a web pin that is several releases behind still snaps forward instead of sticking.
 targets="$(grep -rl -e "v${old_re}" -e "\"${old_re}\"" \
   --include='*.sh' --include='*.py' --include='*.md' --include='*.json' --include='*.toml' --include='*.command' --include='*.svg' \
   . 2>/dev/null | grep -v node_modules | grep -v '^\./vendor/' | grep -v '^\./\.git/' | grep -v 'scripts/bump-version\.sh' || true)"
-if [[ -f "$web_file" ]] && grep -q "v${old_re}" "$web_file"; then
-  targets="$targets
-$web_file"
+
+# --- Web ONE_TOUCH_CMD pin (sibling repo) -----------------------------------
+# Pattern replace, NOT literal old→new: the web app's install one-liner pins the
+# Hephaestus tag in a curl URL. Match the URL shape and snap whatever version it
+# carries to the new tag, so a web file that skipped past releases (and is now
+# several versions behind) still catches up instead of sticking forever.
+web_synced=""
+web_pat='Hephaestus/v[0-9]+\.[0-9]+\.[0-9]+/scripts/install-all-runtimes\.sh'
+if [[ -f "$web_file" ]] && grep -qE "$web_pat" "$web_file"; then
+  cur="$(sed -nE 's#.*Hephaestus/(v[0-9]+\.[0-9]+\.[0-9]+)/scripts/install-all-runtimes\.sh.*#\1#p' "$web_file" | head -1)"
+  if [[ "$dry" == "--dry-run" ]]; then
+    echo "$web_file  (web ONE_TOUCH_CMD ${cur:-?} → ${new})"
+  elif [[ "$cur" != "$new" ]]; then
+    sed -i '' -E "s#(Hephaestus/)v[0-9]+\.[0-9]+\.[0-9]+(/scripts/install-all-runtimes\.sh)#\1${new}\2#g" "$web_file"
+    echo "synced $web_file  (web ONE_TOUCH_CMD ${cur:-?} → ${new})"
+    web_synced=1
+  else
+    echo "web ONE_TOUCH_CMD already at ${new}: $web_file"
+  fi
 fi
 
 if [[ -z "${targets// /}" ]]; then
+  if [[ -n "$web_synced" ]]; then
+    echo "done: web pin moved to $new (no in-repo files still pinned $old)"
+    echo "NOTE: web ONE_TOUCH_CMD updated — deploy AgentsAtlas/app for it to go live."
+    exit 0
+  fi
   echo "no files pin $old — nothing to do"
   exit 0
 fi
@@ -87,7 +112,7 @@ else
     echo "WARN: version pins that did NOT move (fix or confirm intentional):"
     printf '%s\n' "$stragglers"
   fi
-  if [[ -f "$web_file" ]]; then
+  if [[ -n "$web_synced" ]]; then
     echo "NOTE: web ONE_TOUCH_CMD updated — deploy AgentsAtlas/app for it to go live."
   fi
   echo "NOTE: tag and push the release: git tag $new && git push origin $new"
