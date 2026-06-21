@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-version="${HEPHAESTUS_REF:-v0.7.17}"
+version="${HEPHAESTUS_REF:-v0.7.18}"
 repo="${HEPHAESTUS_REPO:-agentlas-ai/Hephaestus}"
 github_url="${HEPHAESTUS_GITHUB_URL:-https://github.com/$repo}"
 marketplace_name="${HEPHAESTUS_MARKETPLACE:-agentlas-core-engine}"
@@ -39,16 +39,48 @@ python_ok() {
   "$@" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 9) else 1)' >/dev/null 2>&1
 }
 
+is_runtime_python_shim() {
+  local candidate="$1"
+  local resolved=""
+  if [[ "$candidate" == */* ]]; then
+    resolved="$candidate"
+  else
+    resolved="$(command -v "$candidate" 2>/dev/null || true)"
+  fi
+  [[ -n "$resolved" ]] || return 1
+  case "$resolved" in
+    "$HOME/.agentlas/runtime/"*/bin/python3|"$HOME/.agentlas/runtime/current/bin/python3")
+      return 0
+      ;;
+  esac
+  return 1
+}
+
+python_candidate_ok() {
+  local candidate="$1"
+  if is_runtime_python_shim "$candidate"; then
+    return 1
+  fi
+  python_ok "$candidate"
+}
+
 resolve_python_cmd() {
-  if [[ -n "${HEPHAESTUS_PYTHON:-}" ]] && python_ok "$HEPHAESTUS_PYTHON"; then
+  if [[ -n "${HEPHAESTUS_PYTHON:-}" ]] && python_candidate_ok "$HEPHAESTUS_PYTHON"; then
     printf '%s\n' "$HEPHAESTUS_PYTHON"
     return 0
   fi
-  if have python3 && python_ok python3; then
+  local candidate
+  for candidate in /opt/homebrew/bin/python3 /usr/local/bin/python3 /usr/bin/python3; do
+    if [[ -x "$candidate" ]] && python_candidate_ok "$candidate"; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+  if have python3 && python_candidate_ok python3; then
     printf '%s\n' python3
     return 0
   fi
-  if have python && python_ok python; then
+  if have python && python_candidate_ok python; then
     printf '%s\n' python
     return 0
   fi
@@ -146,7 +178,11 @@ install_runtime_home() {
         "$home_dir/bin/hephaestus-build" "$home_dir/bin/hephaests-network" \
         "$home_dir/bin/hephaestus-search" "$home_dir/bin/hephaestus-call" \
         "$home_dir/bin/hephaestus-storm" 2>/dev/null || true
-  ln -sfn "$home_dir" "$HOME/.agentlas/runtime/current"
+  local current_link="$HOME/.agentlas/runtime/current"
+  if [[ -e "$current_link" && ! -L "$current_link" ]]; then
+    rm -rf "$current_link"
+  fi
+  ln -sfn "$home_dir" "$current_link"
   log "Installed runner: $HOME/.agentlas/runtime/current/bin/hephaestus"
 }
 
@@ -154,6 +190,7 @@ write_python3_shim() {
   local bin_dir="$1"
   local py
   py="$(resolve_python_cmd || true)"
+  rm -f "$bin_dir/python3" "$bin_dir/python3.cmd" 2>/dev/null || true
   [[ -n "$py" ]] || return 0
   mkdir -p "$bin_dir"
   if [[ "$py" == "py -3" ]]; then
@@ -427,12 +464,14 @@ install_antigravity() {
 register_antigravity_mcp() {
   local cfg_dir="$HOME/.gemini/config"
   local cfg="$cfg_dir/mcp_config.json"
-  if ! have python3; then
+  local py=""
+  py="$(resolve_python_cmd || true)"
+  if [[ -z "$py" ]]; then
     warn "python3 not found; add agentlas MCP to $cfg manually."
     return 0
   fi
   mkdir -p "$cfg_dir"
-  AGENTLAS_MCP_URL="$mcp_url" python3 - "$cfg" <<'PY' || return 1
+  AGENTLAS_MCP_URL="$mcp_url" "$py" - "$cfg" <<'PY' || return 1
 import json, os, sys
 path = sys.argv[1]
 url = os.environ["AGENTLAS_MCP_URL"]
