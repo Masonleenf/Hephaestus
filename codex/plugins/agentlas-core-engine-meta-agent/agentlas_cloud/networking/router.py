@@ -281,7 +281,13 @@ def _score_card(
                 score += domain_boost
                 reasons.append("domain match")
             elif len(query_domains) == 1:
-                score -= domain_penalty
+                # Demote a clear cross-domain card hard, but never let the
+                # penalty ALONE drop a lexically-relevant card below the
+                # eligibility gate (score > 0) — otherwise a single domain
+                # misclassification would silently delete the correct card
+                # instead of merely ranking it lower.
+                penalized = score - domain_penalty
+                score = penalized if penalized > 0 else (0.01 if score > 0 else penalized)
                 reasons.append(
                     "cross-domain penalty (query="
                     + "/".join(sorted(query_domains))
@@ -824,6 +830,23 @@ def route_request(
         ao_allowed_by = ["agent_ontology_graph_cards"]
         ao_fallback_scope = "card_derived_ontology"
 
+    query_domains = set(classify_domains(query))
+
+    def _route_graph_path(card: dict[str, Any] | None) -> list[dict[str, Any]]:
+        """A concrete AO edge (domain→agent) for a routed card under the
+        card-derived ontology scope; empty for any other scope so non-card
+        routes are unchanged. Used by every route branch so a routed card never
+        reports the empty graph_path this feature was meant to eliminate."""
+        if ao_fallback_scope != "card_derived_ontology" or not card:
+            return []
+        from ..agent_graph import card_route_path
+
+        return card_route_path(
+            str(card.get("id")),
+            _cached_index(card).get("domains") or set(),
+            query_domains,
+        )
+
     explicit = _explicit_match(query, usable)
     if explicit is None:
         explicit = _project_override(query, project, cards_by_id)
@@ -841,7 +864,7 @@ def route_request(
             [selected],
             ["explicit_match"],
             match_reason="explicit_match",
-            graph_path=[],
+            graph_path=_route_graph_path(explicit),
             allowed_by=ao_allowed_by or ["explicit_match"],
             blocked_by_axiom=ao_blocked_by_axiom,
             fallback_scope=ao_fallback_scope,
@@ -878,7 +901,7 @@ def route_request(
                 [selected],
                 ["creation_intent"],
                 match_reason="creation_intent",
-                graph_path=[],
+                graph_path=_route_graph_path(creator),
                 allowed_by=ao_allowed_by or ["creation_intent"],
                 blocked_by_axiom=ao_blocked_by_axiom,
                 fallback_scope=ao_fallback_scope,
@@ -889,8 +912,7 @@ def route_request(
     # A one-content-word query ("웹사이트 만들어줘") can never share two words;
     # scale the trigger qualification down to the query's own word count.
     min_shared_words = min(2, max(1, len(word_token_set(query))))
-    query_domains = set(classify_domains(query))
-    semantic_weight = float(policy.get("semantic_weight", 1.5))
+    semantic_weight = float(policy.get("semantic_weight", 0.5))
     domain_boost = float(policy.get("domain_boost", 1.5))
     domain_penalty = float(policy.get("domain_penalty", 6.0))
     query_vector = _embed_query(query) if semantic_weight > 0 else None
@@ -997,17 +1019,7 @@ def route_request(
             chain_note.append("multi_route_hub_alternatives")
         if ao_filter_report.get("status") == "caller_filtered":
             chain_note.append("ao:caller-gated")
-        # Card-derived ontology → emit a concrete AO edge (domain→agent) so the
-        # ontology is visible in the receipt instead of an empty graph_path.
-        route_graph_path: list[dict[str, Any]] = []
-        if ao_fallback_scope == "card_derived_ontology":
-            from ..agent_graph import card_route_path
-
-            route_graph_path = card_route_path(
-                str(top_card.get("id")),
-                _cached_index(top_card).get("domains") or set(),
-                query_domains,
-            )
+        route_graph_path = _route_graph_path(top_card)
         return finish(
             result,
             candidates,

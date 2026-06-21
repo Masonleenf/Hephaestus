@@ -19,11 +19,17 @@ substring collisions (e.g. bare "api" hides inside "therapist").
 
 from __future__ import annotations
 
+import re
+
 # domain id -> high-precision substring markers (lowercased at match time)
 DOMAIN_MARKERS: dict[str, tuple[str, ...]] = {
     "finance": (
-        "증권", "종목", "포트폴리오", "리밸런싱", "주식", "펀드", "투자", "매매", "운용사",
-        "자산운용", "시세", "트레이딩", "배당", "선물옵션", "환율", "재무제표",
+        # Bare "주식" is dropped: it is a substring of "주식회사" (Inc./Co.) and
+        # would tag every corporation mention as finance. Phrase forms keep
+        # stock-trading recall without that collision.
+        "증권", "종목", "포트폴리오", "리밸런싱", "주식 거래", "주식 매수", "주식 투자",
+        "주식 종목", "주식시장", "펀드", "투자", "매매", "운용사", "자산운용", "자산관리",
+        "자산 관리", "시세", "트레이딩", "배당", "선물옵션", "환율", "재무제표",
         "portfolio", "rebalanc", "brokerage", "equities", "stock market", "investor",
         "investment", "hedge fund", "dividend", "valuation", "asset management",
     ),
@@ -61,8 +67,8 @@ DOMAIN_MARKERS: dict[str, tuple[str, ...]] = {
         "canva", "infographic", "mockup",
     ),
     "marketing": (
-        "마케팅", "광고", "캠페인", "카피라이팅", "퍼널", "그로스", "campaign",
-        "advertis", "copywrit", "growth hack", "marketing funnel",
+        "마케팅", "광고", "캠페인", "카피라이팅", "퍼널", "그로스", "소셜", "소셜미디어",
+        "campaign", "advertis", "copywrit", "growth hack", "marketing funnel",
     ),
     "ecommerce": (
         "이커머스", "쇼핑몰", "상세페이지", "스마트스토어", "쿠팡", "상품등록", "재고관리",
@@ -98,8 +104,10 @@ DOMAIN_MARKERS: dict[str, tuple[str, ...]] = {
         "business model", "pitch deck", "go to market",
     ),
     "sales": (
-        "세일즈", "영업", "콜드메일", "제안서", "리드생성", "cold email",
-        "sales pipeline", "lead generation",
+        # Bare "영업" is dropped: it is a substring of 영업비밀(trade secret),
+        # 영업이익(operating profit), 영업시간(business hours). Phrase forms only.
+        "세일즈", "영업 전략", "영업 파이프라인", "영업 활동", "신규 영업", "콜드메일",
+        "제안서", "리드생성", "cold email", "sales pipeline", "lead generation",
     ),
     "support": (
         "고객지원", "고객문의", "헬프데스크", "customer support", "helpdesk",
@@ -114,17 +122,51 @@ DOMAIN_MARKERS: dict[str, tuple[str, ...]] = {
 DOMAIN_IDS: frozenset[str] = frozenset(DOMAIN_MARKERS)
 
 
+def _ascii_pattern(marker: str) -> "re.Pattern[str] | None":
+    """A boundary-anchored matcher for a pure-ASCII marker so it can never fire
+    inside a larger word ('valuation' must not match 'evaluation', 'canva' must
+    not match 'canvas', 'notion' must not match 'notional'). Korean markers have
+    no whitespace word boundaries, so they stay plain substrings and are kept
+    high-precision by phrasing instead. The ASCII-only look-arounds still let a
+    marker match when it is glued directly to Korean text (no ASCII boundary)."""
+    if all(ord(ch) < 128 for ch in marker):
+        return re.compile(r"(?<![a-z0-9])" + re.escape(marker) + r"(?![a-z0-9])")
+    return None
+
+
+def _build_matchers() -> dict[str, tuple[tuple[str | None, "re.Pattern[str] | None"], ...]]:
+    out: dict[str, tuple[tuple[str | None, "re.Pattern[str] | None"], ...]] = {}
+    for domain, markers in DOMAIN_MARKERS.items():
+        pairs: list[tuple[str | None, "re.Pattern[str] | None"]] = []
+        for marker in markers:
+            pattern = _ascii_pattern(marker)
+            pairs.append((None, pattern) if pattern is not None else (marker, None))
+        out[domain] = tuple(pairs)
+    return out
+
+
+# Precompiled per-domain matchers: each is (substring, None) for Korean markers
+# or (None, boundary_regex) for ASCII markers.
+_DOMAIN_MATCHERS = _build_matchers()
+
+
 def classify_domains(*texts: str) -> list[str]:
     """Return the sorted domains whose markers appear in the given text(s).
 
-    Pure substring matching on the lowercased concatenation. Empty result means
-    "no confident domain" — callers must treat that as *unknown*, never as a
-    mismatch, so the guard stays purely additive.
+    Korean markers match as case-insensitive substrings; ASCII markers match
+    only at word boundaries (so they cannot hide inside a larger English word).
+    Empty result means "no confident domain" — callers must treat that as
+    *unknown*, never as a mismatch, so the routing guard stays purely additive.
     """
     blob = " ".join(t for t in texts if t).lower()
     if not blob:
         return []
-    hits = {domain for domain, markers in DOMAIN_MARKERS.items() if any(m in blob for m in markers)}
+    hits: set[str] = set()
+    for domain, matchers in _DOMAIN_MATCHERS.items():
+        for substring, pattern in matchers:
+            if (substring is not None and substring in blob) or (pattern is not None and pattern.search(blob)):
+                hits.add(domain)
+                break
     return sorted(hits)
 
 

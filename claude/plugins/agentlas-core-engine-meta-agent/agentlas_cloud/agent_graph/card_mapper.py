@@ -102,7 +102,10 @@ def card_route_path(
     card_set = set(card_domains or [])
     query_set = set(query_domains or [])
     shared = sorted(card_set & query_set)
-    chosen = shared[0] if shared else (sorted(card_set)[0] if card_set else None)
+    # Only claim a domain-derived edge when query and card actually SHARE a
+    # domain; a card-only domain did not drive this route, so fall back to a
+    # plain routes_to edge rather than fabricating an in_domain justification.
+    chosen = shared[0] if shared else None
     if chosen:
         return [{"from": f"domain:{chosen}", "to": card_id, "relation": "in_domain", "kind": "card_ontology"}]
     return [{"from": "router", "to": card_id, "relation": "routes_to", "kind": "card_ontology"}]

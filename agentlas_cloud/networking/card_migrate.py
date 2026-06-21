@@ -114,7 +114,14 @@ def migrate_package(
     raw_domains = agent_card.get("domains")
     if not raw_domains and agent_card.get("category"):
         raw_domains = [agent_card.get("category")]
-    domains = [str(d) for d in (raw_domains or []) if str(d) in DOMAIN_IDS]
+    # Normalize before the DOMAIN_IDS membership filter so a non-canonical
+    # category casing ("Finance", "GAME ") still maps to its domain id instead
+    # of being silently dropped.
+    domains = []
+    for raw in (raw_domains or []):
+        norm = str(raw).strip().lower()
+        if norm in DOMAIN_IDS:
+            domains.append(norm)
     if not domains:
         domains = classify_domains(name, description, " ".join(str(c) for c in capabilities))
 
@@ -268,6 +275,10 @@ def backfill_domains(home: Path | str | None = None, *, write: bool = True, over
             continue
         card["domains"] = domains
         if write:
-            save_card(base, card)
+            # Strip internal (underscore-prefixed) keys such as _card_path before
+            # persisting, so machine-absolute paths don't leak into the on-disk
+            # card and the content hash isn't taken over them.
+            clean = {k: v for k, v in card.items() if not str(k).startswith("_")}
+            save_card(base, clean)
         updated.append({"id": card.get("id"), "domains": domains})
     return {"status": "ok", "home": str(base), "updated": len(updated), "skipped": skipped, "cards": updated}
