@@ -68,8 +68,10 @@ Paste this into Claude Code, Codex, Gemini CLI, Antigravity, or Cursor. Let the
 AI install Hephaestus and tell you which command surface is active in that tool.
 
 ```text
-Install Hephaestus Agentlas for this workspace. Run:
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.18/scripts/install-all-runtimes.sh | bash
+Install Hephaestus Agentlas for this workspace from this GitHub repo:
+https://github.com/agentlas-ai/Hephaestus
+
+Use the latest release/instructions. If anything errors, diagnose and fix it, retry, and confirm which command surface is active in this tool.
 
 After it finishes, tell me the three primary commands I should use:
 1. create/build agents
@@ -105,7 +107,7 @@ Fresh installs and updates prune the old visible `/hephaestus` chat command so
 new users see the clean command surface above: three primary commands, plus
 search, call, and upload utilities when they need explicit control.
 
-## New In v0.7.18
+## New In v0.7.19
 
 - **Short command surface.** The visible commands are now `/hep-build`,
   `/hep-network`, `/hep-cloud`, `/hep-search`, `/hep-call`, and `/hep-upload`
@@ -296,12 +298,13 @@ message below into its chat box. The agent runs the installer for you, then
 tells you the exact command to use next:
 
 ```text
-Set up the Hephaestus Agentlas meta-agent in this workspace. Run
-`curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.18/scripts/install-all-runtimes.sh | bash`
-in the terminal, then tell me the exact three-command surface for the tool I am
-using (Claude Code, Codex, Gemini CLI, Antigravity, or Cursor). Also tell me
-the optional search/call power-user commands. If anything fails, read the
-error, fix it, and retry.
+Set up the Hephaestus Agentlas meta-agent in this workspace from this GitHub repo:
+https://github.com/agentlas-ai/Hephaestus
+
+Use the latest release/instructions, then tell me the exact three-command surface
+for the tool I am using (Claude Code, Codex, Gemini CLI, Antigravity, or Cursor).
+Also tell me the optional search/call power-user commands. If anything fails,
+read the error, fix it, and retry.
 ```
 
 When it finishes, use `/hep-build`, `/hep-network`, or
@@ -347,7 +350,7 @@ OpenCode, OpenClaw, and Hermes Agent surfaces. It also fixes the common
 old `agentlas-core-engine` entry and adding it again from this repo.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.18/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
 ```
 
 After it finishes, restart any open AI apps. Then use:
@@ -391,7 +394,7 @@ If you already installed the old `agentlas-meta-agent` plugin and Claude says
 `hephaestus` is not found, refresh the marketplace and replace the old plugin:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.18/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
 ```
 
 `/hep-build ontology` is now the Knowledge/Memory panel, not the main Agent OS
@@ -428,7 +431,7 @@ Claude also supports `claude plugins ...` as an alias, but this README uses
 Open your normal OS terminal, not the Codex chat box, and run:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.18
+codex plugin marketplace add agentlas-ai/Hephaestus
 codex plugin add hephaestus@agentlas-core-engine
 ```
 
@@ -442,7 +445,7 @@ If Codex still shows `agentlas-meta-agent` or internal support names like
 `mode-classification`, refresh the marketplace and replace the old plugin:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.18/scripts/install-all-runtimes.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
 ```
 
 The Codex OS-terminal CLI command is singular: `codex plugin`, not
@@ -493,7 +496,7 @@ repo package files in your current project. Open macOS Terminal, Linux terminal,
 Windows Git Bash, or WSL in that project folder and run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.18/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -501,9 +504,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\hephaestus-v0.7.18.zip"
-$extract = "$env:TEMP\hephaestus-v0.7.18"
-Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.7.18.zip" -OutFile $zip
+$zip = "$env:TEMP\hephaestus-main.zip"
+$extract = "$env:TEMP\hephaestus-main"
+Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/heads/main.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1

@@ -80,12 +80,10 @@ message उसके chat box में जैसा है वैसा paste �
 चलाएगा और अगली command बता देगा:
 
 ```text
-इस workspace में Hephaestus Agentlas meta-agent set up करो। Terminal में
-`curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.18/scripts/install-all-runtimes.sh | bash`
-चलाओ, फिर बताओ कि मैं जो tool इस्तेमाल कर रहा/रही हूँ (Claude Code, Codex,
-Gemini CLI, Antigravity, Cursor) उसमें ये commands कैसे इस्तेमाल करनी हैं:
-/hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload। कुछ fail हो तो
-error पढ़कर ठीक करो और दोबारा try करो।
+इस workspace में Hephaestus Agentlas meta-agent set up करो। GitHub repo यहाँ है:
+https://github.com/agentlas-ai/Hephaestus
+
+Latest release/install instructions follow करो, फिर बताओ कि मैं जो tool इस्तेमाल कर रहा/रही हूँ (Claude Code, Codex, Gemini CLI, Antigravity, Cursor) उसमें ये commands कैसे इस्तेमाल करनी हैं: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload। कुछ fail हो तो error पढ़कर ठीक करो और दोबारा try करो।
 ```
 
 खत्म होने पर तीन बातें याद रखें: create/build के लिए `/hep-build`,
@@ -166,7 +164,7 @@ agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
 जिस project folder में package files चाहिए, वहां macOS Terminal, Linux terminal, Windows Git Bash या WSL खोलें:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/v0.7.18/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install.sh | bash
 scripts/verify-package.sh
 scripts/public_safety_check.sh
 ```
@@ -174,9 +172,9 @@ scripts/public_safety_check.sh
 Windows PowerShell:
 
 ```powershell
-$zip = "$env:TEMP\hephaestus-v0.7.18.zip"
-$extract = "$env:TEMP\hephaestus-v0.7.18"
-Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/tags/v0.7.18.zip" -OutFile $zip
+$zip = "$env:TEMP\hephaestus-main.zip"
+$extract = "$env:TEMP\hephaestus-main"
+Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/heads/main.zip" -OutFile $zip
 Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
 Expand-Archive $zip -DestinationPath $extract -Force
 $src = Get-ChildItem $extract -Directory | Select-Object -First 1
@@ -217,7 +215,7 @@ Codex chat के अंदर `/plugin marketplace add` इस्तेमा�
 **`codex` CLI वाले OS terminal में टाइप करें**:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.18
+codex plugin marketplace add agentlas-ai/Hephaestus
 codex plugin list
 codex plugin add hephaestus@agentlas-core-engine
 codex plugin list
@@ -291,7 +289,7 @@ Hephaestus सिर्फ prompt answer नहीं बनाता। यह 
 | "इस workflow के लिए team/company बनाओ" | `20-multi-agent-team-builder` | HQ, PM Soul, Memory Curator, Policy Gate, eval, QA और handoff वाली multi-agent team |
 | "इस existing agent/repo/workspace को package करो" | `30-agentlas-packager` | Desktop import, terminal, Codex, Claude, Gemini या public GitHub release के लिए साफ Agentlas package |
 
-## v0.7.18 में नया
+## v0.7.19 में नया
 
 - **Short command surface।** Claude Code, Codex, Gemini CLI, Antigravity, Cursor, OpenCode और terminal installs अब `/hep-build`, `/hep-network`, `/hep-cloud`, `/hep-search`, `/hep-call`, और `/hep-upload` एक जैसा expose करते हैं।
 - **Explicit upload gate।** `/hep-upload` किसी package, publish, register, या upload action से पहले हमेशा पूछता है कि target private Agentlas Cloud है या public Agentlas Hub।

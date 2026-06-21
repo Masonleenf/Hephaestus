@@ -2,12 +2,15 @@
 
 ## Unreleased
 
-## v0.7.18 - 2026-06-21
+## v0.7.19 - 2026-06-21
 
 - Fixed one-touch installer Python shim recursion: installer now rejects
   `~/.agentlas/runtime/current/bin/python3` as a Python candidate, prefers real
   system Python paths, removes stale shims before writing new ones, and replaces
   a malformed `runtime/current` directory with the intended symlink.
+- Made user-facing install docs versionless: paste-to-AI prompts now point to
+  the GitHub repository/latest instructions, and terminal examples use the
+  `main` one-touch installer instead of release-pinned install URLs.
 - Added deterministic GUI shortcut launch for Hub-distributed packages:
   `/hep-network startup` now restores the Startup Founder Studio cloud package
   and launches its packaged GUI even when Mason's local `Paid/` folder is not
