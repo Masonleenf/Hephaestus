@@ -88,7 +88,6 @@ def call_agents(
     project_dir: Path | str = ".",
     runtime: str | None = "terminal",
     version: str = "latest",
-    reject_paid_slug: bool = True,
     local_inventory: list[str] | None = None,
 ) -> dict[str, Any]:
     """Prepare exactly the named Hub/cloud agent bundles.
@@ -133,7 +132,6 @@ def call_agents(
             project_dir=project_dir,
             home=base,
             version=version,
-            reject_paid_slug=reject_paid_slug,
             local_inventory=local_inventory or [],
         )
         result["requested_ref"] = ref

@@ -26,7 +26,6 @@ def invoke_hub_agent(
     memory_root: Path | str | None = None,
     home: Path | str | None = None,
     version: str = "latest",
-    reject_paid_slug: bool = True,
     local_inventory: list[str] | None = None,
 ) -> dict[str, Any]:
     """Fetch and prepare a Hub agent runtime bundle, then write an execution receipt."""
@@ -53,21 +52,30 @@ def invoke_hub_agent(
 
     selected_slug = str(selected.get("slug") or slug or "")
     selected_norm = _norm_slug(selected_slug)
-    if reject_paid_slug and selected_norm in local["paid"]:
-        return _record(
-            base,
-            {
-                "action": "hub_invoke",
-                "status": "blocked_paid_overlap",
-                "slug": selected_slug,
-                "request_hash": _request_hash(request),
-                "routing_receipt_id": (hub_decision or {}).get("receipt_id"),
-                "local_slug_audit": local,
-            },
-        )
+    # Paid agents are NOT short-circuited locally. Every caller — including one
+    # who happens to hold the agent's source in a local /Paid/ folder — goes
+    # through the SAME server policy: Agentlas OAuth sign-in (handled by
+    # call_hub_tool's auto re-auth) plus the server-side credit gate, where
+    # calling your OWN cloud package is priced at OWN_CALL_CREDITS. The server is
+    # the only authority on entitlement, so a local source copy must never fork
+    # behavior into a privileged path.
 
     try:
         bundle_response = call_hub_tool("agentlas.get_runtime_bundle", {"slug": selected_slug, "version": version}, home=base)
+        refusal = _server_refusal(bundle_response)
+        if refusal is not None:
+            return _record(
+                base,
+                {
+                    "action": "hub_invoke",
+                    "status": refusal["status"],
+                    "slug": selected_slug,
+                    "request_hash": _request_hash(request),
+                    "routing_receipt_id": (hub_decision or {}).get("receipt_id"),
+                    "local_slug_audit": local,
+                    **refusal["fields"],
+                },
+            )
         bundle = bundle_response.get("bundle") if isinstance(bundle_response.get("bundle"), dict) else None
         if bundle is None:
             return _record(
@@ -219,6 +227,52 @@ def _local_slug_audit(home: Path) -> dict[str, Any]:
         if "/Free/" in source:
             buckets["free"].add(slug)
     return {key: sorted(value) for key, value in buckets.items()}
+
+
+# Server errors that mean an entitlement / credit / availability refusal we want
+# to surface as a clean, named status. Bundle-validity errors (manifest_invalid,
+# version_mismatch) are intentionally NOT here — they keep falling through to the
+# bundle_unavailable path with their detail/hub_response intact.
+_SURFACED_REFUSALS = {"insufficient_credits", "owner_only", "no_cloud_package", "agent_not_found"}
+
+
+def _server_refusal(response: dict[str, Any]) -> dict[str, Any] | None:
+    """Surface a server credit/entitlement refusal as a clean, named status.
+
+    agentlas.get_runtime_bundle RETURNS (does not raise) refusal objects such as
+    {"error": "insufficient_credits", "needed", "have", "upgrade", "message"} or
+    {"error": "no_cloud_package" | "owner_only" | "agent_not_found" | ...,
+     "message"}. Those carry no `bundle`, so without this mapping they would fall
+    through to a generic `bundle_unavailable` and hide the real reason (top up /
+    sign in / not published). Auth refusals are handled earlier by call_hub_tool's
+    auto re-auth, so they never reach here.
+    """
+    if not isinstance(response, dict):
+        return None
+    error = response.get("error")
+    if not error:
+        return None
+    error = str(error)
+    if error not in _SURFACED_REFUSALS:
+        return None
+    if error == "insufficient_credits":
+        return {
+            "status": "insufficient_credits",
+            "fields": {
+                "needed": response.get("needed"),
+                "have": response.get("have"),
+                "upgrade": response.get("upgrade") or "/pricing",
+                "message": response.get("message")
+                or "Not enough Agentlas credits to call this agent. Top up or upgrade to continue.",
+            },
+        }
+    return {
+        "status": error,
+        "fields": {
+            "server_error": error,
+            "message": response.get("message") or error,
+        },
+    }
 
 
 def _derive_plugin_needs(bundle: dict[str, Any]) -> list[str]:

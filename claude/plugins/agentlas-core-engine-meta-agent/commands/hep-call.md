@@ -46,8 +46,16 @@ CONTEXT="$(printf '%s' "$CONTEXT" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')"
 1. Report each requested agent slug and status.
 2. If `status: "prepared"`, use the returned `output.entry_excerpt` and
    `output.grounding.directive` as the agent's runtime instructions.
-3. If an agent fails, continue with prepared agents and clearly list failures.
-4. Include `receipt_id` and each prepared `execution_id`.
+3. If `status: "insufficient_credits"`, tell the user the credits `needed` vs.
+   `have` and point to `upgrade`; do NOT run the agent. Sign-in is automatic — if
+   a call still reports an auth/sign-in status, relay it and stop.
+4. If an agent fails for any other reason, continue with prepared agents and
+   clearly list each failure with its `status`.
+5. NEVER substitute for a blocked, failed, or unpaid agent by reading its local
+   source files and role-playing the persona yourself. A paid agent runs only
+   through the server's metered bundle; if it did not return `prepared`, report
+   why — never fabricate a run.
+6. Include `receipt_id` and each prepared `execution_id`.
 
 ## Examples
 

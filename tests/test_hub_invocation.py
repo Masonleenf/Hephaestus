@@ -125,7 +125,11 @@ def test_hub_invocation_does_not_prepare_incomplete_bundle(tmp_path, monkeypatch
     assert result["missing_fields"] == ["packageHash", "entry.content", "toolPermissions"]
 
 
-def test_hub_invocation_blocks_paid_overlap(tmp_path):
+def test_hub_invocation_paid_slug_is_not_blocked_locally(tmp_path, monkeypatch):
+    # A paid slug that overlaps a local /Paid/ card is NOT short-circuited
+    # locally. Every caller goes through the SAME server policy (auth + credit
+    # gate); the old blocked_paid_overlap guard is gone. The slug is still
+    # recorded as paid in the audit — it just no longer forks behavior.
     home = tmp_path / "networking"
     init_networking(home)
     paid = make_ready_card(
@@ -139,6 +143,28 @@ def test_hub_invocation_blocks_paid_overlap(tmp_path):
     paid["id"] = "paid/paid-agent"
     save_card(home, paid)
 
+    def fake_call(name, arguments=None, home=None, timeout=15):
+        if name == "agentlas.get_runtime_bundle":
+            return {
+                "bundle": {
+                    "agent": arguments["slug"],
+                    "packageHash": "sha256:test",
+                    "entry": {"path": "AGENTS.md", "content": "Review a private agent repo."},
+                    "toolPermissions": {"network": "ask", "fileRead": "manifest-allowlist"},
+                }
+            }
+        if name == "agentlas.resolve_plugins":
+            return {"resolved": arguments["needs"], "hub": {"installable": []}}
+        if name == "agentlas.memory.status":
+            return {"expected_layout": {"soul": ".agentlas/project-soul-memory.md"}}
+        if name == "agentlas.wizard.start":
+            return {"ok": True, "scope": "global", "root": arguments["memoryRoot"]}
+        if name == "agentlas.soul.update":
+            return {"write_to": ".agentlas/project-soul-memory.md", "append": "\n### note\n- paid call\n"}
+        raise AssertionError(name)
+
+    monkeypatch.setattr("agentlas_cloud.networking.hub_invocation.call_hub_tool", fake_call)
+
     result = invoke_hub_agent(
         "Run a Hub task.",
         slug="paid-agent",
@@ -147,8 +173,48 @@ def test_hub_invocation_blocks_paid_overlap(tmp_path):
             "receipt_id": "route123",
             "hub": {"results": [{"slug": "paid-agent", "kind": "cloud-callable", "callable": True}]},
         },
+        memory_root=tmp_path / "agentlas-memory",
         home=home,
     )
 
-    assert result["status"] == "blocked_paid_overlap"
+    assert result["status"] == "prepared"
     assert result["slug"] == "paid-agent"
+    assert result["paid_slug_present"] is True
+
+
+def test_hub_invocation_surfaces_insufficient_credits(tmp_path, monkeypatch):
+    # A server credit refusal is surfaced as a clean status (not the generic
+    # bundle_unavailable), and no memory store is created since no work ran.
+    home = tmp_path / "networking"
+    init_networking(home)
+
+    def fake_call(name, arguments=None, home=None, timeout=15):
+        if name == "agentlas.get_runtime_bundle":
+            return {
+                "error": "insufficient_credits",
+                "needed": 5,
+                "have": 1,
+                "upgrade": "/pricing",
+                "message": "Not enough credits.",
+            }
+        raise AssertionError(name)
+
+    monkeypatch.setattr("agentlas_cloud.networking.hub_invocation.call_hub_tool", fake_call)
+
+    result = invoke_hub_agent(
+        "Run a Hub task.",
+        slug="pricey-agent",
+        hub_decision={
+            "action": "hub_candidates",
+            "receipt_id": "route123",
+            "hub": {"results": [{"slug": "pricey-agent", "kind": "cloud-callable", "callable": True}]},
+        },
+        memory_root=tmp_path / "agentlas-memory",
+        home=home,
+    )
+
+    assert result["status"] == "insufficient_credits"
+    assert result["needed"] == 5
+    assert result["have"] == 1
+    assert result["upgrade"] == "/pricing"
+    assert not (tmp_path / "agentlas-memory").exists()

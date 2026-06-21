@@ -18,7 +18,7 @@ import sys
 from typing import Any
 
 PROTOCOL_VERSION = "2025-06-18"
-SERVER_INFO = {"name": "hephaestus-network", "version": "0.7.12"}
+SERVER_INFO = {"name": "hephaestus-network", "version": "0.7.13"}
 
 TOOLS: list[dict[str, Any]] = [
     {
@@ -132,10 +132,6 @@ TOOLS: list[dict[str, Any]] = [
                 "context": {"type": "string", "description": "Task context passed to each named agent."},
                 "project_dir": {"type": "string", "description": "Project directory for context (default: cwd)."},
                 "version": {"type": "string", "description": "Hub package hash or latest."},
-                "reject_paid_slug": {
-                    "type": "boolean",
-                    "description": "Block if a selected Hub slug also exists in local Paid cards (default true).",
-                },
                 "local_inventory": {
                     "type": "array",
                     "items": {"type": "string"},
@@ -203,10 +199,6 @@ TOOLS: list[dict[str, Any]] = [
                     "description": "Backward-compatible no-op; host runtimes gate actual execution.",
                 },
                 "version": {"type": "string", "description": "Hub package hash or latest."},
-                "reject_paid_slug": {
-                    "type": "boolean",
-                    "description": "Block if the selected Hub slug also exists in local Paid cards (default true).",
-                },
                 "local_inventory": {
                     "type": "array",
                     "items": {"type": "string"},
@@ -273,7 +265,6 @@ def _call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
             project_dir=arguments.get("project_dir", "."),
             runtime="mcp",
             version=str(arguments.get("version") or "latest"),
-            reject_paid_slug=arguments.get("reject_paid_slug", True) is not False,
             local_inventory=arguments.get("local_inventory") or [],
         )
     if name == "hephaestus_hub_invoke":
@@ -301,7 +292,6 @@ def _call_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
             project_dir=arguments.get("project_dir", "."),
             memory_root=arguments.get("memory_root"),
             version=str(arguments.get("version") or "latest"),
-            reject_paid_slug=arguments.get("reject_paid_slug", True) is not False,
             local_inventory=arguments.get("local_inventory") or [],
         )
     if name == "hephaestus_network_status":

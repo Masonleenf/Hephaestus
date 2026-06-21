@@ -244,7 +244,6 @@ def main(argv: list[str] | None = None) -> int:
     call.add_argument("--project", default=".")
     call.add_argument("--runtime", default="terminal")
     call.add_argument("--version", default="latest")
-    call.add_argument("--allow-paid-overlap", action="store_true", help="Do not block a Hub slug that also exists in local Paid cards")
     call.add_argument("--local-inventory", default=None, help="JSON array or comma list of installed plugin names for Hub plugin resolution")
 
     mcp = sub.add_parser("mcp", help="MCP integration")
@@ -414,7 +413,6 @@ def main(argv: list[str] | None = None) -> int:
                 project_dir=args.project,
                 runtime=args.runtime,
                 version=args.version,
-                reject_paid_slug=not args.allow_paid_overlap,
                 local_inventory=parse_local_inventory(args.local_inventory),
             )
         )
