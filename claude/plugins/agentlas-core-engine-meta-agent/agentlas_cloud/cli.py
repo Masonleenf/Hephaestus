@@ -228,6 +228,22 @@ def main(argv: list[str] | None = None) -> int:
     stormbreaker_run.add_argument("--max-workers", type=int, default=None)
     stormbreaker_run.add_argument("--timeout", type=int, default=900, help="Per-packet executor timeout in seconds")
 
+    stormbreaker_journal = stormbreaker_sub.add_parser(
+        "journal", help="Inspect or repair a run journal so an interrupted run can resume"
+    )
+    journal_sub = stormbreaker_journal.add_subparsers(dest="journal_command", required=True)
+    for journal_name in ("status", "verify", "repair", "gate"):
+        journal_cmd = journal_sub.add_parser(journal_name)
+        journal_cmd.add_argument("--run-id", default=None, help="Run id under .agentlas/stormbreaker/journal/")
+        journal_cmd.add_argument("--journal", default=None, help="Explicit journal path (overrides --run-id/--project)")
+        journal_cmd.add_argument("--project", default=".")
+        if journal_name == "status":
+            journal_cmd.add_argument("--loop-threshold", type=int, default=3, help="Restarts of one step before a hard stop")
+        if journal_name == "repair":
+            journal_cmd.add_argument("--reason", default="interrupted")
+        if journal_name == "gate":
+            journal_cmd.add_argument("--allow-unverified", action="store_true", help="Do not block on completed-but-unverified steps")
+
     local_gui = sub.add_parser("local-gui", help=argparse.SUPPRESS)
     local_gui.add_argument("query")
     local_gui.add_argument("--no-open", action="store_true")
@@ -476,6 +492,38 @@ def main(argv: list[str] | None = None) -> int:
                 "runner": "hep-storm",
             }
         return emit(decision)
+    if args.command == "stormbreaker" and args.stormbreaker_command == "journal":
+        from .networking.run_journal import RunJournal, default_journal_path
+
+        if args.journal:
+            journal_path = Path(args.journal)
+        elif args.run_id:
+            journal_path = default_journal_path(args.project, args.run_id)
+        else:
+            emit({"action": "stormbreaker_journal", "status": "error", "error": "--run-id or --journal is required"})
+            return 2
+        journal = RunJournal(journal_path)
+        if args.journal_command == "status":
+            return emit(journal.resume_plan(loop_threshold=args.loop_threshold))
+        if args.journal_command == "verify":
+            result = journal.verify()
+            emit(result)
+            return 0 if result["status"] == "pass" else 1
+        if args.journal_command == "gate":
+            result = journal.final_gate(require_verification=not args.allow_unverified)
+            emit(result)
+            return 0 if result["ok"] else 1
+        if args.journal_command == "repair":
+            return emit(
+                {
+                    "action": "stormbreaker_journal",
+                    "status": "ok",
+                    "journal": str(journal_path),
+                    "repaired": journal.repair_dangling(reason=args.reason),
+                }
+            )
+        parser.error("unhandled stormbreaker journal command")
+        return 2
     if args.command == "stormbreaker" and args.stormbreaker_command == "run":
         from .networking import init_networking
         from .networking.bootstrap import networking_home

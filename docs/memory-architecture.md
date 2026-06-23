@@ -85,3 +85,31 @@ env names, owner, project, local relative path, and stale-check metadata.
 For deploy, release, store, billing, auth, API, or cloud work, memory users must
 read the top project credential index and `.agentlas/local-credentials.map.json`
 before concluding that credentials are absent.
+
+## Memory Relation Graph
+
+Durable memory is a graph, not a flat list. The local ontology runtime links
+Memory Curator candidate tickets with typed edges so the "conflict/deprecate,
+never silent overwrite" rule is enforced by structure instead of convention.
+
+Edge types:
+
+- `similar_to`: machine-detected near-duplication between two tickets, scored by
+  token overlap (Jaccard over token + adjacent-bigram shingles).
+- `supersedes`: a newer ticket replaces an older one. Recorded as an edge from
+  the newer ticket to the one it retires, so the retired entry stays visible with
+  a pointer to what replaced it.
+- `contradicts`: two tickets make conflicting claims and need a curator decision.
+
+Commands (all local, no model calls):
+
+```text
+ontology memory dedup [--threshold 0.6]      # link near-duplicate tickets
+ontology memory decide <ticket> supersede --target <newer> --reason "..."
+ontology memory graph <ticket>               # ticket + incoming/outgoing edges
+ontology memory link <from> <to> <type> --reason "..."
+```
+
+`ontology memory graph` fails loud on an unknown ticket id rather than returning
+an empty graph that would read as "no relations". `verify` reports a
+`memory_links` count alongside the other table counts.

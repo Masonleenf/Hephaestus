@@ -83,7 +83,24 @@ Meta-Agent team:
 6. Load only the matching public skills.
 7. Generate or repair `.agentlas/global-commands.json` and matching runtime
    command files or aliases.
-8. If a package was created or repaired in the current workspace, register it to
+8. Market Page Copy Gate — make the public detail page readable before
+   reporting. For any agent/team package created or repaired, write or repair
+   `agentlas.json.publicProfile` (`titleKo`, `descriptionKo`, a `guide` with
+   `whatItDoesKo` / `bestForKo` / `prerequisitesKo` / `expectedOutputsKo` /
+   `carefulWithKo`, and for teams a `detail` with `members` and `flow` in human
+   labels). Mine only sanitized, already-public source fields: routing-card
+   `summary_ko` / `capabilities` / `required_inputs` / `produces`,
+   `README_FOR_HUMANS.md`, and team `company-blueprint.json`. Do NOT trust
+   `.claude/skills/*` descriptions or `CLAUDE.md` titles — generated packages
+   often carry a wrong template there. Never copy secrets, local paths, raw
+   stage ids (P0/G0), or snake_case capability ids into public copy. The page
+   must answer: who it's for, what the user gives it, what it does in plain
+   words, what it returns (name ≥ 2 deliverables), what it can access, and where
+   a human approves. This is BYOK work — the builder's own model writes the copy.
+   When the Forge is present, follow `docs/market-page-copy-gate.md` and verify
+   with `node scripts/lint-public-profile.mjs --path <pkg>` until clean.
+   Recompute the package hash after writing `agentlas.json`.
+9. If a package was created or repaired in the current workspace, register it to
    local discovery before reporting:
    ```bash
    RUNNER="./bin/hephaestus"
@@ -96,7 +113,7 @@ Meta-Agent team:
      echo "Hephaestus runner not found for routing-card migration."
    fi
    ```
-9. Return `status`, `evidence`, `output`, `global_commands`,
+10. Return `status`, `evidence`, `output`, `global_commands`, `market_page_copy`,
    `interview_research`, and `blockers`.
    The `global_commands` section must tell the user the exact Claude Code,
    Codex, Gemini CLI, generic AGENTS.md, and terminal commands for the generated

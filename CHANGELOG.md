@@ -2,6 +2,37 @@
 
 ## Unreleased
 
+## v0.7.22 - 2026-06-24
+
+- **Memory Relation Graph.** The local ontology runtime now links Memory Curator
+  candidate tickets with typed edges (`similar_to`, `supersedes`, `contradicts`)
+  so durable memory is a graph, not a flat list. `ontology memory dedup` scores
+  candidate tickets by token overlap and records `similar_to` edges for near
+  duplicates; `ontology memory decide <ticket> supersede --target <newer>` makes
+  replacement structural by writing a `supersedes` edge from the newer ticket to
+  the one it retires, so a new learning never silently overwrites an older one;
+  `ontology memory graph <ticket>` returns a ticket with its incoming/outgoing
+  edges and fails loud on an unknown ticket instead of returning an empty graph;
+  `ontology memory link` records an edge by hand. `verify` now reports
+  `memory_links`.
+- **Stormbreaker Run Journal.** Long-horizon runs can write an append-only step
+  ledger (start then complete/fail) so an interrupted run resumes instead of
+  restarting. `agentlas-cloud stormbreaker journal status` reports the completed
+  steps to skip and the first step to resume from; a loop guard trips a hard stop
+  when one step keeps restarting without completing; `stormbreaker journal repair`
+  seals interrupted (dangling) steps so a resumed run retries them rather than
+  losing them; `stormbreaker journal verify` checks ledger integrity. Pure local,
+  deterministic, no model calls.
+- **Stormbreaker verifier-first gate and clarification interrupt.** A step can
+  declare how it will be checked (`plan_step`) and record the result
+  (`verify_step`); a step that completes without a passing check is reported as
+  `unverified`. Ambiguity is recorded as a clarification request that marks the
+  run `blocked` until it is resolved, so the run pauses instead of guessing.
+  `agentlas-cloud stormbreaker journal gate` returns one ok/blockers verdict that
+  refuses to call a run done while anything is dangling, looping, failed,
+  awaiting an answer, or completed-but-unverified, so an agent cannot claim
+  success before the checks pass.
+
 ## v0.7.21 - 2026-06-22
 
 - Added the public value-free credential request contract for borrowed

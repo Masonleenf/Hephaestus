@@ -107,16 +107,22 @@ Fresh installs and updates prune the old visible `/hephaestus` chat command so
 new users see the clean command surface above: three primary commands, plus
 search, call, and upload utilities when they need explicit control.
 
-## New In v0.7.21
+## New In v0.7.22
 
-- **Hub taxonomy cleanup.** Public Hub surfaces now separate Agents, Teams, and
-  Plugins, and show invocation credits separately from downloadable packages.
-- **Local trust stays local.** Local routing-card `trusted` remains the
-  local-first Network trust path, while upload and Hub publication security
-  review stay a separate gate.
-- **Private namespace redaction.** Mason-local package buckets are no longer
-  exposed in docs, adapter skills, CLI tier names, benchmarks, or mirrored
-  runtime packages.
+- **Memory Relation Graph.** Durable memory is now a graph: Memory Curator
+  candidate tickets are linked with typed edges (similar, supersedes,
+  contradicts), near-duplicates are detected automatically, and a replacement
+  records a supersedes edge so a new learning never silently overwrites an old
+  one. New `ontology memory dedup | graph | link` commands.
+- **Stormbreaker Run Journal.** Long-horizon runs write an append-only step
+  ledger and resume from the first unfinished step instead of restarting; a loop
+  guard hard-stops a step that keeps restarting, and dangling steps are sealed
+  for retry. New `stormbreaker journal status | repair | verify`.
+- **Verifier-first gate and clarification interrupt.** A step can declare how it
+  will be checked and record the result, so completed-but-unverified work is
+  flagged; ambiguity pauses the run instead of guessing. `stormbreaker journal
+  gate` gives one ok/blockers verdict so a run is never called done before the
+  checks pass.
 
 Hephaestus is the open core engine that makes Agentlas behave like an agent
 operating system instead of a one-off prompt generator. It gives developers
@@ -129,7 +135,9 @@ five connected control planes:
 - **Hephaestus Stormbreaker.** Keep long-running work inside a scope lock,
   failure-memory check, verifier-first plan, parallel session fabric, evidence
   loop, review gate, and final gate so agents cannot silently stop or claim
-  completion before checks pass.
+  completion before checks pass. A **run journal** records every step so an
+  interrupted run resumes from the first unfinished step instead of restarting,
+  seals dangling steps for retry, and hard-stops a step that keeps looping.
 - **Project ontology.** Turn approved project sources into local graph, search,
   and source-lineage context agents can query without sweeping unrelated
   folders. This is not the Hub marketplace search. It is the project-local
@@ -137,7 +145,10 @@ five connected control planes:
   grounding.
 - **Memory, self-evolution, and security gates.** Admit durable memory, promote
   skills, verify installs, scan packages, and block unsafe publish paths before
-  agents are allowed to keep or ship new behavior.
+  agents are allowed to keep or ship new behavior. Durable memory is a **relation
+  graph**: candidate tickets are linked with typed edges (similar, supersedes,
+  contradicts), near-duplicates are detected automatically, and a replacement
+  writes a supersedes edge so a new learning never silently overwrites an old one.
 
 ---
 
@@ -268,6 +279,32 @@ For Hephaestus Network `pipeline` decisions, Stormbreaker now returns an
 required packet list for the final gate. Host runtimes can map those packets to
 active Codex, Claude, GLM, DeepSeek, Gemini, or local model sessions, while
 Hephaestus keeps privacy boundaries and success gating explicit.
+
+#### Run journal (resume after interruption)
+
+A long-horizon run can write an append-only step ledger so an interrupted run
+resumes instead of restarting from zero. Each step records a `start` then a
+terminal `complete`/`fail`; the journal can then tell you exactly what to skip
+and where to re-enter.
+
+```text
+agentlas-cloud stormbreaker journal status --run-id <id>   # completed steps + resume_from + loop hard-stop
+agentlas-cloud stormbreaker journal repair --run-id <id>   # seal dangling steps so a resume retries them
+agentlas-cloud stormbreaker journal verify --run-id <id>   # check ledger integrity
+agentlas-cloud stormbreaker journal gate   --run-id <id>   # one ok/blockers final verdict
+```
+
+`status` reports `completed`, `dangling`, `failed`, `resume_from`, and a
+`hard_stop` flag that trips when one step keeps restarting without completing.
+It is pure-local and deterministic, with no model calls.
+
+A step can also declare **how it will be checked before it runs** and record the
+result, so a step that finishes without a passing check shows up as
+`unverified`. Ambiguity is logged as a **clarification request** that marks the
+run `blocked` until it is answered, so the run pauses instead of guessing.
+`journal gate` rolls all of this into one verdict that refuses to call a run done
+while anything is dangling, looping, failed, awaiting an answer, or
+completed-but-unverified — an agent cannot claim success before the checks pass.
 
 ### Robustness Protocol
 
@@ -429,7 +466,7 @@ Claude also supports `claude plugins ...` as an alias, but this README uses
 Open your normal OS terminal, not the Codex chat box, and run:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.21
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.22
 codex plugin add hephaestus@agentlas-core-engine
 ```
 

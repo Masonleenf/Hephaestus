@@ -177,6 +177,21 @@ class OntologyRuntime:
                   created_at TEXT NOT NULL
                 );
 
+                -- Memory Relation Graph: typed edges between candidate tickets so a
+                -- new learning never silently overwrites an older one. similar_to is
+                -- machine-detected near-duplication; supersedes/contradicts are
+                -- curator decisions that make replacement and conflict structural.
+                CREATE TABLE IF NOT EXISTS memory_links (
+                  link_id TEXT PRIMARY KEY,
+                  from_ticket TEXT NOT NULL REFERENCES memory_candidates(ticket_id) ON DELETE CASCADE,
+                  to_ticket TEXT NOT NULL REFERENCES memory_candidates(ticket_id) ON DELETE CASCADE,
+                  link_type TEXT NOT NULL,
+                  score REAL NOT NULL,
+                  reason TEXT NOT NULL,
+                  created_at TEXT NOT NULL,
+                  UNIQUE(from_ticket, to_ticket, link_type)
+                );
+
                 CREATE TABLE IF NOT EXISTS working_memory (
                   item_id TEXT PRIMARY KEY,
                   agent_id TEXT NOT NULL,
@@ -388,7 +403,13 @@ class OntologyRuntime:
                 rows = conn.execute("SELECT * FROM memory_candidates ORDER BY created_at DESC, ticket_id").fetchall()
         return [self._memory_candidate_row(row) for row in rows]
 
-    def decide_memory_candidate(self, ticket_id: str, decision: str, reason: str) -> dict[str, Any]:
+    def decide_memory_candidate(
+        self,
+        ticket_id: str,
+        decision: str,
+        reason: str,
+        target_ticket: str | None = None,
+    ) -> dict[str, Any]:
         status_map = {
             "approve": "approved_pending_curator",
             "reject": "rejected",
@@ -403,7 +424,23 @@ class OntologyRuntime:
             row = conn.execute("SELECT * FROM memory_candidates WHERE ticket_id = ?", (ticket_id,)).fetchone()
             if row is None:
                 raise KeyError(ticket_id)
-            event_id = stable_hash(f"candidate-event:{ticket_id}:{decision}:{reason}:{now}")
+            link: dict[str, Any] | None = None
+            if target_ticket:
+                # Structural replacement: record WHICH ticket supersedes this one,
+                # so a newer learning never silently overwrites the old entry. The
+                # superseding ticket points at the one it replaces.
+                if decision not in {"supersede", "deprecate"}:
+                    raise ValueError("target_ticket is only valid with a supersede or deprecate decision")
+                link = self._write_memory_link(
+                    conn,
+                    from_ticket=target_ticket,
+                    to_ticket=ticket_id,
+                    link_type="supersedes",
+                    score=1.0,
+                    reason=reason,
+                    require_exists=True,
+                )
+            event_id = stable_hash(f"candidate-event:{ticket_id}:{decision}:{reason}:{target_ticket or ''}:{now}")
             conn.execute(
                 "INSERT INTO memory_candidate_events(event_id, ticket_id, decision, reason, created_at) VALUES (?, ?, ?, ?, ?)",
                 (event_id, ticket_id, decision, reason, now),
@@ -413,7 +450,174 @@ class OntologyRuntime:
                 (status_map[decision], now, ticket_id),
             )
             updated = conn.execute("SELECT * FROM memory_candidates WHERE ticket_id = ?", (ticket_id,)).fetchone()
-        return self._memory_candidate_row(updated)
+        result = self._memory_candidate_row(updated)
+        if link is not None:
+            result["link"] = link
+        return result
+
+    # ---- Memory Relation Graph -------------------------------------------------
+    # Typed edges between candidate tickets. similar_to is machine-detected near
+    # duplication (token Jaccard); supersedes/contradicts are curator-recorded so
+    # replacement and conflict are part of the graph, never a silent overwrite.
+    MEMORY_LINK_TYPES = ("similar_to", "supersedes", "contradicts")
+
+    def relate_memory_candidates(self, threshold: float = 0.6, scan_limit: int = 2000) -> dict[str, Any]:
+        if not 0.0 < threshold <= 1.0:
+            raise ValueError("threshold must be in (0, 1]")
+        now = utc_now()
+        with closing(self.connect()) as conn, conn:
+            rows = conn.execute(
+                "SELECT ticket_id, candidate_text FROM memory_candidates ORDER BY created_at, ticket_id LIMIT ?",
+                (scan_limit,),
+            ).fetchall()
+            shingles = {row["ticket_id"]: self._candidate_shingles(row["candidate_text"]) for row in rows}
+            ids = list(shingles)
+            pairs_examined = 0
+            links_created = 0
+            for i in range(len(ids)):
+                for j in range(i + 1, len(ids)):
+                    pairs_examined += 1
+                    score = self._jaccard(shingles[ids[i]], shingles[ids[j]])
+                    if score < threshold:
+                        continue
+                    # Canonical direction (sorted) so the undirected near-duplicate
+                    # edge is stored once.
+                    a, b = sorted((ids[i], ids[j]))
+                    written = self._write_memory_link(
+                        conn,
+                        from_ticket=a,
+                        to_ticket=b,
+                        link_type="similar_to",
+                        score=round(score, 4),
+                        reason=f"token Jaccard {round(score, 4)} >= threshold {threshold}",
+                        require_exists=False,
+                        _now=now,
+                    )
+                    if written.get("created"):
+                        links_created += 1
+        return {
+            "status": "ok",
+            "threshold": threshold,
+            "candidates_scanned": len(ids),
+            "pairs_examined": pairs_examined,
+            "similar_links_created": links_created,
+        }
+
+    def link_memory(self, from_ticket: str, to_ticket: str, link_type: str, reason: str, score: float = 1.0) -> dict[str, Any]:
+        if link_type not in self.MEMORY_LINK_TYPES:
+            raise ValueError(f"unsupported memory link type: {link_type} (expected one of {self.MEMORY_LINK_TYPES})")
+        if from_ticket == to_ticket:
+            raise ValueError("cannot link a ticket to itself")
+        with closing(self.connect()) as conn, conn:
+            return self._write_memory_link(
+                conn,
+                from_ticket=from_ticket,
+                to_ticket=to_ticket,
+                link_type=link_type,
+                score=clamp(score),
+                reason=reason,
+                require_exists=True,
+            )
+
+    def memory_graph(self, ticket_id: str) -> dict[str, Any]:
+        with closing(self.connect()) as conn, conn:
+            row = conn.execute("SELECT * FROM memory_candidates WHERE ticket_id = ?", (ticket_id,)).fetchone()
+            if row is None:
+                # Fail loud rather than returning an empty graph that reads as
+                # "this ticket has no relations".
+                raise KeyError(ticket_id)
+            outgoing = [
+                self._memory_link_row(link) for link in conn.execute(
+                    "SELECT * FROM memory_links WHERE from_ticket = ? ORDER BY link_type, score DESC", (ticket_id,)
+                )
+            ]
+            incoming = [
+                self._memory_link_row(link) for link in conn.execute(
+                    "SELECT * FROM memory_links WHERE to_ticket = ? ORDER BY link_type, score DESC", (ticket_id,)
+                )
+            ]
+            neighbor_ids = sorted({link["to_ticket"] for link in outgoing} | {link["from_ticket"] for link in incoming})
+            neighbors = {}
+            if neighbor_ids:
+                marks = ", ".join(["?"] * len(neighbor_ids))
+                for neighbor in conn.execute(
+                    f"SELECT ticket_id, status, candidate_text FROM memory_candidates WHERE ticket_id IN ({marks})",
+                    tuple(neighbor_ids),
+                ):
+                    neighbors[neighbor["ticket_id"]] = {
+                        "ticket_id": neighbor["ticket_id"],
+                        "status": neighbor["status"],
+                        "summary": neighbor["candidate_text"][:160],
+                    }
+        return {
+            "ticket": self._memory_candidate_row(row),
+            "outgoing": outgoing,
+            "incoming": incoming,
+            "neighbors": neighbors,
+            "superseded_by": [link["from_ticket"] for link in incoming if link["link_type"] == "supersedes"],
+            "supersedes": [link["to_ticket"] for link in outgoing if link["link_type"] == "supersedes"],
+        }
+
+    def _write_memory_link(
+        self,
+        conn: sqlite3.Connection,
+        from_ticket: str,
+        to_ticket: str,
+        link_type: str,
+        score: float,
+        reason: str,
+        require_exists: bool,
+        _now: str | None = None,
+    ) -> dict[str, Any]:
+        if require_exists:
+            for ticket in (from_ticket, to_ticket):
+                if conn.execute("SELECT 1 FROM memory_candidates WHERE ticket_id = ?", (ticket,)).fetchone() is None:
+                    raise KeyError(ticket)
+        now = _now or utc_now()
+        link_id = stable_hash(f"memory-link:{from_ticket}:{to_ticket}:{link_type}")
+        created = conn.execute(
+            """
+            INSERT OR IGNORE INTO memory_links(link_id, from_ticket, to_ticket, link_type, score, reason, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (link_id, from_ticket, to_ticket, link_type, score, reason, now),
+        ).rowcount == 1
+        row = conn.execute("SELECT * FROM memory_links WHERE link_id = ?", (link_id,)).fetchone()
+        result = self._memory_link_row(row)
+        result["created"] = created
+        return result
+
+    def _memory_link_row(self, row: sqlite3.Row) -> dict[str, Any]:
+        return {
+            "link_id": row["link_id"],
+            "from_ticket": row["from_ticket"],
+            "to_ticket": row["to_ticket"],
+            "link_type": row["link_type"],
+            "score": row["score"],
+            "reason": row["reason"],
+            "created_at": row["created_at"],
+        }
+
+    @staticmethod
+    def _candidate_shingles(text: str) -> set[str]:
+        tokens = tokenize(text or "")
+        if not tokens:
+            return set()
+        shingles = set(tokens)
+        # Add adjacent-token bigrams so near-duplicates with shared phrasing score
+        # higher than mere shared vocabulary.
+        for first, second in zip(tokens, tokens[1:]):
+            shingles.add(f"{first} {second}")
+        return shingles
+
+    @staticmethod
+    def _jaccard(a: set[str], b: set[str]) -> float:
+        if not a or not b:
+            return 0.0
+        intersection = len(a & b)
+        if intersection == 0:
+            return 0.0
+        return intersection / len(a | b)
 
     def write_durable_memory(self, agent_id: str, payload: dict[str, Any]) -> None:
         raise DirectDurableMemoryWriteBlocked(
@@ -534,7 +738,7 @@ class OntologyRuntime:
             integrity = conn.execute("PRAGMA integrity_check").fetchone()[0]
             counts = {
                 table: conn.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
-                for table in ["sources", "chunks", "entities", "relations", "memory_candidates", "working_memory"]
+                for table in ["sources", "chunks", "entities", "relations", "memory_candidates", "memory_links", "working_memory"]
             }
             migration = conn.execute("SELECT max(version) FROM schema_migrations").fetchone()[0]
             unsupported = conn.execute(
@@ -569,7 +773,7 @@ class OntologyRuntime:
         destination = Path(destination)
         destination.parent.mkdir(parents=True, exist_ok=True)
         data: dict[str, list[dict[str, Any]]] = {}
-        tables = ["sources", "chunks", "entities", "entity_aliases", "relations", "memory_candidates", "working_memory"]
+        tables = ["sources", "chunks", "entities", "entity_aliases", "relations", "memory_candidates", "memory_links", "working_memory"]
         with closing(self.connect()) as conn, conn:
             for table in tables:
                 data[table] = [dict(row) for row in conn.execute(f"SELECT * FROM {table}")]

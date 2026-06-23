@@ -59,6 +59,20 @@ def main(argv: list[str] | None = None) -> int:
     decide.add_argument("ticket_id")
     decide.add_argument("decision", choices=["approve", "reject", "quarantine", "supersede", "deprecate"])
     decide.add_argument("--reason", required=True)
+    decide.add_argument("--target", help="With supersede/deprecate: the ticket that replaces this one (records a structural supersedes edge)")
+
+    dedup = memory_sub.add_parser("dedup", help="Detect near-duplicate candidate tickets and link them (similar_to)")
+    dedup.add_argument("--threshold", type=float, default=0.6, help="Token Jaccard threshold in (0,1], default 0.6")
+
+    mem_graph = memory_sub.add_parser("graph", help="Show a candidate ticket with its relation edges")
+    mem_graph.add_argument("ticket_id")
+
+    mem_link = memory_sub.add_parser("link", help="Record a typed relation edge between two tickets")
+    mem_link.add_argument("from_ticket")
+    mem_link.add_argument("to_ticket")
+    mem_link.add_argument("link_type", choices=["similar_to", "supersedes", "contradicts"])
+    mem_link.add_argument("--reason", required=True)
+    mem_link.add_argument("--score", type=float, default=1.0)
 
     working = sub.add_parser("working-memory", help="Agent Working Memory commands")
     working_sub = working.add_subparsers(dest="working_command", required=True)
@@ -108,7 +122,13 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "memory" and args.memory_command == "candidates":
         return emit({"candidates": runtime.list_memory_candidates(status=args.status)})
     if args.command == "memory" and args.memory_command == "decide":
-        return emit(runtime.decide_memory_candidate(args.ticket_id, args.decision, args.reason))
+        return emit(runtime.decide_memory_candidate(args.ticket_id, args.decision, args.reason, target_ticket=args.target))
+    if args.command == "memory" and args.memory_command == "dedup":
+        return emit(runtime.relate_memory_candidates(threshold=args.threshold))
+    if args.command == "memory" and args.memory_command == "graph":
+        return emit(runtime.memory_graph(args.ticket_id))
+    if args.command == "memory" and args.memory_command == "link":
+        return emit(runtime.link_memory(args.from_ticket, args.to_ticket, args.link_type, args.reason, score=args.score))
     if args.command == "working-memory" and args.working_command == "read":
         return emit({"items": runtime.read_working_memory(args.agent, include_expired=args.include_expired)})
     if args.command == "working-memory" and args.working_command == "prune":
