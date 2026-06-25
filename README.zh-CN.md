@@ -285,12 +285,11 @@ Hephaestus 不只是生成一段提示词。它会留下一个其他运行时可
 | “为这个 workflow 做一个 team/company” | `20-multi-agent-team-builder` | 带 HQ、PM Soul、Memory Curator、Policy Gate、eval、QA、handoff 的多智能体团队 |
 | “把这个已有 agent/repo/workspace 打包” | `30-agentlas-packager` | 可用于 Desktop import、terminal、Codex、Claude、Gemini 或公开 GitHub release 的 Agentlas 包 |
 
-## v0.7.23 新特性
+## v0.7.24 新特性
 
-- **Agentlas native，外部 LLM 六个命令。** Agentlas Terminal 和 Agentlas app 是自然语言 native surface：描述任务即可，native Agentlas/Hephaestus tools 会选择路径。外部 LLM host 暴露六个显式命令：`/hep-build`、`/hep-network`、`/hep-cloud`、`/hep-search`、`/hep-call`、`/hep-upload`。
-- **Research Engine phase-0 core。** Hephaestus 现在包含 public-safe research engine，支持 detachable loadouts（`auto`、`safe`、`public-web`、`social`、`browser`、`full`、`recommended`）、built-in cartridges、SSRF-safe readers、receipt ledgers，以及 plan/gather/search/read/status/proofs/verify/credentials/hardpoints CLI flows。
-- **insane-search 是 cartridge，不是整个 engine。** `read.insane_fetch` reader 只会通过较重的 `public-web`、`social`、`browser`、`full` loadout 或显式 allow-list 挂载。它记录 direct reads、Reddit RSS、Jina Reader fallback、metadata/feed parsing、login/paywall stops 的 evidence，但不会成为默认 research brain。
-- **Stormbreaker research evidence。** Stormbreaker packets 现在可以附加 research receipts、preflight files、readiness snapshots、capability summaries 和 compact evidence-quality/coverage signals。`recommended` loadout 会按原始用户请求为每个 packet 解析。
+- **首次安装后静默自动更新。** `hep-network`、`hep-build`、`hep-search`、`hep-call` 以及对应的 slash/prompt commands 现在最多每天启动一次后台更新检查。如果有新的 GitHub release，Hephaestus 会更新 `~/.agentlas/runtime/current`，不会阻塞当前命令。
+- **已安装的 adapters 也会更新。** 自动更新会从 release tarball 刷新已经存在的 Claude、Codex、Gemini、Antigravity、Cursor、OpenCode 和 AgentSkills command/skill adapters。没有安装过的 runtime 不会被新建。
+- **需要时可以关闭。** Auto-update 默认开启。运行 Hephaestus 前设置 `HEPHAESTUS_AUTO_UPDATE=0` 即可关闭；旧的 `HEPHAESTUS_UPDATE_CHECK=0` 仍然生效。
 
 ## 架构
 

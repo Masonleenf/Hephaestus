@@ -293,12 +293,11 @@ Hephaestus は prompt だけを返すものではありません。他の runtim
 | "この workflow の team/company を作って" | `20-multi-agent-team-builder` | HQ、PM Soul、Memory Curator、Policy Gate、eval、QA、handoff を持つ multi-agent team |
 | "既存 agent/repo/workspace を package して" | `30-agentlas-packager` | Desktop import、terminal、Codex、Claude、Gemini、public GitHub release に対応した Agentlas package |
 
-## v0.7.23 の新機能
+## v0.7.24 の新機能
 
-- **Agentlas native、外部 LLM は 6 commands。** Agentlas Terminal と Agentlas app は自然言語 native surface です。作業を説明すると native Agentlas/Hephaestus tools が path を選びます。外部 LLM host は `/hep-build`、`/hep-network`、`/hep-cloud`、`/hep-search`、`/hep-call`、`/hep-upload` の 6 commands を公開します。
-- **Research Engine phase-0 core。** Hephaestus は public-safe research engine を同梱し、detachable loadouts（`auto`、`safe`、`public-web`、`social`、`browser`、`full`、`recommended`）、built-in cartridges、SSRF-safe readers、receipt ledgers、plan/gather/search/read/status/proofs/verify/credentials/hardpoints CLI flows を提供します。
-- **insane-search は cartridge であり、engine 全体ではありません。** `read.insane_fetch` reader は重い `public-web`、`social`、`browser`、`full` loadout、または explicit allow-list でのみ mount されます。direct reads、Reddit RSS、Jina Reader fallback、metadata/feed parsing、login/paywall stops の evidence を残しますが、default research brain にはなりません。
-- **Stormbreaker research evidence。** Stormbreaker packets は research receipts、preflight files、readiness snapshots、capability summaries、compact evidence-quality/coverage signals を添付できます。`recommended` loadout は元の user request から packet ごとに解決されます。
+- **初回 install 後の silent auto-update。** `hep-network`、`hep-build`、`hep-search`、`hep-call` と対応する slash/prompt commands は、1 日 1 回まで background update check を開始します。新しい GitHub release があれば、現在の command を止めずに `~/.agentlas/runtime/current` を更新します。
+- **Installed adapters も更新。** すでに存在する Claude、Codex、Gemini、Antigravity、Cursor、OpenCode、AgentSkills の command/skill adapters を release tarball から refresh します。未使用の runtime は新しく作りません。
+- **必要なら opt out。** Auto-update は default ON です。無効化するには Hephaestus 実行前に `HEPHAESTUS_AUTO_UPDATE=0` を設定します。既存の `HEPHAESTUS_UPDATE_CHECK=0` も引き続き有効です。
 
 ## Architecture
 

@@ -107,29 +107,20 @@ Fresh installs and updates prune the old visible `/hephaestus` chat command so
 new users see the clean command surface above: six explicit commands in
 external LLM hosts, and plain-language native routing inside Agentlas.
 
-## New In v0.7.23
+## New In v0.7.24
 
-- **Native Agentlas, six explicit external commands.** Agentlas Terminal and
-  the Agentlas app are plain-language native surfaces: describe the work and the
-  native Agentlas/Hephaestus tools choose the path. External LLM hosts expose
-  the explicit six-command surface: `/hep-build`, `/hep-network`, `/hep-cloud`,
-  `/hep-search`, `/hep-call`, and `/hep-upload`.
-- **Research Engine phase-0 core.** Hephaestus now ships a public-safe research
-  engine with detachable loadouts (`auto`, `safe`, `public-web`, `social`,
-  `browser`, `full`, and `recommended`), dependency-free built-in cartridges,
-  SSRF-safe readers, receipt ledgers, and CLI flows for plan, gather, search,
-  read, status, proofs, verify, credentials, and hardpoints.
-- **Insane-search as a cartridge, not the whole engine.** The adaptive
-  `read.insane_fetch` reader is mounted only by heavier public-web/social/
-  browser/full loadouts or an explicit allow-list. It records route evidence for
-  direct reads, Reddit RSS, Jina Reader fallback, metadata/feed parsing, and
-  login/paywall stops without becoming the default research brain.
-- **Stormbreaker research evidence.** Stormbreaker packets can attach research
-  receipts, preflight files, readiness snapshots, capability summaries, and
-  compact evidence-quality/coverage signals. The `recommended` loadout resolves
-  per packet from the original user request, so public social/page research can
-  use `public-web` without mounting official social APIs or browser modules by
-  default.
+- **Silent auto-update after first install.** `hep-network`, `hep-build`,
+  `hep-search`, `hep-call`, and the matching slash/prompt commands now start a
+  fail-silent background update check at most once per day. If a newer GitHub
+  release is available, Hephaestus installs it without blocking the current
+  command.
+- **Installed adapters stay fresh too.** Auto-update refreshes the
+  already-installed Claude, Codex, Gemini, Antigravity, Cursor, OpenCode, and
+  AgentSkills command/skill adapters from the release tarball. Missing runtimes
+  are left alone.
+- **Opt out when needed.** Auto-update is on by default. Set
+  `HEPHAESTUS_AUTO_UPDATE=0` before running Hephaestus to disable it; the older
+  `HEPHAESTUS_UPDATE_CHECK=0` switch is still respected.
 
 Hephaestus is the open core engine that makes Agentlas behave like an agent
 operating system instead of a one-off prompt generator. It gives developers
@@ -485,7 +476,7 @@ Claude also supports `claude plugins ...` as an alias, but this README uses
 Open your normal OS terminal, not the Codex chat box, and run:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.23
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.24
 codex plugin add hephaestus@agentlas-core-engine
 ```
 

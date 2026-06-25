@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## v0.7.24 - 2026-06-25
+
+- **Silent runtime auto-update.** `hep-network`, `hep-build`, `hep-search`,
+  `hep-call`, and related slash/prompt command paths now start a fail-silent
+  background update check at most once per day. If a newer GitHub release is
+  available, Hephaestus installs it under `~/.agentlas/runtime/<version>` and
+  moves `~/.agentlas/runtime/current` without blocking the user command.
+- **Installed adapter refresh.** Runtime updates now refresh already-installed
+  Claude, Codex, Gemini, Antigravity, Cursor, OpenCode, and AgentSkills
+  command/skill adapters from the release tarball. Missing runtimes are left
+  alone, so an update does not install tools the user never set up.
+- **Opt-out remains explicit.** Auto-update is on by default for non-developer
+  installs. Set `HEPHAESTUS_AUTO_UPDATE=0` to disable it; the existing
+  `HEPHAESTUS_UPDATE_CHECK=0` switch is still respected.
+
 ## v0.7.23 - 2026-06-25
 
 - **Agentlas native vs external LLM command boundary.** Agentlas Terminal and

@@ -291,12 +291,11 @@ Hephaestus सिर्फ prompt answer नहीं बनाता। यह 
 | "इस workflow के लिए team/company बनाओ" | `20-multi-agent-team-builder` | HQ, PM Soul, Memory Curator, Policy Gate, eval, QA और handoff वाली multi-agent team |
 | "इस existing agent/repo/workspace को package करो" | `30-agentlas-packager` | Desktop import, terminal, Codex, Claude, Gemini या public GitHub release के लिए साफ Agentlas package |
 
-## v0.7.23 में नया
+## v0.7.24 में नया
 
-- **Native Agentlas, external LLMs में छह commands।** Agentlas Terminal और Agentlas app plain-language native surfaces हैं: काम बताइए और native Agentlas/Hephaestus tools path चुनते हैं। External LLM hosts `/hep-build`, `/hep-network`, `/hep-cloud`, `/hep-search`, `/hep-call`, और `/hep-upload` expose करते हैं।
-- **Research Engine phase-0 core।** Hephaestus अब public-safe research engine ship करता है, detachable loadouts (`auto`, `safe`, `public-web`, `social`, `browser`, `full`, `recommended`), built-in cartridges, SSRF-safe readers, receipt ledgers, और plan/gather/search/read/status/proofs/verify/credentials/hardpoints CLI flows के साथ।
-- **insane-search cartridge है, पूरा engine नहीं।** `read.insane_fetch` reader सिर्फ़ heavier `public-web`, `social`, `browser`, `full` loadouts या explicit allow-list से mount होता है। यह direct reads, Reddit RSS, Jina Reader fallback, metadata/feed parsing और login/paywall stops की evidence record करता है, लेकिन default research brain नहीं बनता।
-- **Stormbreaker research evidence।** Stormbreaker packets अब research receipts, preflight files, readiness snapshots, capability summaries और compact evidence-quality/coverage signals attach कर सकते हैं। `recommended` loadout original user request से per packet resolve होता है।
+- **पहले install के बाद silent auto-update।** `hep-network`, `hep-build`, `hep-search`, `hep-call` और matching slash/prompt commands अब दिन में अधिकतम एक बार background update check शुरू करते हैं। नया GitHub release मिलने पर Hephaestus current command को रोके बिना `~/.agentlas/runtime/current` update करता है।
+- **Installed adapters भी fresh रहते हैं।** Auto-update already-installed Claude, Codex, Gemini, Antigravity, Cursor, OpenCode और AgentSkills command/skill adapters को release tarball से refresh करता है। जो runtime install नहीं है, उसे नया नहीं बनाया जाता।
+- **ज़रूरत हो तो opt out करें।** Auto-update default ON है। बंद करने के लिए Hephaestus चलाने से पहले `HEPHAESTUS_AUTO_UPDATE=0` set करें। पुराना `HEPHAESTUS_UPDATE_CHECK=0` switch भी अभी respected है।
 
 ## Architecture
 
