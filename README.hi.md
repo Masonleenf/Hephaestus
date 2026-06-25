@@ -291,11 +291,11 @@ Hephaestus सिर्फ prompt answer नहीं बनाता। यह 
 | "इस workflow के लिए team/company बनाओ" | `20-multi-agent-team-builder` | HQ, PM Soul, Memory Curator, Policy Gate, eval, QA और handoff वाली multi-agent team |
 | "इस existing agent/repo/workspace को package करो" | `30-agentlas-packager` | Desktop import, terminal, Codex, Claude, Gemini या public GitHub release के लिए साफ Agentlas package |
 
-## v0.7.25 में नया
+## v0.7.26 में नया
 
-- **Self-contained `/hep-upload`।** Cloud/Hub upload अब private local checkout या external publish script पर निर्भर नहीं है; bundled Hephaestus package/publish runtime इस्तेमाल होता है।
-- **Hub upload gates bundled हैं।** Marketplace upload से पहले `publicProfile`, `routing-card/2.0`, package hash, static security और bundle size validate होते हैं।
-- **Routing-card migration fix।** Auto-migrated cards अब null package hash नहीं भेजते, और bundled meta-agent card `routing_ready` है।
+- **हर command में update fallback।** हर `/hep-*` command/prompt की शुरुआत में लिखा है कि automatic update न चले तो `hephaestus update` run करें।
+- **Current version फिर भी चलता है।** Notice साफ कहता है कि update optional है; installed command बिना update भी काम करता है।
+- **Automation output साफ रहता है।** fallback सिर्फ chat command/prompt surfaces में है, JSON देने वाले shell CLI output में नहीं।
 
 ## Architecture
 

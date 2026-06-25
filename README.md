@@ -107,16 +107,15 @@ Fresh installs and updates prune the old visible `/hephaestus` chat command so
 new users see the clean command surface above: six explicit commands in
 external LLM hosts, and plain-language native routing inside Agentlas.
 
-## New In v0.7.25
+## New In v0.7.26
 
-- **Self-contained `/hep-upload`.** Cloud and Hub uploads now use the bundled
-  Hephaestus package/publish runtime instead of any private local checkout or
-  external publish script.
-- **Hub upload gates are bundled.** Marketplace upload validates
-  `publicProfile`, `routing-card/2.0`, package hashes, static security, and
-  bundle size limits before registration.
-- **Routing-card migration is fixed.** Auto-migrated cards no longer ship with
-  null package hashes, and the bundled meta-agent card is `routing_ready`.
+- **Update fallback on every command.** Each `/hep-*` command/prompt now starts
+  with a one-line fallback: run `hephaestus update` if automatic update did not
+  fire.
+- **Current version still works.** The notice says updating is optional for the
+  current command; the installed version continues to run.
+- **Automation stays clean.** The fallback line is only in chat command/prompt
+  surfaces, not JSON-emitting CLI output.
 
 Hephaestus is the open core engine that makes Agentlas behave like an agent
 operating system instead of a one-off prompt generator. It gives developers
@@ -472,7 +471,7 @@ Claude also supports `claude plugins ...` as an alias, but this README uses
 Open your normal OS terminal, not the Codex chat box, and run:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.25
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.26
 codex plugin add hephaestus@agentlas-core-engine
 ```
 

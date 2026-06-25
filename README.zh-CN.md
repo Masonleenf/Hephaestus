@@ -285,11 +285,11 @@ Hephaestus 不只是生成一段提示词。它会留下一个其他运行时可
 | “为这个 workflow 做一个 team/company” | `20-multi-agent-team-builder` | 带 HQ、PM Soul、Memory Curator、Policy Gate、eval、QA、handoff 的多智能体团队 |
 | “把这个已有 agent/repo/workspace 打包” | `30-agentlas-packager` | 可用于 Desktop import、terminal、Codex、Claude、Gemini 或公开 GitHub release 的 Agentlas 包 |
 
-## v0.7.25 新特性
+## v0.7.26 新特性
 
-- **`/hep-upload` 自带上传流程。** Cloud/Hub 上传不再依赖私有本地 checkout 或外部 publish script，而是使用 bundled Hephaestus package/publish runtime。
-- **内置 Hub 上传 gate。** marketplace 上传前会验证 `publicProfile`、`routing-card/2.0`、package hash、static security 和 bundle size。
-- **修复 routing-card migration。** 自动迁移的 card 不再输出 null package hash，bundled meta-agent card 也已恢复为 `routing_ready`。
+- **所有 command 都有 update fallback。** 每个 `/hep-*` command/prompt 开头都会提示：如果 automatic update 没有触发，运行 `hephaestus update`。
+- **当前版本仍可运行。** 提示会说明 update 是可选的；不更新时，当前已安装版本的命令仍然可用。
+- **自动化输出保持干净。** fallback 只出现在 chat command/prompt surface，不会混入返回 JSON 的 shell CLI 输出。
 
 ## 架构
 

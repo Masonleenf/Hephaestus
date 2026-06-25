@@ -139,8 +139,8 @@
   "schemaVersion": "routing-card/2.0",
   "source": {
     "kind": "local_path",
-    "package_hash": "sha256:11c24e32cb2d841c1e909340dfb747bdf7623388012044a725c033251208c1d1",
-    "package_version": "0.7.25",
+    "package_hash": "sha256:c4a462674322e3f11148965cf44241535c681db8741145c29d8392e20122f7ee",
+    "package_version": "0.7.26",
     "ref": null
   },
   "summary": "Build, repair, package, validate, and publish Agentlas-compatible agents and teams across major agent runtimes.",

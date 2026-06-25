@@ -4,6 +4,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+UPDATE_FALLBACK = "Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 번 실행하세요. 업데이트하지 않아도 현재 버전 명령은 그대로 동작합니다."
 
 
 def _run(*args: str) -> str:
@@ -41,3 +42,25 @@ def test_standalone_build_wrapper_points_to_hephaestus_build() -> None:
     )
     assert completed.returncode == 0, completed.stderr or completed.stdout
     assert "/hep-build create a finance agent" in completed.stdout
+
+
+def test_all_hep_command_surfaces_include_update_fallback_line() -> None:
+    command_dirs = [
+        ROOT / "claude" / "plugins" / "agentlas-core-engine-meta-agent" / "commands",
+        ROOT / ".claude" / "commands",
+        ROOT / "codex" / "prompts",
+        ROOT / "gemini" / "extension" / "commands",
+        ROOT / ".gemini" / "commands",
+        ROOT / "antigravity" / "workflows",
+        ROOT / ".agents" / "workflows",
+        ROOT / "cursor" / "plugin" / "commands",
+        ROOT / "opencode" / "commands",
+    ]
+    files = []
+    for directory in command_dirs:
+        files.extend(sorted(directory.glob("hep-*.md")))
+        files.extend(sorted(directory.glob("hep-*.toml")))
+
+    assert files
+    missing = [str(path.relative_to(ROOT)) for path in files if UPDATE_FALLBACK not in path.read_text(encoding="utf-8")]
+    assert missing == []

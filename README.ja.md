@@ -293,11 +293,11 @@ Hephaestus は prompt だけを返すものではありません。他の runtim
 | "この workflow の team/company を作って" | `20-multi-agent-team-builder` | HQ、PM Soul、Memory Curator、Policy Gate、eval、QA、handoff を持つ multi-agent team |
 | "既存 agent/repo/workspace を package して" | `30-agentlas-packager` | Desktop import、terminal、Codex、Claude、Gemini、public GitHub release に対応した Agentlas package |
 
-## v0.7.25 の新機能
+## v0.7.26 の新機能
 
-- **Self-contained `/hep-upload`。** Cloud/Hub upload は private checkout や外部 publish script に依存せず、bundled Hephaestus package/publish runtime を使います。
-- **Hub upload gates を内蔵。** marketplace upload 前に `publicProfile`、`routing-card/2.0`、package hash、static security、bundle size を検証します。
-- **Routing-card migration を修正。** Auto-migrated card は null package hash を出さず、bundled meta-agent card も `routing_ready` です。
+- **すべての command に update fallback。** 各 `/hep-*` command/prompt の先頭に、automatic update が動かなかった場合は `hephaestus update` を実行するよう案内します。
+- **現在の version も動作継続。** この案内は optional であり、update しなくても現在 install 済みの command はそのまま動きます。
+- **Automation output は変更なし。** fallback は chat command/prompt surface のみで、JSON を返す shell CLI output には混ぜません。
 
 ## Architecture
 

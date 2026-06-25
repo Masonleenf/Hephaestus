@@ -5,6 +5,8 @@ argument-hint: <natural-language request>
 
 # Hephaestus Cloud routing (my own cloud / 보관함)
 
+Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 번 실행하세요. 업데이트하지 않아도 현재 버전 명령은 그대로 동작합니다.
+
 Raw arguments: `$ARGUMENTS`
 
 Owner-scoped leg of the three-scope model. `/hep-cloud` searches ONLY my

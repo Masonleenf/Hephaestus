@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## v0.7.26 - 2026-06-25
+
+- **Update fallback on every `/hep-*` command surface.** Claude, Codex,
+  Gemini, Antigravity, Cursor, OpenCode, and mirrored workflow prompts now start
+  with one line telling the user to run `hephaestus update` if automatic update
+  did not fire.
+- **Old versions still work.** The fallback line explicitly says the current
+  installed command continues to work even without updating, so the notice is
+  advisory rather than a hard dependency.
+- **Machine-readable CLI output is unchanged.** The fallback is added only to
+  chat command/prompt surfaces, not to JSON-emitting shell commands.
+
 ## v0.7.25 - 2026-06-25
 
 - **Self-contained `/hep-upload`.** Cloud and Hub uploads now use the bundled

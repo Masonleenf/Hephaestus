@@ -6,6 +6,8 @@ allowed-tools: Bash, Read, Glob, Grep
 
 # /hep-network
 
+Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 번 실행하세요. 업데이트하지 않아도 현재 버전 명령은 그대로 동작합니다.
+
 Route a natural-language request through the public Agentlas Hub via
 Hephaestus Network. Local private/restricted cards are ignored by default. Also triggered
 by `@Hephaestus <request>` in chat.
