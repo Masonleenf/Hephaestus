@@ -10,9 +10,14 @@ Raw arguments: `$ARGUMENTS`
 
 Use the `hephaestus-network` skill's runner resolution. If the arguments are
 `ontology`, run `"$RUNNER" ontology`. Otherwise classify the request as
-single-agent-builder, multi-agent-team-builder, or agentlas-packager, execute
-the meta-agent procedure on `$ARGUMENTS`, and include `global_commands` for
-the created agent or team in the final response.
+single-agent-builder, multi-agent-team-builder, or agentlas-packager by
+independent ownership boundaries, execute the meta-agent procedure on
+`$ARGUMENTS`, and include `global_commands` for the created agent or team in
+the final response. If single↔multi is unclear, ask first in plain language:
+"이 일을 한 명의 전문가가 처음부터 끝까지 맡으면 되나요, 아니면 조사/분석/검토처럼
+여러 전문가가 나눠 맡고 마지막에 합쳐야 하나요?" Do not show
+non-technical users internal labels like ownership boundary, memory/context,
+synthesis, or produces/consumes.
 
 Before writing substantial package files, run the Builder Interview and
 Research Gate from `docs/builder-interview-research-gate.md`: ask an 8-12
@@ -24,6 +29,11 @@ and create `docs/builder-interview.md`, `docs/research-sources.md`,
 `docs/tool-selection.md`, `docs/domain-expert-synthesis.md`,
 `docs/prompt-performance-contract.md`, and `.agentlas/capability-eval-plan.json`.
 Include `interview_research` evidence in the final response.
+
+After creating or repairing a package, run
+`scripts/verify-team-package.sh <package-root>`. If it fails, do not report
+`completed`; correct the shape by collapsing to a valid single-agent package or
+adding orchestrator/HQ plus company-blueprint topology, then rerun the gate.
 
 This is the clearer build-focused name for the older Hephaestus command.
 

@@ -16,8 +16,12 @@ Expose `/prompts:hep-build` as the public Codex build prompt next to
 - If the arguments are `ontology`, resolve the runner exactly as in
   `/prompts:hep-network` and run `"$RUNNER" ontology`.
 - Otherwise classify the request as single-agent-builder,
-  multi-agent-team-builder, or agentlas-packager per the skill and execute the
-  meta-agent procedure on: `$ARGUMENTS`.
+  multi-agent-team-builder, or agentlas-packager by independent ownership
+  boundaries and execute the meta-agent procedure on: `$ARGUMENTS`. If
+  single↔multi is unclear, ask first in plain language: "이 일을 한 명의
+  전문가가 처음부터 끝까지 맡으면 되나요, 아니면 조사/분석/검토처럼 여러
+  전문가가 나눠 맡고 마지막에 합쳐야 하나요?" Do not expose internal labels
+  like ownership boundary, memory/context, synthesis, or produces/consumes.
 - Before writing substantial package files, run the Builder Interview and
   Research Gate from `docs/builder-interview-research-gate.md`: ask an 8-12
   question first batch when the request is vague, continue follow-ups until the
@@ -28,6 +32,10 @@ Expose `/prompts:hep-build` as the public Codex build prompt next to
   `docs/research-sources.md`, `docs/tool-selection.md`,
   `docs/domain-expert-synthesis.md`, `docs/prompt-performance-contract.md`,
   and `.agentlas/capability-eval-plan.json`.
+- After creating or repairing a package, run
+  `scripts/verify-team-package.sh <package-root>`. If it fails, do not report
+  `completed`; correct the shape by collapsing to a valid single-agent package
+  or adding orchestrator/HQ plus company-blueprint topology.
 - Include `global_commands` for the created agent or team in the final
   response, plus `interview_research` evidence.
 - If a package was created/repaired in the current workspace, register it to

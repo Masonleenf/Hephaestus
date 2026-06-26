@@ -72,21 +72,31 @@ Read `$ENGINE/AGENTS.md` if it exists, otherwise `$ENGINE/SKILL.md`, then:
 1. Read `$ENGINE/.agentlas/mode-map.json` and
    `$ENGINE/.agentlas/global-commands.json` when present.
 2. Classify the request with the mode-classification skill as single-agent
-   builder, multi-agent team builder, or agentlas-packager.
+   builder, multi-agent team builder, or agentlas-packager by independent
+   ownership boundaries. If single↔multi is unclear, ask first in plain
+   language: "이 일을 한 명의 전문가가 처음부터 끝까지 맡으면 되나요, 아니면
+   조사/분석/검토처럼 여러 전문가가 나눠 맡고 마지막에 합쳐야 하나요?" Do
+   not show non-technical users internal labels like ownership boundary,
+   memory/context, synthesis, or produces/consumes.
 3. Run the Builder Interview and Research Gate from
    `docs/builder-interview-research-gate.md` before writing substantial package
    files. Ask an 8-12 question first batch when the request is vague, continue
-   follow-ups until the functional brief is clear, research official sources,
-   similar agent repositories or comparables, academic/professional theory, and
-   plugin docs, compare selected and rejected tools/plugins, synthesize
-   domain-expert behavior, and create `docs/builder-interview.md`,
+   follow-ups until the functional brief, ownership boundaries, role count,
+   tool permission separation, synthesis need, and execution order are clear,
+   research official sources, similar agent repositories or comparables,
+   academic/professional theory, and plugin docs, compare selected and rejected
+   tools/plugins, synthesize domain-expert behavior, and create
+   `docs/builder-interview.md`,
    `docs/research-sources.md`, `docs/tool-selection.md`,
    `docs/domain-expert-synthesis.md`, `docs/prompt-performance-contract.md`, and
    `.agentlas/capability-eval-plan.json`.
 4. If missing narrow details would change files, adapters, or the public/private
    boundary, run the clarify-question-loop skill first.
 5. Generate or repair the smallest useful Agentlas package in the current
-   workspace, then verify it.
+   workspace, then run `scripts/verify-team-package.sh <package-root>`. If it
+   fails, do not report `completed`; correct the shape by collapsing to a valid
+   single-agent package or adding orchestrator/HQ plus company-blueprint
+   topology, then rerun the gate and verify it.
 6. If the package exists in the current workspace, register its routing-card to
    local discovery so it can participate in local routing priority:
 

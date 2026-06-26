@@ -1,10 +1,12 @@
 import os
+import re
 import subprocess
 from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
 UPDATE_FALLBACK = "Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 번 실행하세요. 업데이트하지 않아도 현재 버전 명령은 그대로 동작합니다."
+PLAIN_SHAPE_QUESTION = "이 일을 한 명의 전문가가 처음부터 끝까지 맡으면 되나요"
 
 
 def _run(*args: str) -> str:
@@ -78,3 +80,23 @@ def test_all_hep_command_surfaces_start_body_with_update_fallback_line() -> None
     assert files
     misplaced = [str(path.relative_to(ROOT)) for path in files if _first_command_body_line(path) != UPDATE_FALLBACK]
     assert misplaced == []
+
+
+def test_hep_build_surfaces_use_plain_language_shape_question() -> None:
+    files = [
+        ROOT / "claude" / "plugins" / "agentlas-core-engine-meta-agent" / "commands" / "hep-build.md",
+        ROOT / ".claude" / "commands" / "hep-build.md",
+        ROOT / "codex" / "prompts" / "hep-build.md",
+        ROOT / "gemini" / "extension" / "commands" / "hep-build.toml",
+        ROOT / ".gemini" / "commands" / "hep-build.toml",
+        ROOT / "antigravity" / "workflows" / "hep-build.md",
+        ROOT / ".agents" / "workflows" / "hep-build.md",
+        ROOT / "cursor" / "plugin" / "commands" / "hep-build.md",
+        ROOT / "opencode" / "commands" / "hep-build.md",
+    ]
+
+    for path in files:
+        text = path.read_text(encoding="utf-8")
+        normalized = re.sub(r"\s+", " ", text)
+        assert PLAIN_SHAPE_QUESTION in normalized, str(path.relative_to(ROOT))
+        assert "자기 메모리/컨텍스트" not in text, str(path.relative_to(ROOT))

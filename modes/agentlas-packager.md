@@ -45,6 +45,9 @@ Cursor rules, another public repo, a ZIP, or an ad hoc Markdown structure.
 6. Remove private or unsafe material before public release.
 7. Add Codex plugin, Claude adapter, Gemini adapter, Antigravity workflow, and
    terminal install surfaces when requested.
+8. Run `scripts/verify-team-package.sh <package-root>` after repairing any
+   package. If it fails, do not report `completed`; collapse to a valid
+   single-agent shape or add orchestrator/HQ plus blueprint topology.
 
 ## Do Not
 
@@ -54,4 +57,6 @@ Cursor rules, another public repo, a ZIP, or an ad hoc Markdown structure.
 - Do not wrap a shallow prompt into a polished package without asking missing
   interview questions and adding domain-expert-synthesis, prompt-performance,
   and capability-eval pressure.
+- Do not leave multiple loose worker `agent.md` files without an
+  orchestrator/HQ and blueprint topology.
 - Do not finish without reporting `global_commands` to the user.

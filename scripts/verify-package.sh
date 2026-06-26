@@ -54,6 +54,7 @@ required_files=(
   "examples/ontology-proposal-agent/verify.sh"
   "examples/ontology-proposal-agent/.agentlas/injected-contracts.json"
   "scripts/sync-adapters.sh"
+  "scripts/verify-team-package.sh"
   "scripts/verify-mcp-surface.sh"
   "scripts/verify-builder-quality-contract.sh"
   ".agents/agentlas-core-engine-meta-agent/agent.md"
@@ -280,6 +281,9 @@ required_files=(
   "hermes/skills/hephaestus-cloud/SKILL.md"
   "agentlas_cloud/mcp_stdio.py"
   "tests/test_mcp_stdio.py"
+  "tests/test_team_package_gate.py"
+  "tests/fixtures/team-valid/.agentlas/company-blueprint.json"
+  "tests/fixtures/team-degenerate/agents/10-researcher/agent.md"
   "docs/local-models.md"
   "bin/ontology"
   "ontology/__init__.py"
@@ -482,6 +486,12 @@ fi
 scripts/verify-install-docs.sh
 scripts/verify-global-command-contract.sh
 scripts/verify-builder-quality-contract.sh
+scripts/verify-team-package.sh tests/fixtures/team-valid >/dev/null
+if scripts/verify-team-package.sh tests/fixtures/team-degenerate >/tmp/agentlas-team-gate-negative.txt 2>&1; then
+  cat /tmp/agentlas-team-gate-negative.txt >&2
+  fail "degenerate team fixture unexpectedly passed"
+fi
+grep -q "degenerate team" /tmp/agentlas-team-gate-negative.txt || fail "degenerate team fixture did not report degenerate team"
 scripts/verify-ontology-runtime.sh
 python3 scripts/score-robustness-eval.py benchmarks/robustness/example-results.jsonl >/dev/null
 scripts/sync-adapters.sh --check

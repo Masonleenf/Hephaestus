@@ -67,12 +67,20 @@ Meta-Agent team:
 1. Read `AGENTS.md`.
 2. Read `.agentlas/mode-map.json`.
 3. Classify the request as single-agent builder, multi-agent team builder, or
-   packager.
+   packager by independent ownership boundaries: one role owning
+   memory/context, tools/permissions, and success criteria is single-agent;
+   two or more such roles plus routing/synthesis/handoff is team-builder;
+   existing material repair/conversion is packager. If single↔multi is
+   unclear, ask first in plain language: "이 일을 한 명의 전문가가 처음부터
+   끝까지 맡으면 되나요, 아니면 조사/분석/검토처럼 여러 전문가가 나눠 맡고
+   마지막에 합쳐야 하나요?" Do not show non-technical users internal labels
+   like ownership boundary, memory/context, synthesis, or produces/consumes.
 4. Run the Builder Interview and Research Gate in
    `docs/builder-interview-research-gate.md` before writing substantial package
    files. Ask an 8-12 question first batch when the request is vague; continue
    follow-ups until target user, tasks, inputs, outputs, examples,
-   tools/plugins, memory, failure modes, and evals are clear. Research official
+   tools/plugins, memory, failure modes, ownership boundaries, execution order,
+   and evals are clear. Research official
    or primary docs, similar agent repositories or comparables, GitHub examples,
    academic/professional theory, and tool/plugin docs. Record selected and
    rejected tools/plugins with permission, secret, fallback, and smoke-test
@@ -115,7 +123,12 @@ Meta-Agent team:
      echo "Hephaestus runner not found for routing-card migration."
    fi
    ```
-10. Return `status`, `evidence`, `output`, `global_commands`, `market_page_copy`,
+10. Run the package shape gate before reporting completion:
+   `scripts/verify-team-package.sh <generated-package-root>`. If it fails, do
+   not report `completed`; fix the package by collapsing to a valid
+   single-agent shape or adding orchestrator/HQ plus company-blueprint topology,
+   then rerun the gate.
+11. Return `status`, `evidence`, `output`, `global_commands`, `market_page_copy`,
    `interview_research`, and `blockers`.
    The `global_commands` section must tell the user the exact Claude Code,
    Codex, Gemini CLI, generic AGENTS.md, and terminal commands for the generated

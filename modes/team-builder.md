@@ -5,6 +5,21 @@
 Create an installable multi-role agent team package. The team behaves like a
 small operating system, not a loose list of prompts.
 
+## Shape Invariant
+
+Generated packages must be exactly one of two valid shapes. A team is valid only
+when it has two or more worker roles, an orchestrator/HQ, company-blueprint
+topology with nodes and edges, PM Soul, Memory Curator, Policy Gate, eval judge,
+QA/evidence gate, Memory Tickets, and one HQ public command. A loose folder with
+multiple worker `agent.md` files and no HQ/topology is a degenerate team and
+must fail `scripts/verify-team-package.sh <package-root>`.
+
+Use the ownership-boundary classifier before building: roles become separate
+team members only when they independently own memory/context, tools/permissions,
+and success criteria, and their outputs require routing, synthesis, review, or
+produces/consumes handoff. Otherwise collapse to one single-agent package or
+separate unrelated single-agent packages.
+
 ## Required Team Layers
 
 - Orchestrator/HQ for intake, routing, sequencing, and final synthesis.
@@ -60,3 +75,6 @@ evidence shows a real ownership boundary.
   unless it is explicitly a minimal private scaffold.
 - Do not finish without reporting the orchestrator/HQ command in
   `global_commands`.
+- Do not report `completed` until `scripts/verify-team-package.sh <package-root>`
+  passes. If it fails, correct the package by adding the orchestrator/HQ plus
+  blueprint topology or by collapsing the output to a valid single-agent shape.

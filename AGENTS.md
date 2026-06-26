@@ -57,7 +57,13 @@ become separate sources of truth.
 ## Operating Loop
 
 1. Run the public mode classifier (`skills/mode-classification/SKILL.md`) and
-   classify the request as one of:
+   classify the request by independent ownership boundaries, not keywords. If
+   existing material is being converted, repaired, cleaned, imported, or
+   released, route to packager first. Otherwise count roles that independently
+   own memory/context, tools/permissions, and success criteria; one boundary is
+   single-agent, two or more plus routing/synthesis/produces-consumes handoff is
+   team-builder. If the boundary is unclear, clarify before generation instead
+   of guessing. Classify the request as one of:
    - create one single agent;
    - create a multi-agent team;
    - package or repair an existing local/external agent or team.
@@ -74,7 +80,11 @@ become separate sources of truth.
    official sources, similar agent repositories or comparables,
    academic/professional theory, and plugin documentation, then select
    tools/plugins only after checking permissions, secrets, alternatives, and
-   smoke-test paths.
+   smoke-test paths. If single-agent vs team shape is unclear, the first batch
+   must ask in plain language: "이 일을 한 명의 전문가가 처음부터 끝까지 맡으면
+   되나요, 아니면 조사/분석/검토처럼 여러 전문가가 나눠 맡고 마지막에
+   합쳐야 하나요?" Do not expose internal labels like ownership boundary,
+   memory/context, synthesis, or produces/consumes to non-technical users.
 5. Inspect current files before making claims. Prefer real files over remembered
    assumptions.
 6. Emit or repair the smallest useful Agentlas package.
@@ -99,10 +109,15 @@ become separate sources of truth.
 13. Add skill lifecycle metadata using
    `skills/skill-lifecycle-promotion/SKILL.md` when the package contains
    reusable skills.
-14. Verify with `scripts/verify-package.sh`.
-15. For ontology runtime changes, also verify with
+14. For generated or repaired packages, run
+    `scripts/verify-team-package.sh <generated-package-root>` before the final
+    report. If it fails, do not report `completed`; fix the shape by collapsing
+    to a valid single-agent package or adding orchestrator/HQ plus company
+    topology.
+15. Verify with `scripts/verify-package.sh`.
+16. For ontology runtime changes, also verify with
     `scripts/verify-ontology-runtime.sh`.
-16. For long-running or multi-file execution work, apply
+17. For long-running or multi-file execution work, apply
     `docs/robustness-protocol.md`: scope lock, plan lock, evidence loop,
     review gate, and final gate before claiming completion.
 
@@ -257,14 +272,16 @@ secret-like values.
 multiple skills, setup guides, memory architecture, research refresh, and
 self-evolution proposals, but it must not inflate the request into a company,
 HQ roster, or swarm. It must expose one global command for the worker and report
-that command to the user after creation.
+that command to the user after creation. It must not emit multiple loose worker
+`agent.md` files; that is a team shape and requires HQ/topology.
 
 `team-builder` produces a multi-role team package. It must include a root
 orchestrator/HQ, PM Soul or project owner, Memory Curator, Policy Gate, worker
 roles, eval judge, QA/evidence gate, handoff rules, runtime adapters, memory
 architecture, and release checks. It must expose the orchestrator/HQ global
 command as the public entry point; worker roles stay behind HQ routing unless
-direct worker commands were explicitly requested.
+direct worker commands were explicitly requested. Team packages must pass
+`scripts/verify-team-package.sh <package-root>` before completion.
 
 `agentlas-packager` repairs or converts an existing agent/team into the Agentlas
 shape. It adds canonical core files, `.agentlas` contracts, runtime adapters,

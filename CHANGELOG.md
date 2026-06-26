@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## v0.7.28 - 2026-06-26
+
+- **Deterministic `/hep-build` team shape gate.** Added
+  `scripts/verify-team-package.sh` plus valid/degenerate fixtures so generated
+  packages must be either one `single-agent` worker or a real team with
+  orchestrator/HQ, topology, memory, policy, eval, QA, and one HQ command.
+- **Ownership-boundary single vs team classifier.** Documented the 0-3 step
+  classifier across canonical skills, modes, command adapters, and mode map so
+  `/hep-build` no longer treats the word "team" as enough evidence by itself.
+- **Plain-language clarify questions.** Builder interview and clarify surfaces
+  now ask ordinary user-facing questions about whether one expert can do the
+  job or several experts must split and merge it, while internal labels such as
+  ownership boundary, memory/context, and produces/consumes stay hidden.
 - **Agentlas Cloud/Network personalization contract.** Documented the remote
   Agentlas Web/MCP behavior where signed-in `/hep-network` searches Cloud,
   then bookmarks, then public Hub, while `/hep-cloud` remains Cloud-only.

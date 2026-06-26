@@ -60,6 +60,14 @@ portable. Otherwise derive one from the package slug. For teams, expose the HQ
 command and keep workers behind HQ unless direct worker commands were requested.
 The final handoff must include `global_commands`.
 
+## Shape Gate
+
+After repairing or converting a package, run
+`scripts/verify-team-package.sh <package-root>`. If the gate fails, do not
+report `completed`; collapse loose workers into a valid single-agent shape or
+add orchestrator/HQ plus company-blueprint topology. Never leave a degenerate
+team with multiple worker `agent.md` files and no HQ.
+
 ## Safety
 
 Do not copy secrets, private local research notes, raw logs, credentials,

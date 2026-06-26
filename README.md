@@ -107,7 +107,21 @@ Fresh installs and updates prune the old visible `/hephaestus` chat command so
 new users see the clean command surface above: six explicit commands in
 external LLM hosts, and plain-language native routing inside Agentlas.
 
-## New In v0.7.27
+## New In v0.7.28
+
+- **Deterministic team shape gate.** Generated packages now have to be exactly
+  one valid shape: one `single-agent` worker, or a real team with an
+  orchestrator/HQ, topology, memory, policy, eval, QA, and one HQ command.
+  Loose worker folders without HQ fail `scripts/verify-team-package.sh`.
+- **Single vs team classification by ownership.** `/hep-build` now decides by
+  independent role ownership, handoffs, and synthesis needs instead of the word
+  "team" alone.
+- **Plain-language builder questions.** When the shape is unclear, Hephaestus
+  asks user-facing questions such as whether one expert can handle the work or
+  several experts must split it and merge the result. Internal labels like
+  ownership boundary, memory/context, and produces/consumes stay hidden.
+
+## Previous Command Fallback Update
 
 - **Update fallback on every command.** Each `/hep-*` command/prompt now starts
   with a one-line fallback: run `hephaestus update` if automatic update did not
@@ -480,7 +494,7 @@ Claude also supports `claude plugins ...` as an alias, but this README uses
 Open your normal OS terminal, not the Codex chat box, and run:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.27
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.28
 codex plugin add hephaestus@agentlas-core-engine
 ```
 

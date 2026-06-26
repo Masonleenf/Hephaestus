@@ -8,8 +8,13 @@ runtime adapters.
 
 ## Use When
 
+- The ownership-boundary classifier found two or more roles that independently
+  own memory/context, tools/permissions, and success criteria.
+- Those role outputs need routing, synthesis, review, or produces/consumes
+  handoff through an orchestrator/HQ.
 - The user asks for a team, company, firm, roster, departments, HQ, debate,
-  parallel workers, review gates, or multi-role ownership.
+  parallel workers, review gates, or multi-role ownership and the ownership
+  boundary is confirmed.
 - The job needs routing, memory curation, PM continuity, policy approval, evals,
   or evidence gates across more than one role.
 
@@ -19,7 +24,9 @@ Before writing the team roster, run `docs/builder-interview-research-gate.md`.
 Do not jump from a rough idea to a generic HQ/worker list. Ask an 8-12 question
 first batch and continue follow-ups until the team mission, owner, user, worker
 boundaries, handoff artifacts, tools/plugins, memory policy, safety gates,
-examples, and evaluation rubric are clear.
+examples, and evaluation rubric are clear. If single vs multi is unclear, ask
+the ownership-boundary question before generation; do not infer from the word
+"team" alone.
 
 Research the team's domain before writing role prompts. Use official or primary
 docs, similar agent repositories or comparables, GitHub examples,
@@ -54,6 +61,8 @@ role behavior.
 - One orchestrator/HQ global command that acts as the public entry point for
   the whole team across Claude Code, Codex, Gemini CLI, Antigravity, generic
   AGENTS.md, and terminal adapters.
+- `scripts/verify-team-package.sh <package-root>` passes before final status is
+  `completed`.
 
 ## Ontology-Backed Generation
 
@@ -83,9 +92,14 @@ include `global_commands`.
 ## Do Not
 
 - Do not collapse a requested team into one helper.
+- Do not ship multiple loose worker `agent.md` files without an
+  orchestrator/HQ and blueprint topology.
 - Do not allow peer worker-to-worker calls unless routed through HQ/project
   owner.
 - Do not ship without eval, policy, memory, and package verification.
+- Do not report `completed` until the team shape gate passes. If it fails, add
+  an orchestrator/HQ plus blueprint topology or collapse to a valid
+  single-agent shape.
 
 ## Output
 

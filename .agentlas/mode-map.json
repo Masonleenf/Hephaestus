@@ -37,6 +37,9 @@
         "one installable worker",
         "multiple skills inside one worker",
         "self-evolving or research-refresh agent",
+        "one independent ownership boundary for memory/context, tools/permissions, and success criteria",
+        "many tools or skills but one worker owns the context",
+        "no routing, review handoff, or final synthesis requirement",
         "no requested roster or team topology"
       ],
       "mustInclude": [
@@ -52,6 +55,7 @@
       "mustNotInclude": [
         "invented company roster",
         "unrequested HQ swarm",
+        "multiple loose worker agent.md files (that is a team, not a single agent)",
         "autonomous self-modification without approval"
       ]
     },
@@ -63,6 +67,11 @@
         "multi-role team",
         "orchestrator or HQ",
         "roster, departments, debate, review gates, or parallel ownership",
+        "roles each need independent memory/context",
+        "roles require separated tools or permissions",
+        "role outputs need routing, review, or final synthesis",
+        "roster, desk, or parallel role ownership",
+        "produces/consumes handoff dependencies between roles",
         "company-style topology"
       ],
       "mustInclude": [
@@ -79,6 +88,7 @@
       ],
       "mustNotInclude": [
         "team collapsed into a lone helper",
+        "workers without an orchestrator/HQ (degenerate team)",
         "peer worker calls without HQ/project owner routing",
         "release without eval and package verification"
       ]

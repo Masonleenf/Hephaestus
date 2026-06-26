@@ -30,6 +30,14 @@ classify the mode, then interview the user before generation.
 Ask a first batch of 8-12 high-leverage questions. Continue with follow-ups
 until these dimensions are no longer ambiguous:
 
+- single-agent vs team shape: whether each role needs independent
+  memory/context, or whether one worker can own the whole job with multiple
+  skills;
+- role count and ownership boundaries;
+- tool and permission separation by role;
+- whether role outputs must be synthesized by an orchestrator/HQ;
+- execution order: sequential produces/consumes pipeline vs independent
+  parallel packets;
 - target user and buyer;
 - job-to-be-done and top recurring tasks;
 - inputs the agent receives, including files, APIs, chats, repos, docs, and
@@ -51,6 +59,21 @@ until these dimensions are no longer ambiguous:
 If a user cannot answer a question, propose a conservative default, label it as
 `assumption`, and ask whether that default is acceptable. Do not bury unknowns
 inside the generated agent instructions.
+
+If the prompt is only a domain label plus "team" (for example, "stock research
+team") and the ownership boundaries are unclear, do not start generation until
+the first batch answers the shape questions above.
+
+Ask those shape questions in plain language. Do not show users internal labels
+like ownership boundary, memory/context, synthesis, or produces/consumes. The
+first question should be understandable by a non-technical operator:
+
+> 이 일을 한 명의 전문가가 처음부터 끝까지 맡으면 되나요, 아니면 조사/분석/검토처럼
+> 여러 전문가가 나눠 맡고 마지막에 합쳐야 하나요?
+
+Then ask only the practical follow-ups that matter: what roles are needed, what
+files/accounts/tools each role can use, whether one person must combine the
+results, and whether the work is sequential or can happen at the same time.
 
 Write the result into the generated package as `docs/builder-interview.md`.
 

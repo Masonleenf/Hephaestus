@@ -11,16 +11,30 @@ description: "Use when the user types /prompts:hep-build, mentions @Hephaestus f
    to invoke the older internal support skill names.
 2. Read `AGENTS.md` and `.agentlas/mode-map.json` when they exist in the
    current workspace.
-3. Run the public mode classifier:
+3. Run the public mode classifier by independent ownership boundaries, not by
+   keywords such as "team":
    - package or repair existing material -> `30-agentlas-packager`;
-   - multi-role roster/company/HQ -> `20-multi-agent-team-builder`;
-   - one worker -> `10-single-agent-builder`.
+   - one independently owned context/tools/success standard ->
+     `10-single-agent-builder`;
+   - two or more roles with separate context, permissions, success standards,
+     handoff, or synthesis needs -> `20-multi-agent-team-builder`.
+   If the shape is unclear, ask before generating. The user-facing question
+   must be plain language, for example: "이 일을 한 명의 전문가가 처음부터 끝까지
+   맡으면 되나요, 아니면 조사/분석/검토처럼 여러 전문가가 나눠 맡고 마지막에
+   합쳐야 하나요?" Do not expose internal labels such as `single-agent`,
+   `team-builder`, ownership boundary, memory/context, synthesis, or
+   produces/consumes.
 4. Run the Builder Interview and Research Gate from
    `docs/builder-interview-research-gate.md` before writing substantial package
    files:
    - ask an 8-12 question first batch when the request is vague;
    - continue follow-ups until target user, tasks, inputs, outputs, examples,
-     tools/plugins, memory, failure modes, and evals are clear;
+     role count, separated tools or permissions, final merge needs, execution
+     order, memory, failure modes, and evals are clear;
+   - phrase shape questions in everyday language. Ask who handles which part,
+     whether each role needs different files/accounts/tools, whether someone
+     must merge the result, and whether work can run at the same time or must
+     pass from one person to the next;
    - research official or primary docs, similar agent repositories or
      comparables, GitHub examples, academic/professional theory, and
      tool/plugin docs;
@@ -46,7 +60,11 @@ description: "Use when the user types /prompts:hep-build, mentions @Hephaestus f
    AGENTS.md, and terminal adapters. For teams, expose the orchestrator/HQ
    command and route workers through HQ unless direct worker commands were
    requested.
-10. Verify with `scripts/verify-package.sh`.
+10. Run `scripts/verify-team-package.sh <generated-package-root>` for generated
+    or repaired packages. If it fails, do not report completion; collapse the
+    output to a single-agent package or add the required orchestrator/HQ and
+    team contracts.
+11. Verify with `scripts/verify-package.sh`.
 
 ## Output
 

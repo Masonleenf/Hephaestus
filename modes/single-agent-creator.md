@@ -6,6 +6,16 @@ Create one installable Agentlas worker package. The package may include multiple
 skills, commands, setup guides, memory contracts, runtime adapters, and
 self-evolution proposals, but it is still one worker.
 
+## Shape Invariant
+
+Generated packages must be exactly one of two valid shapes. A single-agent
+package has one worker `agent.md`, no orchestrator/HQ, and
+`.agentlas/company-blueprint.json` topology `single-agent`. It may own many
+skills, tools, and setup paths, but it must not emit multiple loose worker
+`agent.md` files. If two or more independent ownership boundaries are required,
+route to `team-builder`; if separate roles do not need synthesis, create
+separate single-agent packages rather than one degenerate team.
+
 ## Required Structure
 
 - `AGENTS.md` as the canonical cross-runtime entry point.
@@ -56,6 +66,8 @@ The single agent must be useful even when the user's initial request was vague.
 
 - Do not invent HQ, company, swarm, or multi-agent roster for a normal single
   worker request.
+- Do not emit multiple loose worker `agent.md` files. That is a team shape and
+  must have an orchestrator/HQ plus blueprint topology.
 - Do not remove memory architecture just because the package is single-agent.
 - Do not allow autonomous self-modification without explicit approval.
 - Do not ship a prompt-only worker without interview, research, tool-selection,

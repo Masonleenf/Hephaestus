@@ -36,7 +36,9 @@ description: "Use when converting, repairing, or packaging an existing local or 
 5. Add or repair the global command across Claude Code, Codex, Gemini CLI,
    generic AGENTS.md tools, and terminal adapters.
 6. Remove secrets, raw logs, private local notes, and unsafe public paths.
-7. Run package verification and public-safety checks before release.
+7. Run `scripts/verify-team-package.sh <package-root>` after repair. If it
+   fails, correct the package shape before any final handoff.
+8. Run package verification and public-safety checks before release.
 
 ## Output
 

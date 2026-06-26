@@ -26,6 +26,10 @@ description: "Use when generating or auditing a multi-role agent team package wi
 9. Emit one orchestrator/HQ global command in `.agentlas/global-commands.json`
    and runtime command files. Do not expose worker commands unless requested.
 10. Emit runtime adapters and package verification.
+11. Run `scripts/verify-team-package.sh <package-root>` before reporting
+    `completed`. If it fails, do not hand off a result; correct the package by
+    adding an orchestrator/HQ plus company-blueprint topology or by collapsing
+    it to a valid single-agent package.
 
 ## Output
 
