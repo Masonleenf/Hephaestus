@@ -32,6 +32,11 @@ After the user chooses Agentlas Hub, publish to the public marketplace with
 gate blocks missing or generic publicProfile, bad routing-card.json, missing
 package hashes, static security blockers, and public bundle size violations.
 
+When running through a non-interactive host without a TTY, do not call the
+question-only gate again after the user has answered. Use one explicit command:
+Cloud: `bin/hephaestus hep-upload <agent-folder> --visibility private-link`.
+Agentlas Hub: `bin/hephaestus hep-upload <agent-folder> --visibility marketplace`.
+
 If the destination is answered but the target folder is ambiguous, ask for the
 exact agent folder before running any upload.
 """

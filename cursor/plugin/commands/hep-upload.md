@@ -21,3 +21,9 @@ private-link`. Agentlas Hub means public marketplace upload through
 `bin/hephaestus publish <agent-folder> --visibility marketplace` after the
 bundled publicProfile, routing-card, hash, static security, and bundle-size
 gates pass.
+
+When running through a non-interactive host without a TTY, do not call the
+question-only gate again after the user has answered. Use one explicit command:
+
+- Cloud: `bin/hephaestus hep-upload <agent-folder> --visibility private-link`
+- Agentlas Hub: `bin/hephaestus hep-upload <agent-folder> --visibility marketplace`

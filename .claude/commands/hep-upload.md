@@ -43,5 +43,11 @@ After the user chooses:
   Hephaestus gate. Prefer
   `bin/hephaestus publish <agent-folder> --visibility marketplace`.
 
+When running through a non-interactive host without a TTY, do not call the
+question-only gate again after the user has answered. Use one explicit command:
+
+- Cloud: `bin/hephaestus hep-upload <agent-folder> --visibility private-link`
+- Agentlas Hub: `bin/hephaestus hep-upload <agent-folder> --visibility marketplace`
+
 If the destination is answered but the target folder is ambiguous, ask for the
 exact agent folder before running any upload.

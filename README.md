@@ -107,8 +107,19 @@ Fresh installs and updates prune the old visible `/hephaestus` chat command so
 new users see the clean command surface above: six explicit commands in
 external LLM hosts, and plain-language native routing inside Agentlas.
 
-## New In v0.7.28
+## New In v0.7.29
 
+- **Plugin-cache self-healing updates.** `hephaestus update` now recovers
+  installs that are missing a `RELEASE` marker and refreshes existing Claude
+  Code and Codex plugin cache directories, so standalone runtime updates do
+  not leave slash-command plugins pinned to an older cached version.
+- **Non-interactive `/hep-upload` execution.** After the user chooses Cloud or
+  Agentlas Hub, hosts without a TTY can run
+  `hep-upload <agent-folder> --visibility private-link` or
+  `--visibility marketplace` directly instead of stopping at "No upload
+  performed."
+- **English README cleanup.** The English command table now uses English-only
+  examples and language labels.
 - **Deterministic team shape gate.** Generated packages now have to be exactly
   one valid shape: one `single-agent` worker, or a real team with an
   orchestrator/HQ, topology, memory, policy, eval, QA, and one HQ command.
@@ -494,7 +505,7 @@ Claude also supports `claude plugins ...` as an alias, but this README uses
 Open your normal OS terminal, not the Codex chat box, and run:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.28
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.29
 codex plugin add hephaestus@agentlas-core-engine
 ```
 

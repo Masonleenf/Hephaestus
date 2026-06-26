@@ -34,6 +34,12 @@ After the user chooses:
 - Agentlas Hub: publish to the public marketplace. Prefer
   `bin/hephaestus publish <agent-folder> --visibility marketplace`.
 
+When running through a non-interactive host without a TTY, do not call the
+question-only gate again after the user has answered. Use one explicit command:
+
+- Cloud: `bin/hephaestus hep-upload <agent-folder> --visibility private-link`
+- Agentlas Hub: `bin/hephaestus hep-upload <agent-folder> --visibility marketplace`
+
 For Hub upload, the bundled gate blocks missing or generic `publicProfile`, bad
 `routing-card.json`, missing package hashes, static security blockers, and
 packages that exceed the public bundle limits.

@@ -54,6 +54,27 @@ def test_update_check_uses_ttl_cache_and_reports_newer_release(tmp_path, monkeyp
     assert result["latest"] == "v9.9.9"
 
 
+def test_update_recovers_runtime_without_release_marker(tmp_path, monkeypatch):
+    monkeypatch.setenv("HEPHAESTUS_RUNTIME_BASE", str(tmp_path / "runtime"))
+    root = tmp_path / "stale-plugin-cache"
+    root.mkdir()
+    release = {"tag_name": "v9.9.9", "tarball_url": "https://example.test/source.tar.gz", "html_url": "https://example.test/v9.9.9"}
+    calls = []
+
+    monkeypatch.setattr("agentlas_cloud.update.fetch_latest_release", lambda force=True: release)
+    monkeypatch.setattr(
+        "agentlas_cloud.update.install_latest_runtime",
+        lambda item: calls.append(item) or {"updated_to": item["tag_name"], "runtime_root": str(tmp_path / "runtime" / "9.9.9")},
+    )
+
+    result = run_update(check_only=False, root=root)
+
+    assert calls == [release]
+    assert result["status"] == "recovered_missing_release_marker"
+    assert result["current"] is None
+    assert result["latest"] == "v9.9.9"
+
+
 def test_install_latest_runtime_flips_current_and_writes_shims(tmp_path, monkeypatch):
     monkeypatch.setenv("HEPHAESTUS_RUNTIME_BASE", str(tmp_path / "runtime"))
     source = tmp_path / "source"
@@ -161,6 +182,41 @@ def test_sync_installed_runtime_adapters_overwrites_existing_paths_only(tmp_path
     assert (home / ".agents" / "skills" / "hephaestus-network" / "SKILL.md").read_text(encoding="utf-8") == "new skill\n"
     assert not (home / ".agents" / "skills" / "hephaestus-cloud").exists()
     assert str(home / ".claude" / "commands" / "hep-build.md") in result["updated"]
+
+
+def test_sync_installed_runtime_adapters_replaces_existing_plugin_cache_dirs(tmp_path, monkeypatch):
+    monkeypatch.delenv("CODEX_HOME", raising=False)
+    source = tmp_path / "source"
+    home = tmp_path / "home"
+    claude_src = source / "claude" / "plugins" / "agentlas-core-engine-meta-agent"
+    codex_src = source / "codex" / "plugins" / "agentlas-core-engine-meta-agent"
+    source.mkdir()
+    (source / "manifest.json").write_text(json.dumps({"version": "9.9.9"}), encoding="utf-8")
+    for src, marker in ((claude_src, "new claude plugin"), (codex_src, "new codex plugin")):
+        (src / "bin").mkdir(parents=True)
+        (src / "bin" / "hephaestus").write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+        (src / "plugin-marker.txt").write_text(marker, encoding="utf-8")
+
+    claude_old = home / ".claude" / "plugins" / "cache" / "agentlas-core-engine" / "hephaestus" / "0.7.23"
+    codex_old = home / ".codex" / "plugins" / "cache" / "agentlas-core-engine" / "hephaestus" / "0.7.23"
+    untouched = home / ".claude" / "plugins" / "cache" / "agentlas-core-engine" / "hephaestus" / "notes"
+    for dest in (claude_old, codex_old, untouched):
+        (dest / "bin").mkdir(parents=True)
+    (claude_old / "bin" / "hephaestus").write_text("old\n", encoding="utf-8")
+    (codex_old / "bin" / "hephaestus").write_text("old\n", encoding="utf-8")
+    (untouched / "README.md").write_text("not a plugin cache runtime\n", encoding="utf-8")
+
+    result = sync_installed_runtime_adapters(source, home=home)
+
+    assert (claude_old / "plugin-marker.txt").read_text(encoding="utf-8") == "new claude plugin"
+    assert (codex_old / "plugin-marker.txt").read_text(encoding="utf-8") == "new codex plugin"
+    assert (claude_old / "RELEASE").read_text(encoding="utf-8").strip() == "v9.9.9"
+    assert (codex_old / "RELEASE").read_text(encoding="utf-8").strip() == "v9.9.9"
+    assert (claude_old / "bin" / "python3").exists()
+    assert (codex_old / "bin" / "python3").exists()
+    assert (untouched / "README.md").read_text(encoding="utf-8") == "not a plugin cache runtime\n"
+    assert str(claude_old) in result["updated"]
+    assert str(codex_old) in result["updated"]
 
 
 def test_write_python_shims_adds_windows_utf8_launchers(tmp_path):

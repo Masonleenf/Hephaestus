@@ -168,3 +168,44 @@ def test_bin_hephaestus_package_does_not_require_forge_checkout(tmp_path: Path):
     assert completed.returncode == 0, completed.stderr
     assert "Hephaestus_agent_forge" not in completed.stdout
     assert json.loads(completed.stdout)["status"] == "ready"
+
+
+def test_bin_hephaestus_upload_visibility_runs_without_tty_or_forge(tmp_path: Path):
+    agent = make_upload_agent(tmp_path)
+    fake_home = tmp_path / "home-without-forge"
+    fake_home.mkdir()
+
+    completed = subprocess.run(
+        ["./bin/hephaestus", "hep-upload", str(agent), "--visibility", "marketplace", "--dry-run", "--no-open"],
+        cwd=Path(__file__).resolve().parents[1],
+        env={**os.environ, "HOME": str(fake_home), "PYTHONUTF8": "1"},
+        text=True,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert "No upload performed" not in completed.stderr
+    assert "Hephaestus_agent_forge" not in completed.stdout
+    payload = json.loads(completed.stdout)
+    assert payload["status"] == "dry-run"
+    assert payload["manifest"]["visibility"] == "marketplace"
+
+
+def test_bin_hephaestus_upload_rejects_missing_visibility_value(tmp_path: Path):
+    agent = make_upload_agent(tmp_path)
+    completed = subprocess.run(
+        ["./bin/hephaestus", "hep-upload", str(agent), "--visibility"],
+        cwd=Path(__file__).resolve().parents[1],
+        env={**os.environ, "PYTHONUTF8": "1"},
+        text=True,
+        stdin=subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+
+    assert completed.returncode == 2
+    assert "Missing value for --visibility" in completed.stderr

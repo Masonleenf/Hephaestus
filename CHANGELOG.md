@@ -2,8 +2,18 @@
 
 ## Unreleased
 
-## v0.7.28 - 2026-06-26
+## v0.7.29 - 2026-06-26
 
+- **Self-healing updates for stale plugin caches.** `hephaestus update` now
+  recovers runtimes with no `RELEASE` marker and refreshes existing Claude Code
+  and Codex plugin cache directories in addition to the neutral
+  `~/.agentlas/runtime/current` install.
+- **Non-interactive `/hep-upload` no longer stalls.** After Cloud or Agentlas
+  Hub has been chosen, `hep-upload <agent-folder> --visibility private-link`
+  and `--visibility marketplace` run through the bundled publisher without
+  requiring an interactive TTY.
+- **English README language cleanup.** Removed Korean examples from the English
+  README command table and changed the language selector label to English.
 - **Deterministic `/hep-build` team shape gate.** Added
   `scripts/verify-team-package.sh` plus valid/degenerate fixtures so generated
   packages must be either one `single-agent` worker or a real team with

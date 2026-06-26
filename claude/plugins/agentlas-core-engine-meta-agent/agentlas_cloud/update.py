@@ -53,12 +53,12 @@ def run_update(check_only: bool = False, root: Path | None = None) -> dict[str, 
         "html_url": latest.get("html_url"),
         "install_command": "hephaestus update",
     }
-    if check_only or status != "update_available":
+    if check_only or status not in {"update_available", "missing_release_marker"}:
         return result
 
     installed = install_latest_runtime(latest)
     result.update(installed)
-    result["status"] = "updated"
+    result["status"] = "updated" if status == "update_available" else "recovered_missing_release_marker"
     return result
 
 
@@ -75,7 +75,7 @@ def maybe_auto_update(root: Path | None = None, *, background: bool = True) -> N
             return
         runtime_root = root or Path(__file__).resolve().parent.parent
         current = current_release(runtime_root)
-        if not _is_comparable_release(current):
+        if current is not None and not _is_comparable_release(current):
             return
         base = _runtime_base()
         if (base / ".update.lock").exists():
@@ -233,6 +233,21 @@ def sync_installed_runtime_adapters(source: Path, home: Path | None = None) -> d
         except Exception as exc:
             failed.append({"path": str(dest), "error": str(exc)})
 
+    source_release = _source_release_tag(source)
+    for src_rel, dest in _installed_plugin_cache_targets(source, home_dir):
+        src = source / src_rel
+        if not src.is_dir() or not dest.exists():
+            skipped_missing.append(str(dest))
+            continue
+        try:
+            _replace_directory(src, dest)
+            if source_release:
+                (dest / "RELEASE").write_text(f"{source_release}\n", encoding="utf-8")
+            write_python_shims(dest / "bin", sys.executable)
+            updated.append(str(dest))
+        except Exception as exc:
+            failed.append({"path": str(dest), "error": str(exc)})
+
     return {
         "updated": updated,
         "skipped_missing": skipped_missing,
@@ -316,8 +331,8 @@ def _run_auto_update_once(root: Path | None = None) -> dict[str, Any]:
     current = current_release(runtime_root)
     marker_path = _runtime_base() / AUTO_UPDATE_MARKER
     marker = _read_json(marker_path)
-    if not _is_comparable_release(current):
-        result = {"status": "skipped", "reason": "missing_or_uncomparable_release", "current": current}
+    if current is not None and not _is_comparable_release(current):
+        result = {"status": "skipped", "reason": "uncomparable_release", "current": current}
         _write_json(marker_path, {**marker, **result, "last_checked_epoch": int(time.time())})
         return result
 
@@ -330,7 +345,7 @@ def _run_auto_update_once(root: Path | None = None) -> dict[str, Any]:
         "latest": latest_tag,
         "last_checked_epoch": int(time.time()),
     }
-    if status != "update_available":
+    if status not in {"update_available", "missing_release_marker"}:
         _write_json(marker_path, {**marker, **result})
         return result
     if marker.get("last_applied_tag") == latest_tag and _marker_recent(marker.get("last_applied_epoch")):
@@ -341,7 +356,7 @@ def _run_auto_update_once(root: Path | None = None) -> dict[str, Any]:
 
     installed = install_latest_runtime(latest)
     result.update(installed)
-    result["status"] = "updated"
+    result["status"] = "updated" if status == "update_available" else "recovered_missing_release_marker"
     result["last_applied_tag"] = latest_tag
     result["last_applied_epoch"] = int(time.time())
     _write_json(marker_path, {**marker, **result})
@@ -409,6 +424,33 @@ def _installed_adapter_dir_targets(source: Path, home: Path) -> list[tuple[Path,
     return [(src_rel, dest) for src_rel, dest in targets if (source / src_rel).is_dir()]
 
 
+def _installed_plugin_cache_targets(source: Path, home: Path) -> list[tuple[Path, Path]]:
+    targets: list[tuple[Path, Path]] = []
+    claude_src = Path("claude") / "plugins" / "agentlas-core-engine-meta-agent"
+    codex_src = Path("codex") / "plugins" / "agentlas-core-engine-meta-agent"
+    cache_roots = [
+        (
+            claude_src,
+            home / ".claude" / "plugins" / "cache" / "agentlas-core-engine" / "hephaestus",
+        ),
+        (
+            codex_src,
+            Path(os.environ.get("CODEX_HOME") or home / ".codex")
+            / "plugins"
+            / "cache"
+            / "agentlas-core-engine"
+            / "hephaestus",
+        ),
+    ]
+    for src_rel, cache_root in cache_roots:
+        if not (source / src_rel).is_dir() or not cache_root.is_dir():
+            continue
+        for child in cache_root.iterdir():
+            if child.is_dir() and not child.is_symlink() and (child / "bin" / "hephaestus").exists():
+                targets.append((src_rel, child))
+    return targets
+
+
 def _replace_directory(src: Path, dest: Path) -> None:
     tmp = dest.parent / f".{dest.name}.tmp-{os.getpid()}"
     if tmp.exists() or tmp.is_symlink():
@@ -423,6 +465,23 @@ def _replace_directory(src: Path, dest: Path) -> None:
         else:
             dest.unlink()
     tmp.rename(dest)
+
+
+def _source_release_tag(source: Path) -> str | None:
+    marker = source / "RELEASE"
+    if marker.is_file():
+        value = marker.read_text(encoding="utf-8").strip()
+        if value:
+            return value
+    manifest = source / "manifest.json"
+    try:
+        version = json.loads(manifest.read_text(encoding="utf-8")).get("version")
+    except (FileNotFoundError, ValueError, OSError, AttributeError):
+        return None
+    if not version:
+        return None
+    value = str(version).strip()
+    return value if value.startswith("v") else f"v{value}"
 
 
 def _download(url: str, path: Path) -> None:
