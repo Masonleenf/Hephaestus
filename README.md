@@ -107,7 +107,27 @@ Fresh installs and updates prune the old visible `/hephaestus` chat command so
 new users see the clean command surface above: six explicit commands in
 external LLM hosts, and plain-language native routing inside Agentlas.
 
-## New In v0.7.32
+## New In v1.0.0
+
+- **100K Agentlas routing path.** Hephaestus is now wired into the Agentlas
+  100K-agent routing upgrade: semantic embeddings open recall beyond lexical
+  token matches, Atlas `$vectorSearch` supplies dense ANN candidates, and
+  optional Z.ai/DeepSeek reranking sharpens final ordering.
+- **Router Agent cascade.** When deterministic routing needs clarification or
+  proposes a new agent instead of selecting one confidently, Hephaestus now
+  attaches a structured Router Agent escalation directive for the host runtime.
+- **Model calls stay with the host.** The engine does not call an LLM for that
+  cascade. It hands off a redacted directive so Claude Code, Codex, Agentlas
+  Desktop, or another host can run the reasoning pass under its own model policy.
+- **Agentlas Desktop runtime hook.** Desktop now consumes the Router Agent
+  directive and injects the assembled system-agent prompt before the normal
+  auto-route preamble, so escalation context survives the runtime handoff.
+- **Production gates passed.** This release was verified with R2 marketplace
+  index loading, Atlas vector index READY, 120 routing profiles backfilled with
+  embeddings, routing eval 10/10 plus 5/5 guards, production readiness 8/8,
+  Hephaestus pytest, and Desktop typecheck/smoke gates.
+
+## Previous Stability Updates
 
 - **No-terminal app-host auto-update.** Every `/hep-*` command/prompt surface
   now starts with a fail-silent app-host preflight: if Claude Code, Codex,
@@ -535,7 +555,7 @@ Claude also supports `claude plugins ...` as an alias, but this README uses
 Open your normal OS terminal, not the Codex chat box, and run:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v0.7.32
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.0.0
 codex plugin add hephaestus@agentlas-core-engine
 ```
 

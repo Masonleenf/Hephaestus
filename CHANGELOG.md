@@ -2,6 +2,30 @@
 
 ## Unreleased
 
+## v1.0.0 - 2026-06-29
+
+- **100K Agentlas routing release.** Hephaestus now ships as the Agent OS engine
+  behind Agentlas' 100K-agent routing path: lexical routing is augmented by
+  OpenAI query/document embeddings, Atlas `$vectorSearch` dense ANN candidate
+  sourcing, optional Z.ai/DeepSeek reranking, and an R2-backed marketplace search
+  index.
+- **Router Agent cascade.** When deterministic routing lands on
+  `clarify`/`propose_new` or otherwise low-confidence decisions, Hephaestus
+  attaches a structured Router Agent escalation directive so the host can do a
+  final LLM reasoning pass over intent, candidates, and next action.
+- **BYOC/BYOM boundary preserved.** The engine still does not call a model for
+  the Router Agent cascade. It emits a redacted directive and leaves the actual
+  model call to the host runtime, so external LLM hosts and Agentlas Desktop keep
+  control of their own model usage.
+- **Desktop runtime connection.** Agentlas Desktop now consumes the Router Agent
+  directive and injects the assembled `ROUTER_SYSTEM_AGENT` prompt before the
+  normal auto-route preamble, so escalation context is no longer dropped at the
+  desktop runtime boundary.
+- **Production proof.** The release was verified with Atlas vector index READY,
+  R2 marketplace index loading, 120 routed profiles backfilled with embeddings,
+  routing eval passing 10/10 plus 5/5 guards, production readiness passing 8/8,
+  Hephaestus pytest, and Desktop typecheck/smoke gates.
+
 ## v0.7.32 - 2026-06-27
 
 - **Reverted the classifier-blocked curl|bash auto-update preflight.** The inline
