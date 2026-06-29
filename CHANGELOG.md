@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## v1.0.0 - 2026-06-29
+## v1.0.1 - 2026-06-29
 
 - **100K Agentlas routing release.** Hephaestus now ships as the Agent OS engine
   behind Agentlas' 100K-agent routing path: lexical routing is augmented by
