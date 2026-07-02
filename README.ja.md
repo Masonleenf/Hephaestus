@@ -4,20 +4,26 @@
   </a>
 </p>
 
-<h1 align="center">Hephaestus — Network 2.0</h1>
+<h1 align="center">Hephaestus — モデル非依存のエージェント OS</h1>
 
 <p align="center">
-  <strong>ローカルファーストのエージェント &amp; プラグイン・ネットワーキング: どの AI ランタイムからでも自分のエージェントを呼び出し、標準化されたルーティングカードでルーティングし、メモリは手元のマシンに保持します。</strong>
+  <strong>自律 AI エージェントのための、独立したローカルファーストのオペレーティングシステム。エージェントを、あなたが所有するポータブルで検査可能な資産として、任意のモデルランタイムをまたいでコンパイル・スケジューリング・ルーティングし、規律をもって実行し、メモリを統制します。</strong>
 </p>
 
 <p align="center">
-  ラフな agent アイデア 1 つを、インストール可能な Agentlas agent/team リポジトリに変換します — その後は Hephaestus Network がすべてのリクエストを適切なローカル agent にルーティングし、Hub へのフォールバックはあなたの承認がある場合のみ行われます。
+  <a href="https://github.com/agentlas-ai/Hephaestus/releases/latest">
+    <img alt="Latest release" src="https://img.shields.io/github/v/release/agentlas-ai/Hephaestus?label=release">
+  </a>
+  <a href="LICENSE">
+    <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-green">
+  </a>
+  <img alt="Runtimes" src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Antigravity%20%7C%20Cursor%20%7C%20DeepSeek%20%7C%20GLM%20%7C%20Ollama%20%7C%20Terminal-black">
 </p>
 
 <p align="center">
   <a href="README.md">English</a>
   ·
-  <a href="README.ko.md">한국어</a>
+  <a href="README.ko.md">Korean</a>
   ·
   <a href="README.zh-CN.md">中文</a>
   ·
@@ -27,344 +33,335 @@
 </p>
 
 <p align="center">
-  <img src="assets/agentlas-meta-agent-architecture.svg" alt="Agentlas Meta-Agent architecture decomposition">
+  <a href="#エージェント-os-の時代">エージェント OS の時代</a>
+  ·
+  <a href="#クイックスタート">クイックスタート</a>
+  ·
+  <a href="#コマンドサーフェス">コマンドサーフェス</a>
+  ·
+  <a href="#v110-の新機能--briefing-interview-engine">v1.1.0 の新機能</a>
+  ·
+  <a href="#os-サブシステム">サブシステム</a>
+  ·
+  <a href="#エンタープライズのための設計">エンタープライズ運用</a>
+  ·
+  <a href="#生成される成果物プロセスパッケージング">システムパッケージング</a>
+  ·
+  <a href="#目的別ドキュメント">ドキュメント一覧</a>
+  ·
+  <a href="#デスクトップシェル--agentlas-desktop">デスクトップシェル</a>
 </p>
 
 ---
 
-## Hephaestus Network 2.0
+## エージェント OS の時代
+
+業界はすでに、ステートレスでその場しのぎの「ツール付きチャットボット」の段階を越えました。Google をはじめとする主要 AI ラボが開発者戦略を**エージェントオペレーティングシステム**（Antigravity オーケストレーションプラットフォームや Gemini Spark デーモンプロセスなど）を軸に再構成する中で、AI エージェントは正式にオペレーティングシステムの第一級プリミティブ — 固有のアイデンティティ、リレーショナルなメモリシステム、セキュリティ権限、ネイティブなツール呼び出し環境を備えた、長寿命でステートフルなプロセス — になりました。
+
+これにより、チームにとって決定的なエンジニアリング上の問いはこう変わります。**あなたのワークフォースは、誰のオペレーティングシステム上で動いているのか?**
+
+エージェントが単一のモデルプロバイダーの独自 API に密結合していると、組織のメモリ、カスタムツール、タスク固有のロジックは、事実上そのベンダーのエコシステムにロックインされます。
+
+**Hephaestus は、独立したモデル非依存のカーネルです。** エージェントフレームワークでも API ラッパーでもありません。ローカルファーストのエージェントオペレーティングシステム — 任意のホストランタイム上でポータブルなエージェントプロセスをコンパイルし、スケジューリングし、統制する、統合された実行基盤です。基盤となる推論エンジンを差し替えても、ワークフォース全体はそのまま維持されます。
+
+Hephaestus は、古典的なオペレーティングシステムの概念に直接対応します:
+
+| OS の抽象概念 | Hephaestus における実装 |
+| :--- | :--- |
+| **カーネル / Policy Gate** | 決定的ルーター + セキュリティゲート。すべてのルーティング動作は監査可能なレシートを生成し、ツール実行権限は厳密にサンドボックス化され、ホストランタイムによって強制されます。 |
+| **プロセス / スレッド** | 明示的で型付けされたコントラクト（Routing Card、アンチスコープ、メモリ境界、検証シム）を持つパッケージとしてコンパイルされる、独立したエージェントとマルチエージェントチーム。 |
+| **プロセススケジューラー** | Network 2.0 ルーティング（ローカルファースト、品質ゲート、ベンチマークゲート付きディスパッチ）と、Stormbreaker の並列実行ファブリックおよび追記専用の実行ジャーナルの組み合わせ。 |
+| **メモリ管理（MMU）** | 二重境界で統制されたメモリ: ローカルプロジェクトメモリはマシン上に隔離されたまま維持され、恒久メモリへの昇格はローカルの Memory Curator によってゲートされます。 |
+| **仮想ファイルシステム** | Production Ontology Runtime: ローカルファーストのソース取り込み、CJK トライグラム FTS5 検索、ハイブリッド Reciprocal Rank Fusion、GraphRAG リトリーバル。 |
+| **プロセス間呼び出し（IPC）** | A2A Agent Card Boundary（暗号学的なインポート/エクスポートと呼び出し元ゲーティング）+ Model Context Protocol（MCP）ツール登録。 |
+| **パッケージマネージャー** | Agentlas Hub & Cloud: 品質ゲートを内蔵した、エージェントのコンパイル・公開・バージョン管理・共有。 |
+| **シェルインターフェース** | 外部クライアントランタイムでは小さく統一された 6 コマンドの CLI、ネイティブ Agentlas シェルでは平易な自然言語によるインテントルーティング。 |
+| **プロセス初期化** | Briefing Interview Gate を統合した Meta-Agent Factory — コードをコンパイルする前に、エージェントのパラメーターを仕様化します。 |
 
 <p align="center">
-  <img src="assets/hephaestus-network-architecture.svg" alt="Hephaestus Network 2.0 A2A networking architecture">
+  <img src="assets/agentlas-meta-agent-architecture.svg" alt="Figure 1. Agentlas Meta-Agent architecture decomposition">
 </p>
 
 <p align="center">
-  <sub>図2. Hephaestus Network 2.0 — ランタイム、グローバルなローカルファースト・オーケストレーター、ルーティングカード、承認ゲート、ローカルメモリ、そして Agentlas Hub の A2A/MCP フォールバック。</sub>
+  <sub>図 1. リクエストシェイピング、3 つのビルダー、生成されるパッケージコントラクト、メモリキュレーション、スキルライフサイクル、ランタイムアダプター、同期境界。</sub>
 </p>
-
-ひとつのコマンドで、すべてのランタイムから、すべてローカルで:
-
-```text
-/hep-network 会議メモを週次レポートにまとめて
-/hep-network 新製品のローンチ計画を下書きして
-@Hephaestus このフォルダの文書を整理して要約して   # スラッシュコマンド非対応ランタイム
-hep-network "このタスクに合うエージェントを探して"   # ターミナル
-```
-
-- **ルーティングカード。** すべての agent、team、plugin は、標準化された
-  ルーティングカード（トリガー、アンチトリガー、capabilities、リスク
-  プロファイル、メモリ動作）を同梱します。品質ゲートを通らないカードが
-  自動ルーティングされることはありません。
-- **ローカルファースト。** 明示的なコマンド → プロジェクトのオーバーライド →
-  手元のローカルカード、の順で解決します。Agentlas Hub はフォールバックで
-  あり、送信されるのは redact 済みのキーワードだけです — 生のプロンプトが
-  送られることはありません。
-- **メモリはローカルに残ります。** agent の能力は Hub から取得できますが、
-  user/project メモリは `~/.agentlas/networking/` にあり、明示的なエクスポート
-  承認なしにマシンの外へ出ることはありません。
-- **レシート、実行ではありません。** すべてのルーティング決定はレシートを
-  書き込みます。Router は agent または Hub bundle を選ぶだけで、実際の
-  tool permission は host runtime が扱います。
-- **主張ではなく計測。** ルーティングベンチマーク（韓国語 + 英語）が自動
-  ルーティングをゲートします: top-3 recall ≥ 90%、プライバシースイートで
-  unsafe route ゼロ。
-
-詳細: [docs/hephaestus-network-2.0.md](docs/hephaestus-network-2.0.md) ·
-ランタイム対応マトリクス: [docs/runtime-fallback-adapters.md](docs/runtime-fallback-adapters.md)
 
 ---
 
-## 貼り付けてインストール (AI にやってもらう)
+## v1.1.0 の新機能 — Briefing Interview Engine
 
-ターミナルが苦手でも、自分で何か実行する必要はありません。AI コーディング
-ツール（**Claude Code・Codex・Gemini CLI・Antigravity・Cursor** のどれでも）を
-開き、次のメッセージをチャット欄にそのまま貼り付けてください。エージェントが
-代わりにインストーラーを実行し、次に使うコマンドを教えてくれます。
+曖昧な一文プロンプトから生成されたエージェントは、実世界のエッジケースで破綻します。Hephaestus v1.1.0 は、**Briefing Interview Engine** によってタスクの仕様化を OS の第一級サービスとして位置づけます:
+
+*   **定量的な曖昧さゲート:** コンパイルスケジューラーは、プロンプトの明確さを 4 つの主要ベクトル（Goal、Constraints、Scope、Context）で評価します。曖昧さスコアが数値しきい値（ambiguity score $\le 0.2$、各次元ごとの安全下限付き）を満たすまで、ビルドプロセスは厳密にゲートされます。明確なプロンプトは、些細なタスクの質問数に上限を設けるバジェットシステムによって、インタビューループを完全にバイパスします。
+*   **レンズ駆動のシステム分析:** 明確化のための質問は、構造化されたレンズテーブル（Scope、Intent、Challenge、System Architecture）から動的に選定され、重要なルーティング指標 — *アンチスコープ境界*（エージェントがやってはいけないこと）、*検証可能な受け入れ基準*、*終了条件* — に焦点を当てます。
+*   **Work Brief:** 解決された詳細は `.agentlas/work-brief.json` に凍結され、検証済みのゴール、具体的な制約、ソースタグ付きの仮定台帳、そしてメタデータとしての曖昧さスコアが記録されます。
+*   **実行中のコンテキストブリーフ:** CLI ツール `cards migrate` は、ブリーフの詳細をエージェントのルーティングカード上のトリガーとアンチトリガーへ自動的に直接マッピングします。`route --brief` を実行すると、このブリーフがすべての Stormbreaker 実行パケットに伝播し、ライフサイクル全体を通じて制約と終了条件が並列サブプロセスを統制します。
+*   **強化されたルーティング判別:** ルーティングカード上のインタビュー検証済みアンチトリガーと、ルーター内部での低信頼度 LLM 再ランキングエスカレーションという両面ゲーティングにより、同一トピック・異なるインテントの衝突（例: セキュリティエージェントがデプロイ用プロンプトを横取りする）を防ぎます。
+
+---
+
+## クイックスタート
+
+### 貼り付けて起動（AI に任せる）
+以下を Claude Code、Codex、Gemini CLI、Antigravity、Cursor に貼り付けてください:
 
 ```text
-このワークスペースに Hephaestus Agentlas メタエージェントをセットアップして。GitHub リポジトリはこちら:
+Install Hephaestus Agentlas for this workspace from this GitHub repo:
 https://github.com/agentlas-ai/Hephaestus
 
-最新リリース/インストール手順に従い、私が使っているツール（Claude Code, Codex, Gemini CLI, Antigravity, Cursor）で使うコマンドを教えて: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload。失敗したらエラーを読んで直し、もう一度試して。
+Use the latest release/instructions. If anything errors, diagnose and fix it,
+retry, and confirm which command surface is active in this tool:
+- Agentlas Terminal / Desktop route plain language natively.
+- External LLM hosts expose exactly six commands: build, network, cloud,
+  search, call, upload.
 ```
 
-終わったら、この境界を覚えてください。Agentlas Terminal と Agentlas app では、
-自然言語で作業を説明すれば native Agentlas/Hephaestus tools が context に応じて
-path を選びます。Claude Code、Codex、Gemini CLI、Antigravity、Cursor、OpenCode
-などの外部 LLM host では、明示的な command は `/hep-build`、`/hep-network`、
-`/hep-cloud`、`/hep-search`、`/hep-call`、`/hep-upload` の 6 つです。
-Stormbreaker、research loadout、lower-level options は context から自動で
-attached されます。自分でコマンドを実行したい場合は、下の **Quickstart** を使ってください。
-
----
-
-## Quickstart
-
-インストール方法は 3 つあります。Agentlas のフルローカル runtime が必要なら **1 + 3** を使います。Claude Code、Codex、通常の project folder にこの package だけを直接入れたい場合は **2** を使います。
-
-| パス | 向いている用途 | 何を開くか |
-|---|---|---|
-| 1. Agentlas Terminal | shell から Agentlas agents を実行する | 先に Agentlas Desktop、その後 macOS Terminal / Windows PowerShell / Linux terminal |
-| 2. Hephaestus standalone | Claude Code、Codex、通常 repo に直接入れる | Claude Code、Codex、または OS terminal |
-| 3. Agentlas Desktop | visual local runtime、agent/team 管理、vault、Apps | browser で download し、Agentlas Desktop app を開く |
-
-### 1. Agentlas Terminal をインストール
-
-Agentlas Terminal は **Agentlas Desktop** からインストールします。Desktop を入れた後、app 内で次を開きます。
-
-```text
-Agentlas Desktop -> Settings -> Use from the terminal (`agentlas` CLI) -> Install CLI
-```
-
-その後、通常の terminal を開いて `agentlas` を実行します。
-
-**macOS Terminal**
-
+### macOS クリーン環境の確認
 ```bash
-arch=$([ "$(uname -m)" = "arm64" ] && echo arm64 || echo x64)
-curl -fL "https://agentlas.cloud/api/desktop/download?arch=${arch}" -o Agentlas.dmg
-open Agentlas.dmg
+xcode-select --install   # Command line tools (skip if already installed)
+git --version            # Confirm git is available
 ```
 
-**Windows PowerShell**
-
-```powershell
-$r = Invoke-RestMethod https://api.github.com/repos/agentlas-ai/agentlas-desktop/releases/latest
-$u = ($r.assets | Where-Object { $_.name -like '*Windows-x64-Setup.exe' }).browser_download_url
-Invoke-WebRequest $u -OutFile "$env:TEMP\AgentlasSetup.exe"
-Start-Process "$env:TEMP\AgentlasSetup.exe"
-```
-
-**Linux terminal, AppImage**
-
+### すべてのランタイムを 1 つのターミナルコマンドで
 ```bash
-url=$(curl -fsSL https://api.github.com/repos/agentlas-ai/agentlas-desktop/releases/latest \
-  | grep -o 'https://[^"]*Linux-x64\.AppImage' | head -1)
-curl -fL "$url" -o Agentlas.AppImage
-chmod +x Agentlas.AppImage
-./Agentlas.AppImage
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
 ```
+これにより、ニュートラルランナーが `~/.agentlas/runtime/current/bin/hephaestus` にインストールされ、Claude Code、Codex、Gemini CLI、Antigravity、Cursor 用のコマンドアダプターが登録されます。インストーラーは、登録後に各ランタイムサーフェスを検証します。
 
-**Linux terminal, Debian/Ubuntu**
+### ランタイム別プラグインドライバー
 
-```bash
-url=$(curl -fsSL https://api.github.com/repos/agentlas-ai/agentlas-desktop/releases/latest \
-  | grep -o 'https://[^"]*Linux-x64\.deb' | head -1)
-curl -fL "$url" -o agentlas.deb
-sudo dpkg -i agentlas.deb
-```
+<details>
+<summary>Claude Code プラグイン</summary>
 
-Desktop Settings で CLI をインストールした後:
-
-```bash
-agentlas list
-agentlas run agentlas-meta-agent "Package this workflow for Agentlas"
-```
-
-### 2. Hephaestus を standalone でインストール
-
-#### Simple file install
-
-package files を入れたい project folder で macOS Terminal、Linux terminal、Windows Git Bash、または WSL を開きます。
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install.sh | bash
-scripts/verify-package.sh
-scripts/public_safety_check.sh
-```
-
-Windows PowerShell:
-
-```powershell
-$zip = "$env:TEMP\hephaestus-main.zip"
-$extract = "$env:TEMP\hephaestus-main"
-Invoke-WebRequest "https://github.com/agentlas-ai/Hephaestus/archive/refs/heads/main.zip" -OutFile $zip
-Remove-Item $extract -Recurse -Force -ErrorAction SilentlyContinue
-Expand-Archive $zip -DestinationPath $extract -Force
-$src = Get-ChildItem $extract -Directory | Select-Object -First 1
-Get-ChildItem $src.FullName -Force | Copy-Item -Destination (Get-Location) -Recurse -Force
-```
-
-#### Claude Code plugin install
-
-marketplace 登録と plugin install は別の手順です。marketplace command は Claude Code にこの repo の場所を教えるだけで、install command が実際に plugin を入れます。インストール後は reload します。
-
-**Claude Code chat の中で入力**:
-
-```text
-/plugin marketplace add https://github.com/agentlas-ai/Hephaestus --sparse .claude-plugin claude/plugins
-/plugin install hephaestus@agentlas-core-engine
-/reload-plugins
-/plugin list
-```
-
-**`claude` CLI が使える OS terminal で入力**:
-
+OS のターミナルから:
 ```bash
 claude plugin marketplace add https://github.com/agentlas-ai/Hephaestus --sparse .claude-plugin claude/plugins
 claude plugin install hephaestus@agentlas-core-engine
 ```
+*注: Claude Code はエイリアスとして `claude plugins ...` もサポートしていますが、この README では一貫性のため単数形の `claude plugin ...` を使用します。*
 
-期待される結果:
+</details>
+
+<details>
+<summary>Codex プラグイン</summary>
+
+OS のターミナルから:
+```bash
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.0
+codex plugin add hephaestus@agentlas-core-engine
+```
+*注: Codex アプリ内では `/plugin marketplace add` は利用できません。上記の 2 つのコマンドを OS のターミナルで実行してください。OS ターミナルの CLI コマンドは単数形（`codex plugin`）ですが、Codex アプリ内のプラグインブラウザーのスラッシュコマンドは複数形（`/plugins`）です。インストール後は、`/prompts:hep-build` がアプリ内のエントリーポイントになります。*
+
+</details>
+
+<details>
+<summary>プロジェクトにファイルをコピー（手動ドライバー）</summary>
+
+リポジトリをクローンし、`AGENTS.md`、`agent.md`、`agents/`、`skills/`、`modes/`、`schemas/`、`templates/`、`.agentlas/` をワークスペースにコピーします。ランタイムフォルダー（`.claude/`、`codex/`、`.gemini/`、`.agents/`）は、同一の正準コアに対するアダプターとして機能します。
+
+</details>
+
+**話しかけるだけ:** インストール後は、ネイティブ Agentlas インターフェース内で平易な自然言語で話しかければ、タスクは自動的にルーティングされます。外部ホストツールでは、以下に示す 6 つの明示的なコマンドを使用してください。どのようなエージェントが存在するのか分からないときは、まず `/hep-search` から始めてください。
+
+---
+
+## コマンドサーフェス
+
+ネイティブ Agentlas 環境内では、Hephaestus はコマンドレスで動作します。外部 LLM ホストでは、意図的に小さく保たれた可視コマンドセットを使用します。Stormbreaker、リサーチロードアウト、設定テーブルといったシステムレベルのユーティリティは、コンテキストから自動的にアタッチされます:
+
+| システムサブシステム | シェルコマンド | 例 |
+| :--- | :--- | :--- |
+| **プロセスビルダー** | `/hep-build` | `/hep-build create a customer support agent for Shopify refunds` |
+| **A2A スケジューラー** | `/hep-network` | `/hep-network split this launch plan into research, copy, QA, and release agents` |
+| **クラウド状態同期** | `/hep-cloud` | `/hep-cloud use my saved finance analyst agent to review this report` |
+| **ディレクトリ検索** | `/hep-search` | `/hep-search find agents for a market report workflow` |
+| **プロセス間呼び出し（IPC）** | `/hep-call` | `/hep-call market-researcher, report-writer {draft a market report}` |
+| **パッケージエクスポーター** | `/hep-upload` | `/hep-upload ./agents/customer-support-hq` |
+
+---
+
+## デスクトップシェル — Agentlas Desktop
+
+[Agentlas Desktop](https://agentlas.cloud/desktop) は、このエージェント OS のグラフィカルシェルです — 同じカーネル、スケジューラー、ガバナンスサブシステムを、ビジュアルに操作できます。Desktop 0.6.0 には Hephaestus v1.1.0 エンジンがバンドルされ、ピン留めされています。アプリとカーネルはバージョンロックされ、1 つのユニットとして自動更新されます。
+
+| シェルサーフェス | 操作対象 |
+| :--- | :--- |
+| **チャットワークスペース** | 任意のランタイム — Claude Code、Codex、Gemini CLI、Antigravity、BYOK API（DeepSeek、GLM、Kimi）、ローカルの Ollama — にバインドされた自然言語セッション。ライブストリーミング、ステアリングキュー、チャットごとの作業フォルダーを備えます。 |
+| **ビルドメニュー** | UI を備えた Meta-Agent Factory: インタビューゲート付きビルド（バッチ化されたブリーフィング質問をネイティブな質問カードとして表示）を経て、実際のパッケージファイルをディスクに生成します。 |
+| **エージェントライブラリ & Hub** | コンパイル済みのエージェント、チーム、借用した Hub スペシャリスト — Agentlas Hub パッケージレジストリに対して、インストール・バージョン管理・公開・価格設定が行えます。 |
+| **タスクフォース & スウォーム** | 借用型のマルチエージェントタスクフォース、マシンスペック連動の同時実行スライダー付き並列スウォーム実行、長期ホライズン作業のための連続ライブラン。 |
+| **オートメーション** | cron/イベント/ファイル監視トリガーを、ビジュアルグラフエディター付きの並列 DAG ワークフローへコンパイル — OS の言葉で言えば、スケジュールされたエージェントプロセスです。 |
+| **メモリ & 進化パネル** | 統制されたメモリサブシステムの可視化: キュレーターチケット、昇格済みプレイブック、自己進化の提案、セキュリティ再スキャン。 |
+
+デスクトップシェルは、CLI と同じ境界を強制します: あなたのマシンとあなたのサブスクリプション上での BYOC 実行、ルーティング決定のレシート、そしてローカルファーストのメモリ。ダウンロード: [agentlas.cloud/desktop](https://agentlas.cloud/desktop)
+
+
+---
+
+## OS サブシステム
+
+### Meta-Agent Factory — プロセス生成
+3 つのビルダーを用いる統合コンパイルファクトリーです。生成されるすべてのパッケージはグローバルコマンド（`.agentlas/global-commands.json`）を登録し、検証スクリプトを同梱します — コンパイル済みパッケージの実行方法をユーザーが推測する必要は一切ありません:
+
+| コンパイルモード | ルーティング先 | 出力アーティファクト |
+| :--- | :--- | :--- |
+| **シングルエージェント** | `10-single-agent-builder` | ローカライズされたスキル、メモリコントラクト、ランタイムアダプターを備えたスタンドアロンワーカー。 |
+| **マルチエージェントチーム** | `20-multi-agent-team-builder` | PM Orchestrator、Memory Curator、Policy Gate、QA、検証スクリプトを含む階層型チーム。 |
+| **ワークスペースパッケージャー** | `30-agentlas-packager` | デスクトップへのインポート、CLI 実行、GitHub 配布に対応したコンパイル済みバンドル。 |
+
+*Briefing Interview Gate:* ビルダーは **briefing interview gate**（[docs/builder-interview-research-gate.md](docs/builder-interview-research-gate.md)）を用いてプロセスを開始します: レンズ駆動の質問を行い、曖昧さのしきい値を評価し、一次情報源を検索し、Work Brief を出力します。
+
+---
+
+### Network 2.0 — スケジューラー
+
+<p align="center">
+  <img src="assets/hephaestus-network-architecture.svg" alt="Figure 2. Hephaestus Network 2.0 A2A networking architecture">
+</p>
+
+<sub>図 2. A2A スケジューリング: ホストランタイム、ローカルファーストのオーケストレーター、ルーティングカード、ローカルメモリ、そして Agentlas Hub の A2A/MCP フォールバック。</sub>
+
+*   **Routing Cards:** すべてのエージェント、チーム、プラグインは、トリガー、アンチトリガー、能力、リスクプロファイル、メモリパラメーターを含む標準化されたカードを同梱します。検証に失敗したカードはルーティングから除外されます。
+*   **ローカルファーストディスパッチ:** ディスパッチはまずローカルで解決されます（プロジェクトオーバーライド $\rightarrow$ ローカルカード）。Agentlas Hub への外部ルックアップはキーワードにまでレダクションされ、生のプロンプトがローカル環境の外へ出ることはありません。
+*   **一時的なタスクフォース:** 複合的なリクエストは Hub/ローカルのタスクフォース計画へ分解され、Stormbreaker エンベロープ、セッションヒント、オントロジーパスウェイをパッキングします。名前付きスペシャリストが動的にスケジュールされ、一時的なオーケストレーターがタスクのハンドオフを管理します。
+*   **レシート駆動の実行:** すべてのルーティング決定はレシートを書き出します。ルーターが決定するのはどのエージェントまたはパッケージを呼び出すかのみであり、ツール実行権限は厳密にサンドボックス化されたまま、ホストランタイムが管理します。
+*   **バイリンガルベンチマーク:** 自動ルーティングは、トップ 3 リコール $\ge 90\%$ かつプライバシーリークゼロを要求するバイリンガル（韓国語 + 英語）ベンチマークによってゲートされます。低信頼度のパスは、ホストレベルの Router Agent 再ランキングへエスカレーションされます。
+
+詳細: [docs/hephaestus-network-2.0.md](docs/hephaestus-network-2.0.md) · ランタイムサポートマトリクス: [docs/runtime-fallback-adapters.md](docs/runtime-fallback-adapters.md)
+
+---
+
+### Stormbreaker — 規律ある実行
+Stormbreaker は、エージェント OS の実行ゲーティングサブシステムです。すべての成果が決定的チェックによって検証されるまで、エージェントが成功を報告したり終了したりしないことを保証します:
 
 ```text
-✓ Installed hephaestus. Run /reload-plugins to apply.
-Reloaded: 1 plugin · 0 skills · 9 agents · 0 hooks · 0 plugin MCP servers · 0 plugin LSP servers
+Kernel Gating Envelope:
+[Scope Lock] -> [Decomposition] -> [Parallel Work Packets] -> [Verify Contracts] -> [Bounded Repair] -> [Final Gate]
 ```
 
-#### Codex plugin install
+ローカルの実行ジャーナルにより、長時間の実行は中断後も再開可能です。実行パケットは Work Brief を携行するため、アンチスコープルールと終了基準がすべての並列サブプロセスを統制します。Stormbreaker は明示的な完了状態（**verified / unverified / blocked**）を報告し、自律実行における「完了の演出」を防ぎます。
 
-Codex chat の中では `/plugin marketplace add` は使いません。Codex app では `/plugins` で installed plugins を確認し、install は OS terminal で実行します。
+実行プロトコル: [docs/robustness-protocol.md](docs/robustness-protocol.md) · ベンチマークと評価: [docs/robustness-eval.md](docs/robustness-eval.md)
 
-**`codex` CLI が使える OS terminal で入力**:
+---
+
+### Ontology Runtime — 知識ファイルシステム
+知識集約型の運用のために、`bin/ontology` はセマンティックファイルシステムとして機能し、非構造化のローカルファイルをエージェントが読み取れるデータベーススタックへ変換します:
+
+```text
+Ingested Files -> [Parser Adapter] -> [CJK trigram/bigram tokenization] 
+  -> [FTS5 + SQLite Storage] -> [Reciprocal Rank Fusion Ranking] -> [GraphRAG Search]
+```
+
+GPL 依存ゼロのファーストパーティ韓国語ドキュメントパース（HWPX およびレガシー HWP5）を備えています。完全にローカルかつ SQLite ベースで動作し、機密・プライベートなチャンクは隔離され、外部クラウドフックに到達することを防ぎます。
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus
-codex plugin list
-codex plugin add hephaestus@agentlas-core-engine
-codex plugin list
+bin/ontology ingest ./corpus --scope internal
+bin/ontology query "Project Helios Memory Curator" --agent verifier
+bin/ontology memory candidates
 ```
 
-Codex がすでに開いている場合は、新しいチャットを開始して `/plugins` で plugin が見えることを確認してください。インストール後は `/prompts:hep-build ontology` を実行します。
+詳細: [docs/ontology-runtime.md](docs/ontology-runtime.md)
 
-### 3. Agentlas Desktop をインストール
+---
 
-browser で次を開きます。
+### 統制されたメモリ — キュレーションによる昇格
+*   **ローカルプロジェクトメモリ:** `~/.agentlas/networking/` 以下に保存され、ローカルマシンに隔離されます。明示的な承認なしにエクスポートすることはできません。
+*   **ワークスペースパーソナライゼーション:** 借用した Cloud/Hub エージェントのパーソナライゼーションログ（サマリー、プレイブック、プラグインロック、レシート）を、生のプロンプト・認証情報の値・プライベートファイルを保存することなく管理します。
+*   **キュレーターゲーティング:** スキルとメモリの変更は、候補として保持されます。ローカルのキュレーターがホールドアウト/リプレイの証明、ロールバックのカバレッジ、セキュリティポリシーの承認を確認して初めて、恒久ステータスへ昇格します。
+
+---
+
+### A2A Boundary — エージェント間分離
+標準化された CLI コマンドにより、安全なエージェント間連携が可能です:
+
+```bash
+agentlas-cloud ao a2a import ./agent-card.json .
+agentlas-cloud ao a2a export . --agent local/10-builder
+agentlas-cloud route "run the release check" --caller local/orchestrator .
+```
+インポートは提案として扱われ（自動呼び出しを制限）、エクスポートはプライベートなパスとロジックをレダクションし、呼び出しはルーティング解決の前に呼び出し元ゲーティングを通過します。
+
+---
+
+## エンタープライズのための設計
+
+エンタープライズに必要なのは、孤立した Python エージェントを書くためのもう 1 つの方法ではありません。必要なのは、それらを**統制されたワークフォースとして運用する**ことです。Hephaestus は、まさにこの運用モデルのために設計されています:
+
+*   **調達レバレッジとしてのモデル中立性:** エージェント、メモリリポジトリ、知識ドメインは、あなたの管理下にあるローカル資産として保存されます。新しいモデルプロバイダーへの移行（あるいは Ollama や Llama のようなローカルモデル、DeepSeek・GLM・Gemini・Claude のようなエンタープライズエンジンの活用）は、コードベースの移行ではなく、単なる設定の更新です。
+*   **構造としての監査可能性:** すべてのルーティング決定、実行ステップ、メモリ候補、キュレーター決定はテキストファイルとして記録されます。diff・監査・コミットが可能です。作業は検証済みであるか、未検証としてフラグ付けされるかのいずれかです。
+*   **決定的なパイプラインゲート:** セキュリティフィルター、アンチスコープ、ルーティングカードのトリガー、プロンプトのサニタイズは OS パイプラインにハードコードされており、LLM のシステム指示やガイドラインには依存しません。
+*   **生成前の仕様化:** Briefing Interview Engine はリクエストの曖昧さを測定し、そのスコアを Work Brief に刻印します。これにより、タスクの実行は常に「合意された内容」まで遡って監査できます。
+*   **ローカルファーストのデータ境界:** 生のテキスト、ドキュメント、データベースファイルはローカルに留まります。外部とのトランザクションはレダクションされ、オプトインです。
+
+### フレームワークの位置づけ
+CrewAI、LangChain、ベンダー製エージェント SDK は**ライブラリ**として機能します — 単一プロセス内でカスタムエージェントロジックを書くには優れた選択肢です。Hephaestus は**ホスト基盤**として動作します: ワークスペースランタイムをまたいでエージェントを仕様化し、パッケージ化し、ルーティングし、実行し、監査し、移行します。フレームワークのコードは Hephaestus パッケージの内部で動作し、カーネルが要求するのは、エージェントがディレクトリコントラクトと Routing Card を守ることだけです。
+
+---
+
+## 生成される成果物（プロセスパッケージング）
+
+Hephaestus は、任意のワークスペースランタイムがパース・インストール・検証・実行できる標準ディレクトリレイアウトへエージェントをパッケージします:
 
 ```text
-https://agentlas.cloud/desktop
+├── AGENTS.md                          # Canonical route configurations
+├── agent.md / agents/                 # Single worker or team roles
+├── skills/                            # Local agent skills and capabilities
+├── modes/                             # Custom agent execution modes
+├── schemas/                           # Validation contracts and schemas
+├── templates/                         # Configuration templates
+├── .agentlas/                         # System Directory: routing cards, work briefs,
+│                                      # global commands, memory contracts, eval plans
+├── .claude/ codex/ .gemini/ .agents/  # Runtime shims (driver adapters over the core)
+├── scripts/
+│   ├── verify-package.sh              # Package structure verifier
+│   └── public_safety_check.sh         # Secret and credentials scanner
+└── docs/                              # Briefing records, tool specifications,
+                                       # and prompt contracts
 ```
 
-Desktop は local projects、agents、teams、Apps、vault references、runtime selection、built-in Core Engine Meta-Agent routing、`agentlas` CLI installer を提供します。
+---
 
-## 画像で見るインストール手順
+## 目的別ドキュメント
 
-すでに Claude Code chat の中にいる場合は Claude slash command の画像を使います。Codex は先に OS terminal で install し、Codex app の中では `/plugins` で installed plugins を確認します。macOS Terminal、Windows PowerShell、Linux terminal、Git Bash、WSL を開いている場合は CLI の画像を使います。
-
-### Claude Code chat
-
-Claude Code にそのまま入力します。
-
-![Claude Code chat install flow](assets/install-claude-code-chat.svg)
-
-### OS terminal の Claude CLI
-
-shell で `claude` command が使える場合はこちらです。
-
-![Claude CLI install flow](assets/install-claude-cli.svg)
-
-### Codex app plugin browser
-
-OS terminal で `codex plugin ...` install を終えた後、Codex app で `/plugins` と入力して確認します。
-
-![Codex app plugin browser](assets/install-codex-chat.svg)
-
-### Codex Desktop または IDE Extension
-
-Codex に Plugins settings 画面がある場合はこちらです。
-
-![Codex Desktop settings install flow](assets/install-codex-desktop-settings.svg)
-
-### OS terminal の Codex CLI
-
-shell で `codex` command が使える場合はこちらです。
-
-![Codex CLI install flow](assets/install-codex-cli.svg)
-
-## 何を開き、どこに入力するか
-
-| 作業 | 開くもの | 入力先 |
-|---|---|---|
-| Desktop を download | browser | `https://agentlas.cloud/desktop` または OS 別 download command |
-| `agentlas` CLI を install | Agentlas Desktop | Settings -> Use from the terminal -> Install CLI |
-| Agentlas Terminal を実行 | OS terminal | `agentlas list`, `agentlas run ...` |
-| Claude plugin を slash command で install | Claude Code | `/plugin marketplace add ...`, `/plugin install ...`, `/reload-plugins` |
-| Claude plugin を shell で install | OS terminal | `claude plugin marketplace add ...`, `claude plugin install ...` |
-| Installed Codex plugins を確認 | Codex app | `/plugins` |
-| Codex plugin を shell で install | OS terminal | `codex plugin marketplace add ...`, `codex plugin add ...` |
-
-## 何を生成するか
-
-Hephaestus は prompt だけを返すものではありません。他の runtime が読めて、install できて、verify できて、継続的に改善できる repository を残します。
-
-| 依頼 | ルート | 結果 |
-|---|---|---|
-| "X を行う agent を作って" | `10-single-agent-builder` | skills、memory contracts、runtime adapters、verification を持つ single worker |
-| "この workflow の team/company を作って" | `20-multi-agent-team-builder` | HQ、PM Soul、Memory Curator、Policy Gate、eval、QA、handoff を持つ multi-agent team |
-| "既存 agent/repo/workspace を package して" | `30-agentlas-packager` | Desktop import、terminal、Codex、Claude、Gemini、public GitHub release に対応した Agentlas package |
-
-## Previous Command Fallback Update
-
-- **すべての command に update fallback。** 各 `/hep-*` command/prompt の先頭に、automatic update が動かなかった場合は `hephaestus update` を実行するよう案内します。
-- **現在の version も動作継続。** この案内は optional であり、update しなくても現在 install 済みの command はそのまま動きます。
-- **Automation output は変更なし。** fallback は chat command/prompt surface のみで、JSON を返す shell CLI output には混ぜません。
-
-## Architecture
-
-public core は architecture/foldering contract です。Claude、Codex、Gemini、Desktop、Terminal folders は同じ core の上にある thin adapters であり、別の source of truth ではありません。
-
-| Public contract | 役割 |
+| システム上の目的 | 参照ドキュメント |
 |---|---|
-| Mode auto-detection | `single-agent-creator`、`team-builder`、`agentlas-packager` のどれかを先に選びます。 |
-| Clarify question loop | runtime、public/private boundary、tools、safety に影響する質問だけをします。 |
-| `.agentlas` auto-activation | local runtime が project memory、sitemap/task-bias、Memory Tickets、vault references を seed できるようにします。 |
-| Skill lifecycle registry | skill を candidate metadata として開始し、trial ledger と Curator decision ledger を保持します。 |
+| 正準ルートを理解する | [`AGENTS.md`](AGENTS.md) |
+| チームコントラクト全体を見る | [`agent.md`](agent.md) |
+| アーキテクチャの一次情報源 | [`docs/source-of-truth.md`](docs/source-of-truth.md) |
+| ランタイム境界 | [`docs/runtime-sync-boundaries.md`](docs/runtime-sync-boundaries.md) |
+| ブリーフィングインタビューとリサーチゲート | [`docs/builder-interview-research-gate.md`](docs/builder-interview-research-gate.md) |
+| Network 2.0 ルーティング | [`docs/hephaestus-network-2.0.md`](docs/hephaestus-network-2.0.md) |
+| Stormbreaker プロトコル | [`docs/robustness-protocol.md`](docs/robustness-protocol.md) |
+| Ontology ランタイム | [`docs/ontology-runtime.md`](docs/ontology-runtime.md) |
+| メモリアーキテクチャ | [`docs/memory-architecture.md`](docs/memory-architecture.md) |
+| スキルライフサイクルの昇格 | [`docs/skill-lifecycle-promotion.md`](docs/skill-lifecycle-promotion.md) |
+| Cloud ランタイムバンドル | [`docs/agentlas-cloud-runtime.md`](docs/agentlas-cloud-runtime.md) |
+| パッケージの検証 | [`scripts/verify-package.sh`](scripts/verify-package.sh) |
+| 公開セーフティチェック | [`scripts/public_safety_check.sh`](scripts/public_safety_check.sh) |
 
-default export は保守的です。生成された skill は自動で first-class recall になりません。Curator が execution evidence、sealed holdout/replay、rollback、workspace policy approval を確認してから昇格します。
+---
 
-## Agentlas Desktop と Terminal を併用する利点
+## 公開セーフティ境界
 
-- Desktop で agent/team structure、local projects、Apps、vault references、runtime choices を確認できます。
-- Terminal では同じ package を `agentlas` command で実行できます。
-- Desktop/Terminal には Core Engine Meta-Agent path が内蔵されているため、別途 standalone plugin を入れなくても agent creation/package work を開始できます。
-- standalone Claude/Codex install は、その runtime に package を直接入れたい場合に有効です。
+このリポジトリには、ホスティングされている Agentlas の課金/アカウントロジック、本番クラウド認証情報、顧客データベース、生のプライベートトランスクリプト、デスクトップのキーチェーンマネージャー、プライベートなデプロイスクリプトは**含まれていません**。
 
-## Compare
+Hephaestus がコンパイルする公開向けの出力パッケージは、ローカルの絶対パス、API キー、サービスアカウントキー、`.env` シークレット、生のトランスクリプト、顧客ログ、開発者のプライベートノートを除外しなければなりません。
 
-| 比較対象 | 強み | Hephaestus が追加するもの |
-|---|---|---|
-| OpenAI / Codex | 強力な model と coding terminal | portable repo contracts、`.agentlas` memory/package files、skills、schemas、runtime adapters、public verification |
-| Claude / Claude Code | 強力な reasoning と Claude-native workflow | Claude-only ではなく、Codex、Gemini、Desktop、Terminal、`AGENTS.md` も揃えます |
-| OpenClaw | local identity と workspace agent loop | visible role folders、Agentlas package contracts、public-safety checks、Desktop import、vault references |
-| Hermes | persona と memory-centered local runtime | PM Soul、Memory Tickets、sitemap/task-bias、policy/eval/QA、skill lifecycle evidence |
+---
 
-OpenAI と Claude は model/runtime surfaces です。OpenClaw と Hermes は local-agent experiences です。Hephaestus は agent を portable、inspectable、installable、publishable にする package layer です。
+## コントリビューションと検証
 
-## 使い方
+プルリクエストを開く前、または更新を公開する前に、検証テストスイートを実行してください:
 
-```text
-/meta-agent Create a research agent for SEC filing analysis.
-Package it for Codex, Claude Code, Gemini, and Agentlas Desktop.
+```bash
+scripts/verify-package.sh
+scripts/verify-ontology-runtime.sh
+scripts/public_safety_check.sh
 ```
 
-```text
-Use Hephaestus.
-Build a customer-support operations team with PM Soul, Memory Curator, Policy Gate, QA, eval, and public-safe release checks.
-```
+---
 
-```text
-Package this local OpenClaw/Hermes-style workspace into Agentlas architecture.
-Keep private notes, machine paths, raw logs, and secrets out of the public repo.
-```
+## ライセンス
 
-## Docs
-
-| 目的 | 文書 |
-|---|---|
-| canonical route を理解する | [`AGENTS.md`](AGENTS.md) |
-| team contract を見る | [`agent.md`](agent.md) |
-| source of truth を見る | [`docs/source-of-truth.md`](docs/source-of-truth.md) |
-| runtime boundaries を理解する | [`docs/runtime-sync-boundaries.md`](docs/runtime-sync-boundaries.md) |
-| mode を選ぶ | [`docs/mode-classifier.md`](docs/mode-classifier.md) |
-| package を verify する | [`scripts/verify-package.sh`](scripts/verify-package.sh) |
-| public safety を check する | [`scripts/public_safety_check.sh`](scripts/public_safety_check.sh) |
-
-## Public Safety Boundary
-
-この repo には hosted Agentlas billing/account logic、production credentials、customer data、raw private logs、raw transcripts、desktop keychain storage、local database implementation、private deployment configuration を含めません。
-
-public package には local machine paths、API keys、tokens、private keys、service-account JSON、`.env` secrets、private research notes、raw chat transcripts、customer logs、hosted billing/account/OAuth internals、desktop storage internals を入れないでください。
-
-## License
-
-Apache-2.0。詳しくは [`LICENSE`](LICENSE) を確認してください。
+Apache-2.0 です。[LICENSE](LICENSE) を参照してください。
