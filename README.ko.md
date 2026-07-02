@@ -7,8 +7,8 @@
 <h1 align="center">Hephaestus — 모델 애그노스틱 에이전트 OS</h1>
 
 <p align="center">
-  <strong>또 하나의 에이전트 프레임워크가 아닙니다 — 모델을 갈아끼워도 당신의 에이전트, 메모리, 자동화가 그대로 살아남는 에이전트 OS입니다.</strong><br>
-  로컬 우선(local-first)이며 Claude Code, Codex, Gemini, Cursor, 로컬 모델과 호환됩니다.
+  <strong>에이전트를 매번 새로 만들고 세팅하는 일, 이제 그만하세요. Hephaestus는 전문 에이전트를 허브에 쌓아두고, 태스크마다 일회용 오케스트레이터를 즉석에서 만들어 돌립니다 — Claude Code·Codex와는 정반대 구조입니다.</strong><br>
+  로컬 우선(local-first)·모델 애그노스틱이며 Claude Code, Codex, Gemini, Cursor, 로컬 모델과 호환됩니다.
 </p>
 
 <p align="center">
@@ -38,7 +38,7 @@
 </p>
 
 <p align="center">
-  <sub>같은 에이전트 워크포스가 실시간으로 라우팅됩니다 — 밑단 모델을 바꿔도 그 외엔 아무 것도 바뀌지 않습니다.</sub>
+  <sub>허브에서 불러온 전문 에이전트들이 임시 태스크포스로 조립되어 MCP로 실시간 라우팅됩니다 — 태스크마다 에이전트를 세팅할 필요가 없습니다.</sub>
 </p>
 
 ## 빠른 시작

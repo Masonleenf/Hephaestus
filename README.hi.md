@@ -7,8 +7,8 @@
 <h1 align="center">Hephaestus — मॉडल-अग्नॉस्टिक Agent OS</h1>
 
 <p align="center">
-  <strong>यह कोई और agent framework नहीं है — यह एक Agent OS है जहाँ model बदलने पर भी आपके agents, memory और automations जीवित रहते हैं।</strong><br>
-  Local-first, और Claude Code, Codex, Gemini, Cursor तथा local models के साथ compatible।
+  <strong>हर task के लिए नया agent बनाना और configure करना बंद कीजिए। Hephaestus specialist agents को एक hub में रखता है और हर task के लिए एक disposable orchestrator तुरंत बना देता है — Claude Code और Codex के तरीके के बिल्कुल उलट।</strong><br>
+  Local-first, model-agnostic, और Claude Code, Codex, Gemini, Cursor तथा local models के साथ compatible।
 </p>
 
 <p align="center">
@@ -38,7 +38,7 @@
 </p>
 
 <p align="center">
-  <sub>वही agent workforce, live route किया गया — नीचे का model बदल दीजिए, बाकी कुछ नहीं बदलता।</sub>
+  <sub>Hub से लाए गए specialist agents एक temporary task force में जुड़ते हैं और MCP के जरिए live route होते हैं — हर task के लिए अलग agent setup की जरूरत नहीं।</sub>
 </p>
 
 ## क्विकस्टार्ट
