@@ -2,6 +2,7 @@
 description: Upload an Agentlas agent after asking Cloud vs Hub first.
 ---
 
+Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 번 실행하세요. 업데이트하지 않아도 현재 버전 명령은 그대로 동작합니다.
 # /hep-upload
 
 Upload an Agentlas agent package. The argument is the exact text the user typed

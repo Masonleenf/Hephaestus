@@ -2,6 +2,33 @@
 
 ## Unreleased
 
+## v1.1.0 - 2026-07-02
+
+- **Briefing interview engine.** New `agentlas_cloud/interview/` package:
+  Work Brief schema (`work-brief/1.0`), deterministic ambiguity composition
+  with numeric stop gates (threshold 0.2, per-dimension floors, 2-round
+  stability streak), a four-group lens table with per-surface question
+  budgets (trivial asks get zero questions), and a host-executed interview
+  directive. The engine never calls a model (BYOC).
+- **Work Brief rides the pipeline.** `plan_pipeline(brief=...)` extends stage
+  detection with the confirmed goal/acceptance text and relaxes the
+  plan-anchored guard for scoped briefs; the Stormbreaker runner injects the
+  brief into every packet contract; `route --brief <path|dir>` loads
+  `.agentlas/work-brief.json`.
+- **Interview-confirmed routing cards.** `cards migrate` consumes the Work
+  Brief as its first-choice source: anti_scope becomes anti_triggers verbatim
+  and the confirmed goal/acceptance become trigger examples.
+- **Builder gate upgraded.** The Builder Interview and Research Gate and all
+  hep-build command surfaces now specify lens-driven questions (anti-scope /
+  done-signal / stop-criterion required), the numeric stop rule, a coverage
+  check, and a one-sentence goal restate before generation.
+- **README repositioned.** Full rewrite around the model-neutral Agent OS
+  positioning: OS-subsystem mapping, enterprise governance posture, and the
+  v1.1.0 interview engine. Framework-alternative comparisons removed.
+- Includes the v1.0.5 router discrimination patches (hub_candidates Router
+  Agent escalation, brand-token generic list, bridged Hub query tokens) in the
+  canonical release line.
+
 ## v1.0.5 - 2026-07-01
 
 - **Borrow every explicitly named agent.** When the operator names multiple
