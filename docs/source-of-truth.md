@@ -105,8 +105,11 @@ These files are the public contract surface:
 - `skills/`
 - `.agents/skills/`
 - `schemas/`
+- `schemas/gateway-channel.schema.json`
 - `schemas/local-credentials-map.schema.json`
+- `docs/hephaestus-agentlas-gateway-architecture.md`
 - `templates/`
+- `templates/gateway-channel.json.tpl`
 - `templates/local-credentials.map.json.tpl`
 - runtime adapters under `codex/`, `.claude/`, `.gemini/`, and `claude/`
 - global command adapters under `.claude/commands/`,
@@ -128,6 +131,7 @@ change:
 - clarify question loop;
 - generated package folder layout;
 - `.agentlas` schemas or required files;
+- gateway channel contracts, templates, or verification rules;
 - `.agentlas` global command registry or generated command surfaces;
 - `.agentlas` auto-activation contract;
 - `.agentlas` skill lifecycle registry contract;

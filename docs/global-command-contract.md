@@ -69,9 +69,9 @@ Hephaestus has two user-facing surfaces:
   build, network, cloud, call, upload, search, research, or Stormbreaker
   behavior.
 - **External LLM hosts:** Claude Code, Codex, Gemini CLI, Antigravity, Cursor,
-  OpenCode, and similar plugin/MCP/prompt hosts expose exactly six explicit
-  user commands. Stormbreaker, research loadouts, and lower-level route options
-  are attached automatically from context.
+  OpenCode, and similar plugin/MCP/prompt hosts expose a small explicit command
+  set. Stormbreaker, research loadouts, and lower-level route options are
+  attached automatically from context.
 
 External LLM hosts expose these commands:
 
@@ -83,23 +83,27 @@ External LLM hosts expose these commands:
 - `/hep-search <request>` — compare Cloud and Hub candidates without invoking.
 - `/hep-call <slugs> <context>` — prepare explicitly named Hub/cloud agents.
 - `/hep-upload <agent-folder>` — ask Cloud-vs-Hub before any upload action.
+- `/hep-connect <target>` — Telegram setup helper in Claude Code; Codex uses
+  `/prompts:hep-connect`.
 
 Network routing is backed by the local-first router
-(`docs/hephaestus-network-2.0.md`). Fresh installs expose only the six external
-commands above. `hep-storm` and other lower-level controls may remain available
-to native tools, MCP tool selection, automation, and debugging, but they are not
-part of the visible external command set. Stormbreaker packet auto-run is
+(`docs/hephaestus-network-2.0.md`). Fresh installs expose the six core external
+work commands above, plus `/hep-connect` where the host can guide the Desktop
+Telegram setup flow. `hep-storm` and other lower-level controls may remain
+available to native tools, MCP tool selection, automation, and debugging, but
+they are not part of the visible external work command set. Stormbreaker packet auto-run is
 available through the runner when routing returns a runnable `execution_fabric`
 and `--plan-only` is not present. Required visible external surfaces:
 
 - Claude Code: `.claude/commands/hep-build.md`,
   `.claude/commands/hep-network.md`, `.claude/commands/hep-cloud.md`,
-  `.claude/commands/hep-search.md`, `.claude/commands/hep-call.md`, and
-  `.claude/commands/hep-upload.md` (+ global copies).
+  `.claude/commands/hep-search.md`, `.claude/commands/hep-call.md`,
+  `.claude/commands/hep-upload.md`, and `.claude/commands/hep-connect.md`
+  (+ global copies).
 - Codex: `codex/prompts/hep-build.md`,
   `codex/prompts/hep-network.md`, `codex/prompts/hep-cloud.md`,
-  `codex/prompts/hep-search.md`, `codex/prompts/hep-call.md`, and
-  `codex/prompts/hep-upload.md`.
+  `codex/prompts/hep-search.md`, `codex/prompts/hep-call.md`,
+  `codex/prompts/hep-upload.md`, and `codex/prompts/hep-connect.md`.
 - Gemini CLI: `gemini/extension/commands/hep-build.toml`,
   `hep-network.toml`, `hep-cloud.toml`, `hep-search.toml`, `hep-call.toml`,
   and `hep-upload.toml` (+ `~/.gemini/commands/` fallbacks).
@@ -109,7 +113,7 @@ and `--plan-only` is not present. Required visible external surfaces:
   (+ `~/.gemini/antigravity*/global_workflows/`).
 - Cursor: command files under `cursor/plugin/commands/hep-*.md`, with
   `cursor/rules/hephaestus.mdc` as the per-project fallback — reacts to
-  the six `/hep-*` commands and `@Hephaestus`.
+  the core `/hep-*` commands and `@Hephaestus`.
 - Terminal shell/debug: `hep-build "<request>"` is the build alias,
   `hep-network "<request>"` is the standalone Hub-only Network alias,
   `hep-cloud "<request>"` is the cloud/share surface, `hep-search` compares

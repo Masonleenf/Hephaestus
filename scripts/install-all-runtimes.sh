@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-version="${HEPHAESTUS_REF:-v1.1.0}"
+version="${HEPHAESTUS_REF:-v1.1.1}"
 repo="${HEPHAESTUS_REPO:-agentlas-ai/Hephaestus}"
 github_url="${HEPHAESTUS_GITHUB_URL:-https://github.com/$repo}"
 marketplace_name="${HEPHAESTUS_MARKETPLACE:-agentlas-core-engine}"
@@ -282,7 +282,7 @@ write_claude_commands() {
   ensure_downloaded_source || return 1
   mkdir -p "$HOME/.claude/commands"
   local name src dest
-  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-call.md hep-upload.md; do
+  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-call.md hep-upload.md hep-connect.md; do
     src="$source_dir/.claude/commands/$name"
     dest="$HOME/.claude/commands/$name"
     rm -f "$dest"
@@ -292,7 +292,7 @@ write_claude_commands() {
         "$HOME/.claude/commands/hephaestus-build.md" "$HOME/.claude/commands/hephaestus-network.md" \
         "$HOME/.claude/commands/hephaestus-cloud.md" "$HOME/.claude/commands/hephaestus-search.md" \
         "$HOME/.claude/commands/hephaestus-call.md"
-  log "Refreshed Claude commands: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload"
+  log "Refreshed Claude commands: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-connect"
 }
 
 remove_codex_existing() {
@@ -311,7 +311,7 @@ write_codex_prompts() {
   [[ -d "$prompts_src" ]] || { warn "codex prompts not found: $prompts_src"; return 1; }
   mkdir -p "$HOME/.codex/prompts"
   local name
-  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-call.md hep-upload.md; do
+  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-call.md hep-upload.md hep-connect.md; do
     rm -f "$HOME/.codex/prompts/$name"
     cp "$prompts_src/$name" "$HOME/.codex/prompts/$name" || return 1
   done
@@ -319,7 +319,7 @@ write_codex_prompts() {
         "$HOME/.codex/prompts/hephaestus-build.md" "$HOME/.codex/prompts/hephaestus-network.md" \
         "$HOME/.codex/prompts/hephaestus-cloud.md" "$HOME/.codex/prompts/hephaestus-search.md" \
         "$HOME/.codex/prompts/hephaestus-call.md"
-  log "Installed Codex custom prompts: /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload"
+  log "Installed Codex custom prompts: /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect"
 }
 
 install_codex() {
@@ -692,12 +692,12 @@ main() {
   log "Installed/updated runtimes: $ok"
   log "Failed runtimes: $failed"
   log ""
-  log "Public chat surface: six external commands are installed or refreshed; Agentlas native surfaces use plain language."
+  log "Public chat surface: core external commands are installed or refreshed; Claude/Codex also get the Telegram connect helper; Agentlas native surfaces use plain language."
   log "Restart open Claude Code, Codex, Gemini, Antigravity, Cursor, OpenCode, OpenClaw, and Hermes apps."
   log "Then use:"
   log "  Agentlas:    describe the task in plain language; native tools choose the path"
-  log "  Claude Code: /reload-plugins, then /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload"
-  log "  Codex:       /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload"
+  log "  Claude Code: /reload-plugins, then /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-connect"
+  log "  Codex:       /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect"
   log "  Gemini CLI:  /extensions list or /commands list, then /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload"
   log "  Antigravity: reopen the workspace, then /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload"
   log "  Cursor:      /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload"

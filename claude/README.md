@@ -16,7 +16,7 @@ curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts
 ```
 
 After this surface is installed, `/hep-build`, `/hep-network`, `/hep-cloud`,
-`/hep-search`, `/hep-call`, and `/hep-upload` first run the app-host
+`/hep-search`, `/hep-call`, `/hep-upload`, and `/hep-connect` first run the app-host
 auto-update preflight inside Claude Code when the Bash tool is available. That
 preflight refreshes `~/.agentlas/runtime/current` and existing plugin cache
 surfaces without asking the user to open a separate terminal. If the existing
@@ -56,6 +56,7 @@ Use the same slash command for builder work:
 /hep-cloud use my saved analyst agent
 /hep-search find agents for market report research
 /hep-call market-researcher, report-writer {draft a market report brief}
+/hep-connect Telegram for Marketing Agent Team
 ```
 
 After generation, the final handoff must include `global_commands` for the

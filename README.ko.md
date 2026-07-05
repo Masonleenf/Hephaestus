@@ -94,7 +94,7 @@ Hephaestus는 고전적인 운영체제 개념에 그대로 대응됩니다:
 | **가상 파일 시스템** | Production Ontology Runtime: 로컬 우선 소스 수집, CJK 트라이그램 FTS5 검색, 하이브리드 Reciprocal Rank Fusion, GraphRAG 검색. |
 | **프로세스 간 호출(IPC)** | A2A Agent Card Boundary(암호학적 가져오기/내보내기와 호출자 게이팅) + Model Context Protocol(MCP) 도구 등록. |
 | **패키지 매니저** | Agentlas Hub & Cloud: 품질 게이트가 내장된 에이전트 컴파일·발행·버저닝·공유. |
-| **셸 인터페이스** | 외부 클라이언트 런타임에서는 작고 통일된 6개 명령 CLI, 네이티브 Agentlas 셸에서는 평문 의도 라우팅. |
+| **셸 인터페이스** | 외부 클라이언트 런타임에서는 작고 통일된 명령 집합, 네이티브 Agentlas 셸에서는 평문 의도 라우팅. |
 | **프로세스 초기화** | Briefing Interview Gate가 통합된 Meta-Agent Factory — 코드를 컴파일하기 전에 에이전트 파라미터를 확정합니다. |
 
 <p align="center">
@@ -131,8 +131,9 @@ https://github.com/agentlas-ai/Hephaestus
 Use the latest release/instructions. If anything errors, diagnose and fix it,
 retry, and confirm which command surface is active in this tool:
 - Agentlas Terminal / Desktop route plain language natively.
-- External LLM hosts expose exactly six commands: build, network, cloud,
-  search, call, upload.
+- 외부 LLM 호스트는 핵심 작업 명령을 노출합니다: build, network, cloud,
+  search, call, upload. Claude Code와 Codex에는 Telegram 설정 helper인
+  connect도 함께 노출됩니다.
 ```
 
 ### 새 macOS 점검
@@ -166,7 +167,7 @@ claude plugin install hephaestus@agentlas-core-engine
 
 OS 터미널에서:
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.0
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.1
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *참고: Codex 앱 안에서는 `/plugin marketplace add`가 동작하지 않습니다 — 위 두 명령을 OS 터미널에서 실행하세요. OS 터미널 CLI 명령은 단수형(`codex plugin`)이고, Codex 앱 안의 플러그인 브라우저 슬래시 명령은 복수형(`/plugins`)입니다. 설치 후에는 `/prompts:hep-build`가 앱 내 진입점입니다.*
@@ -180,7 +181,7 @@ codex plugin add hephaestus@agentlas-core-engine
 
 </details>
 
-**그냥 말하세요:** 설치 후 네이티브 Agentlas 인터페이스에서는 평문으로 말하면 태스크가 자동 라우팅됩니다. 외부 호스트 도구에서는 아래에 나열된 6개의 명시적 명령을 사용하세요. 어떤 에이전트가 있는지 모를 때는 `/hep-search`부터 시작하세요.
+**그냥 말하세요:** 설치 후 네이티브 Agentlas 인터페이스에서는 평문으로 말하면 태스크가 자동 라우팅됩니다. 외부 호스트 도구에서는 아래에 나열된 명시적 명령을 사용하세요. 어떤 에이전트가 있는지 모를 때는 `/hep-search`부터 시작하세요. Telegram을 연결하려면 Claude Code에서는 `/hep-connect`, Codex에서는 `/prompts:hep-connect`를 사용하세요.
 
 ---
 
@@ -196,12 +197,13 @@ codex plugin add hephaestus@agentlas-core-engine
 | **디렉터리 검색** | `/hep-search` | `/hep-search find agents for a market report workflow` |
 | **프로세스 간 호출(IPC)** | `/hep-call` | `/hep-call market-researcher, report-writer {draft a market report}` |
 | **패키지 익스포터** | `/hep-upload` | `/hep-upload ./agents/customer-support-hq` |
+| **Telegram 설정** | `/hep-connect` 또는 `/prompts:hep-connect` | `/hep-connect Telegram for Marketing Agent Team` |
 
 ---
 
 ## 데스크톱 셸 — Agentlas Desktop
 
-[Agentlas Desktop](https://agentlas.cloud/desktop)은 이 에이전트 OS의 그래픽 셸입니다 — 동일한 커널, 스케줄러, 거버넌스 서브시스템을 시각적으로 운용합니다. Desktop 0.6.0에는 Hephaestus v1.1.0 엔진이 번들로 고정되어 함께 배포되며, 앱과 커널은 버전이 서로 잠긴 채 하나의 단위로 자동 업데이트됩니다.
+[Agentlas Desktop](https://agentlas.cloud/desktop)은 이 에이전트 OS의 그래픽 셸입니다 — 동일한 커널, 스케줄러, 거버넌스 서브시스템을 시각적으로 운용합니다. Desktop 0.6.0에는 Hephaestus v1.1.1 엔진이 번들로 고정되어 함께 배포되며, 앱과 커널은 버전이 서로 잠긴 채 하나의 단위로 자동 업데이트됩니다.
 
 | 셸 표면 | 운용 대상 |
 | :--- | :--- |

@@ -43,6 +43,7 @@ The canonical core is runtime-neutral:
 - `docs/agentlas-auto-activation.md`
 - `docs/local-credential-store.md`
 - `docs/skill-lifecycle-promotion.md`
+- `docs/hephaestus-agentlas-gateway-architecture.md`
 - `docs/ontology-runtime.md`
 - `docs/super-ontology-candidate-contract.md`
 - `agents/`
@@ -96,6 +97,7 @@ The canonical core is runtime-neutral:
 - `.agentlas/super-ontology-evidence.jsonl` in generated packages
 - `.agentlas/super-ontology-memory-bridge.jsonl` in generated packages
 - `schemas/`
+- `schemas/gateway-channel.schema.json`
 - `templates/`
 
 ## Public Runtime Contracts
@@ -138,6 +140,11 @@ Three runtime behaviors are public contracts here, not private product code:
   PPTX, PDF text, HWPX, and OCR images when the local OCR engine is available.
   It blocks direct durable-memory writes and records missing external parsers as
   `unsupported_pending_adapter` instead of pretending success.
+- Gateway channel contract: generated packages may declare Telegram, Slack,
+  Discord, WhatsApp, email, SMS, and other messaging-channel needs with
+  value-free credential references, sender policies, channel/account/peer
+  bindings, delivery receipts, and pairing/admin gates. Raw provider tokens do
+  not belong in public packages, Hub metadata, or memory.
 
 ## Generated Architecture Components
 

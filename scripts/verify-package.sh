@@ -32,6 +32,7 @@ required_files=(
   "docs/builder-interview-research-gate.md"
   "docs/builder-quality-research-basis.md"
   "docs/super-ontology-candidate-contract.md"
+  "docs/hephaestus-agentlas-gateway-architecture.md"
   "agent.md"
   "agents/10-single-agent-builder/agent.md"
   "agents/20-multi-agent-team-builder/agent.md"
@@ -99,6 +100,7 @@ required_files=(
   ".agentlas/super-ontology-replays.jsonl"
   ".agentlas/super-ontology-evidence.jsonl"
   ".agentlas/super-ontology-memory-bridge.jsonl"
+  "schemas/gateway-channel.schema.json"
   "schemas/agentlas-manifest.schema.json"
   "schemas/activation.schema.json"
   "schemas/global-commands.schema.json"
@@ -144,6 +146,7 @@ required_files=(
   "templates/domain-expert-synthesis.md.tpl"
   "templates/prompt-performance-contract.md.tpl"
   "templates/capability-eval-plan.json.tpl"
+  "templates/gateway-channel.json.tpl"
   "templates/super-ontology-contract.json.tpl"
   "templates/super-ontology-open-world-coverage.json.tpl"
   "templates/super-ontology-consensus-coordination.json.tpl"
@@ -197,6 +200,7 @@ required_files=(
   ".claude/commands/hep-search.md"
   ".claude/commands/hep-call.md"
   ".claude/commands/hep-upload.md"
+  ".claude/commands/hep-connect.md"
   ".claude/commands/meta-agent.md"
   ".claude/agents/agentlas-core-engine-meta-agent.md"
   ".claude/skills/agentlas-core-engine-meta-agent/SKILL.md"
@@ -208,6 +212,7 @@ required_files=(
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-search.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-call.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-upload.md"
+  "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-connect.md"
   "claude/plugins/agentlas-core-engine-meta-agent/bin/hephaestus"
   "claude/plugins/agentlas-core-engine-meta-agent/bin/hep-build"
   "claude/plugins/agentlas-core-engine-meta-agent/bin/hep-network"
@@ -235,6 +240,8 @@ required_files=(
   "codex/prompts/hep-search.md"
   "codex/prompts/hep-call.md"
   "codex/prompts/hep-upload.md"
+  "codex/prompts/hep-connect.md"
+  ".agents/workflows/hep-connect.md"
   "codex/plugins/agentlas-core-engine-meta-agent/bin/hephaestus"
   "codex/plugins/agentlas-core-engine-meta-agent/bin/hep-build"
   "codex/plugins/agentlas-core-engine-meta-agent/bin/hep-network"
@@ -299,6 +306,7 @@ required_files=(
   "scripts/verify-install-docs.sh"
   "scripts/verify-global-command-contract.sh"
   "scripts/verify-builder-quality-contract.sh"
+  "scripts/verify-gateway-channel-contract.sh"
   "scripts/verify-one-touch-install.sh"
   "scripts/run-one-touch-terminal.command"
   "scripts/verify-ontology-runtime.sh"
@@ -486,6 +494,7 @@ fi
 scripts/verify-install-docs.sh
 scripts/verify-global-command-contract.sh
 scripts/verify-builder-quality-contract.sh
+scripts/verify-gateway-channel-contract.sh
 scripts/verify-team-package.sh tests/fixtures/team-valid >/dev/null
 if scripts/verify-team-package.sh tests/fixtures/team-degenerate >/tmp/agentlas-team-gate-negative.txt 2>&1; then
   cat /tmp/agentlas-team-gate-negative.txt >&2

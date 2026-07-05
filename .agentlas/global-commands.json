@@ -25,7 +25,7 @@
       "runtime": "gemini-cli",
       "command": "/hep-build",
       "adapterPath": "gemini/extension/commands/hep-build.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.0",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.1",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hep-build.toml."
@@ -95,7 +95,7 @@
       "runtime": "gemini-cli",
       "command": "/hep-network",
       "adapterPath": "gemini/extension/commands/hep-network.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.0",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.1",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hep-network.toml."
@@ -194,7 +194,7 @@
       "runtime": "gemini-cli",
       "command": "/hep-cloud",
       "adapterPath": "gemini/extension/commands/hep-cloud.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.0",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.1",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hep-cloud.toml."
@@ -485,10 +485,36 @@
       "scope": "terminal",
       "status": "shell-command",
       "notes": "Interactive upload gate. Shows the mandatory bilingual Cloud vs Agentlas Hub question before upload."
+    },
+    {
+      "runtime": "claude-code",
+      "command": "/hep-connect",
+      "adapterPath": ".claude/commands/hep-connect.md",
+      "globalInstallPath": "~/.claude/commands/hep-connect.md",
+      "scope": "global",
+      "status": "native-slash-command",
+      "notes": "Guided Telegram-first gateway setup. Prefer Agentlas Desktop /connect, pair a real chat, send a test message, and keep bot tokens out of normal chat."
+    },
+    {
+      "runtime": "codex",
+      "command": "/prompts:hep-connect",
+      "adapterPath": "codex/prompts/hep-connect.md",
+      "globalInstallPath": "~/.codex/prompts/hep-connect.md",
+      "scope": "global",
+      "status": "custom-prompt-slash-command",
+      "notes": "Codex prompt surface for Telegram gateway setup. Uses the real Desktop Connect UI as source of truth."
+    },
+    {
+      "runtime": "agentlas-workflow",
+      "command": "/hep-connect",
+      "adapterPath": ".agents/workflows/hep-connect.md",
+      "scope": "project",
+      "status": "workflow-command",
+      "notes": "Project workflow for connecting a single agent, orchestrator, or team to Telegram through the Agentlas gateway."
     }
   ],
   "postCreationUserMessage": {
     "required": true,
-    "template": "global_commands: Agentlas terminal/app plain language through native Agentlas/Hephaestus tools; Claude Code /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; Codex /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload; Gemini CLI /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; Antigravity /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; Cursor /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; OpenCode /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload. Meaning: build/create = /hep-build; borrow public Hub agents = /hep-network; share/use my Agentlas Cloud packages = /hep-cloud; search candidates = /hep-search; explicit named agent call = /hep-call; upload gate = /hep-upload. Research loadouts, Stormbreaker, and lower-level options are selected automatically by context."
+    "template": "global_commands: Agentlas terminal/app plain language through native Agentlas/Hephaestus tools; Claude Code /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-connect; Codex /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect; Gemini CLI /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; Antigravity /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; Cursor /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; OpenCode /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload. Meaning: build/create = /hep-build; borrow public Hub agents = /hep-network; share/use my Agentlas Cloud packages = /hep-cloud; search candidates = /hep-search; explicit named agent call = /hep-call; upload gate = /hep-upload; Telegram gateway setup = /hep-connect or /prompts:hep-connect. Research loadouts, Stormbreaker, and lower-level options are selected automatically by context."
   }
 }

@@ -94,7 +94,7 @@ Hephaestus 与经典操作系统概念一一对应：
 | **虚拟文件系统** | 生产级 Ontology Runtime：本地优先的源摄取、CJK 三元组 FTS5 搜索、混合倒数排名融合（Reciprocal Rank Fusion）与 GraphRAG 检索。 |
 | **进程间调用（IPC）** | A2A Agent Card 边界（加密导入/导出与调用方门控）+ Model Context Protocol（MCP）工具注册。 |
 | **包管理器** | Agentlas Hub 与 Cloud：编译、发布、版本化并共享智能体，内置质量门。 |
-| **Shell 接口** | 在外部客户端运行时中提供小而统一的六命令 CLI；在原生 Agentlas Shell 中按自然语言意图路由。 |
+| **Shell 接口** | 在外部客户端运行时中提供小而统一的命令集；在原生 Agentlas Shell 中按自然语言意图路由。 |
 | **进程初始化** | Meta-Agent Factory 集成简报访谈门（Briefing Interview Gate）——先明确智能体参数，再编译代码。 |
 
 <p align="center">
@@ -131,8 +131,9 @@ https://github.com/agentlas-ai/Hephaestus
 Use the latest release/instructions. If anything errors, diagnose and fix it,
 retry, and confirm which command surface is active in this tool:
 - Agentlas Terminal / Desktop route plain language natively.
-- External LLM hosts expose exactly six commands: build, network, cloud,
-  search, call, upload.
+- External LLM hosts expose the core work commands: build, network, cloud,
+  search, call, upload. Claude Code and Codex also expose the Telegram setup
+  helper: connect.
 ```
 
 ### 全新 macOS 环境检查
@@ -166,7 +167,7 @@ claude plugin install hephaestus@agentlas-core-engine
 
 在操作系统终端中运行：
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.0
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.1
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *注：Codex 应用内不支持 `/plugin marketplace add`，请在操作系统终端中运行上面两条命令。操作系统终端的 CLI 命令为单数形式（`codex plugin`）；在 Codex 应用内，插件浏览器的斜杠命令为复数形式（`/plugins`）。安装完成后，`/prompts:hep-build` 即为应用内入口。*
@@ -180,7 +181,7 @@ codex plugin add hephaestus@agentlas-core-engine
 
 </details>
 
-**直接开口即可：** 安装完成后，在原生 Agentlas 界面中用自然语言说话即可自动路由任务。在外部宿主工具中，使用下面列出的六条显式命令。不清楚有哪些智能体时，先从 `/hep-search` 开始。
+**直接开口即可：** 安装完成后，在原生 Agentlas 界面中用自然语言说话即可自动路由任务。在外部宿主工具中，使用下面列出的显式命令。不清楚有哪些智能体时，先从 `/hep-search` 开始。要连接 Telegram，请在 Claude Code 中使用 `/hep-connect`，或在 Codex 中使用 `/prompts:hep-connect`。
 
 ---
 
@@ -196,12 +197,13 @@ codex plugin add hephaestus@agentlas-core-engine
 | **目录搜索** | `/hep-search` | `/hep-search find agents for a market report workflow` |
 | **进程间调用（IPC）** | `/hep-call` | `/hep-call market-researcher, report-writer {draft a market report}` |
 | **包导出器** | `/hep-upload` | `/hep-upload ./agents/customer-support-hq` |
+| **Telegram 设置** | `/hep-connect` 或 `/prompts:hep-connect` | `/hep-connect Telegram for Marketing Agent Team` |
 
 ---
 
 ## 桌面外壳 — Agentlas Desktop
 
-[Agentlas Desktop](https://agentlas.cloud/desktop) 是这套 Agent OS 的图形外壳——同样的内核、调度器与治理子系统，以可视化方式操作。Desktop 0.6.0 内置并锁定 Hephaestus v1.1.0 引擎；应用与其内核版本互相锁定，作为一个整体自动更新。
+[Agentlas Desktop](https://agentlas.cloud/desktop) 是这套 Agent OS 的图形外壳——同样的内核、调度器与治理子系统，以可视化方式操作。Desktop 0.6.0 内置并锁定 Hephaestus v1.1.1 引擎；应用与其内核版本互相锁定，作为一个整体自动更新。
 
 | Shell 表面 | 操作对象 |
 | :--- | :--- |

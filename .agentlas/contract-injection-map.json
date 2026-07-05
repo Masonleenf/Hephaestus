@@ -23,6 +23,10 @@
       "contracts": ["super-ontology-side-effect-containment", "super-ontology-capability-delegation-authority"],
       "reason": "Submission, sending, or publishing requires a human review gate before the side effect."
     },
+    "has_gateway_channels": {
+      "contracts": ["gateway-channel", "super-ontology-side-effect-containment", "super-ontology-capability-delegation-authority", "super-ontology-privacy-confidentiality-boundary"],
+      "reason": "Telegram, Slack, Discord, WhatsApp, email, SMS, and similar channel access needs a value-free gateway contract, sender policy, binding rules, delivery receipts, and a credential boundary."
+    },
     "promotes_memory": {
       "contracts": ["super-ontology-memory-bridge", "super-ontology-knowledge-homeostasis"],
       "reason": "Durable memory writes go through Memory Curator candidate tickets (admission control)."

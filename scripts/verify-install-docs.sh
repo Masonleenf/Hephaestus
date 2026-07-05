@@ -125,12 +125,14 @@ assert manifest["entrypoints"]["claudeHephaestusCloudCommand"].endswith("hep-clo
 assert manifest["entrypoints"]["claudeHephaestusSearchCommand"].endswith("hep-search.md")
 assert manifest["entrypoints"]["claudeHephaestusCallCommand"].endswith("hep-call.md")
 assert manifest["entrypoints"]["claudeHephaestusUploadCommand"].endswith("hep-upload.md")
+assert manifest["entrypoints"]["claudeHephaestusConnectCommand"].endswith("hep-connect.md")
 assert manifest["entrypoints"]["codexHephaestusBuildPrompt"].endswith("hep-build.md")
 assert manifest["entrypoints"]["codexHephaestusNetworkPrompt"].endswith("hep-network.md")
 assert manifest["entrypoints"]["codexHephaestusCloudPrompt"].endswith("hep-cloud.md")
 assert manifest["entrypoints"]["codexHephaestusSearchPrompt"].endswith("hep-search.md")
 assert manifest["entrypoints"]["codexHephaestusCallPrompt"].endswith("hep-call.md")
 assert manifest["entrypoints"]["codexHephaestusUploadPrompt"].endswith("hep-upload.md")
+assert manifest["entrypoints"]["codexHephaestusConnectPrompt"].endswith("hep-connect.md")
 assert manifest["entrypoints"]["geminiExtension"].endswith("gemini-extension.json")
 assert manifest["entrypoints"]["geminiHephaestusBuildCommand"].endswith("hep-build.toml")
 assert manifest["entrypoints"]["geminiHephaestusNetworkCommand"].endswith("hep-network.toml")
@@ -144,6 +146,7 @@ assert manifest["entrypoints"]["antigravityCloudWorkflow"].endswith("antigravity
 assert manifest["entrypoints"]["antigravitySearchWorkflow"].endswith("antigravity/workflows/hep-search.md")
 assert manifest["entrypoints"]["antigravityCallWorkflow"].endswith("antigravity/workflows/hep-call.md")
 assert manifest["entrypoints"]["antigravityUploadWorkflow"].endswith("antigravity/workflows/hep-upload.md")
+assert manifest["entrypoints"]["agentlasHephaestusConnectWorkflow"].endswith(".agents/workflows/hep-connect.md")
 assert manifest["entrypoints"]["globalCommands"].endswith("global-commands.json")
 
 for path in [

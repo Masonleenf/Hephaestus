@@ -21,12 +21,14 @@ required_files=(
   ".claude/commands/hep-search.md"
   ".claude/commands/hep-call.md"
   ".claude/commands/hep-upload.md"
+  ".claude/commands/hep-connect.md"
   "codex/prompts/hep-build.md"
   "codex/prompts/hep-network.md"
   "codex/prompts/hep-cloud.md"
   "codex/prompts/hep-search.md"
   "codex/prompts/hep-call.md"
   "codex/prompts/hep-upload.md"
+  "codex/prompts/hep-connect.md"
   "gemini/extension/commands/hep-build.toml"
   "gemini/extension/commands/hep-network.toml"
   "gemini/extension/commands/hep-cloud.toml"
@@ -52,6 +54,7 @@ required_files=(
   ".agents/workflows/hep-search.md"
   ".agents/workflows/hep-call.md"
   ".agents/workflows/hep-upload.md"
+  ".agents/workflows/hep-connect.md"
   "AGENTS.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-build.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-network.md"
@@ -59,6 +62,7 @@ required_files=(
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-search.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-call.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-upload.md"
+  "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-connect.md"
   "codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-build/SKILL.md"
   "codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-network/SKILL.md"
   "codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-cloud/SKILL.md"
@@ -155,9 +159,26 @@ for alias_command, adapter in {
     if not Path(adapter).exists():
         raise SystemExit(f"{alias_command} adapter file does not exist: {adapter}")
 
-for command_name in ("/hep-search", "/prompts:hep-search", "/hep-call", "/prompts:hep-call", "/hep-upload", "/prompts:hep-upload", "hephaestus_search", "hephaestus_call"):
+for command_name in ("/hep-search", "/prompts:hep-search", "/hep-call", "/prompts:hep-call", "/hep-upload", "/prompts:hep-upload", "/hep-connect", "/prompts:hep-connect", "hephaestus_search", "hephaestus_call"):
     if not any(item.get("command") == command_name for item in registry.get("commands", [])):
         raise SystemExit(f"missing power-user command registry entry: {command_name}")
+connect_entries = {
+    item["runtime"]: item
+    for item in registry.get("commands", [])
+    if item.get("command") in ("/hep-connect", "/prompts:hep-connect")
+}
+for runtime, adapter in {
+    "claude-code": ".claude/commands/hep-connect.md",
+    "codex": "codex/prompts/hep-connect.md",
+    "agentlas-workflow": ".agents/workflows/hep-connect.md",
+}.items():
+    item = connect_entries.get(runtime)
+    if not item:
+        raise SystemExit(f"missing /hep-connect registry entry for {runtime}")
+    if item.get("adapterPath") != adapter:
+        raise SystemExit(f"{runtime} /hep-connect adapterPath mismatch: {item.get('adapterPath')} != {adapter}")
+    if not Path(adapter).exists():
+        raise SystemExit(f"{runtime} /hep-connect adapter file does not exist: {adapter}")
 required = {
     "claude-code": ".claude/commands/hep-build.md",
     "codex": "codex/prompts/hep-build.md",

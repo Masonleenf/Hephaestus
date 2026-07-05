@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## v1.1.1 - 2026-07-05
+
+- **Telegram gateway contract.** Added the gateway channel schema, template,
+  verification script, and architecture note for binding single agents,
+  orchestrators, or teams to Telegram without treating the bot account as the
+  agent itself.
+- **`/hep-connect` surface.** Added Claude Code, Codex, and Agentlas workflow
+  entrypoints that point operators to the Desktop Connect flow, require a real
+  paired chat and test message, and keep bot tokens out of normal chat.
+- **Copy pass through No-AI-Slop.** Tightened Telegram setup language around
+  receipts, session boundaries, local secret storage, and actionable failure
+  states.
+
 ## v1.1.0 - 2026-07-02
 
 - **Briefing interview engine.** New `agentlas_cloud/interview/` package:

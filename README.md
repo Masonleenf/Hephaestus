@@ -94,7 +94,7 @@ Hephaestus maps directly to classical operating system concepts:
 | **Virtual File System** | Production Ontology Runtime: local-first source ingestion, CJK trigram FTS5 search, hybrid Reciprocal Rank Fusion, and GraphRAG retrieval. |
 | **Inter-Process Call (IPC)** | A2A Agent Card Boundary (cryptographic import/export and caller-gating) + Model Context Protocol (MCP) tool registrations. |
 | **Package Manager** | Agentlas Hub & Cloud: compile, publish, version, and share agents with built-in quality gates. |
-| **Shell Interface** | A small, unified six-command CLI in external client runtimes; plain-language intent routing in native Agentlas shells. |
+| **Shell Interface** | A small, unified command set in external client runtimes; plain-language intent routing in native Agentlas shells. |
 | **Process Initialization** | Meta-Agent Factory with an integrated Briefing Interview Gate—specifying agent parameters before compiling code. |
 
 <p align="center">
@@ -131,8 +131,9 @@ https://github.com/agentlas-ai/Hephaestus
 Use the latest release/instructions. If anything errors, diagnose and fix it,
 retry, and confirm which command surface is active in this tool:
 - Agentlas Terminal / Desktop route plain language natively.
-- External LLM hosts expose exactly six commands: build, network, cloud,
-  search, call, upload.
+- External LLM hosts expose the core work commands: build, network, cloud,
+  search, call, upload. Claude Code and Codex also expose the Telegram setup
+  helper: connect.
 ```
 
 ### Fresh macOS Check
@@ -166,7 +167,7 @@ claude plugin install hephaestus@agentlas-core-engine
 
 From your OS terminal:
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.0
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.1
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *Note: Codex does not accept `/plugin marketplace add` inside the app — run the two commands above in your OS terminal. The OS-terminal CLI command is singular (`codex plugin`); inside the Codex app, the plugin browser slash command is plural (`/plugins`). After install, `/prompts:hep-build` is the in-app entry.*
@@ -180,7 +181,7 @@ Clone the repo and copy `AGENTS.md`, `agent.md`, `agents/`, `skills/`, `modes/`,
 
 </details>
 
-**Just talk:** After installation, speak in plain language within native Agentlas interfaces to auto-route tasks. In external host tools, use the six explicit commands listed below. When you don't know what agents exist, start with `/hep-search`.
+**Just talk:** After installation, speak in plain language within native Agentlas interfaces to auto-route tasks. In external host tools, use the explicit commands listed below. When you don't know what agents exist, start with `/hep-search`. To connect Telegram, use `/hep-connect` in Claude Code or `/prompts:hep-connect` in Codex.
 
 ---
 
@@ -196,12 +197,13 @@ Inside native Agentlas environments, Hephaestus operates commandless. External L
 | **Directory Search** | `/hep-search` | `/hep-search find agents for a market report workflow` |
 | **Inter-Process Call (IPC)** | `/hep-call` | `/hep-call market-researcher, report-writer {draft a market report}` |
 | **Package Exporter** | `/hep-upload` | `/hep-upload ./agents/customer-support-hq` |
+| **Telegram Setup** | `/hep-connect` or `/prompts:hep-connect` | `/hep-connect Telegram for Marketing Agent Team` |
 
 ---
 
 ## The Desktop Shell — Agentlas Desktop
 
-[Agentlas Desktop](https://agentlas.cloud/desktop) is the graphical shell for this Agent OS — the same kernel, scheduler, and governance subsystems, operated visually. Desktop 0.6.0 ships with the Hephaestus v1.1.0 engine bundled and pinned; the app and its kernel version-lock together and auto-update as one unit.
+[Agentlas Desktop](https://agentlas.cloud/desktop) is the graphical shell for this Agent OS — the same kernel, scheduler, and governance subsystems, operated visually. Desktop 0.6.0 ships with the Hephaestus v1.1.1 engine bundled and pinned; the app and its kernel version-lock together and auto-update as one unit.
 
 | Shell Surface | What it operates |
 | :--- | :--- |
