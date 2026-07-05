@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+## v1.1.2 - 2026-07-05
+
+- **`/hep-storm` Stormbreaker loop surface.** Promoted the Stormbreaker
+  auto-runner from a terminal-only alias to a first-class global command across
+  every runtime (Claude Code `/hep-storm`, Codex `/prompts:hep-storm`, Gemini,
+  Antigravity, Cursor, OpenCode, plus OpenClaw / Hermes / `.agents` skills). It
+  routes the goal, materializes a verified pipeline fabric, then the host model
+  executes it under the verifier-first, no-fake-pass Stormbreaker Loop protocol
+  (scope-lock → issue contract → plan-lock → act → verify → bounded repair/retry
+  → final-gate) with the goal-loop stability invariants (no stall, no runaway,
+  journal-resumable). Registered in `.agentlas/global-commands.json`,
+  `manifest.json`, the global-command contract, and the contract verifier.
+- **`/hep-connect` command-surface contract.** Fixed the four `hep-connect`
+  surfaces to open their body with the standard update-fallback line, restoring
+  the `test_all_hep_command_surfaces_start_body_with_update_fallback_line`
+  contract test.
+
 ## v1.1.1 - 2026-07-05
 
 - **Telegram gateway contract.** Added the gateway channel schema, template,

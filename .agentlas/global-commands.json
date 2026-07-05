@@ -25,7 +25,7 @@
       "runtime": "gemini-cli",
       "command": "/hep-build",
       "adapterPath": "gemini/extension/commands/hep-build.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.1",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.2",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hep-build.toml."
@@ -95,7 +95,7 @@
       "runtime": "gemini-cli",
       "command": "/hep-network",
       "adapterPath": "gemini/extension/commands/hep-network.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.1",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.2",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hep-network.toml."
@@ -164,6 +164,78 @@
       "notes": "Typo-tolerant standalone Network alias; maps to hephaestus hep-network \"<request>\", uses Hub-only Network routing, and auto-runs runnable Stormbreaker execution_fabric decisions unless --plan-only is present."
     },
     {
+      "runtime": "claude-code",
+      "command": "/hep-storm",
+      "adapterPath": ".claude/commands/hep-storm.md",
+      "globalInstallPath": "~/.claude/commands/hep-storm.md",
+      "scope": "global",
+      "status": "native-slash-command",
+      "notes": "Force-robust Stormbreaker loop surface. Routes the goal, materializes a verified pipeline fabric (hephaestus hep-storm = stormbreaker run), and the host model executes it under the verifier-first, no-fake-pass Stormbreaker Loop protocol (scope-lock -> issue contract -> plan-lock -> act -> verify -> bounded repair/retry -> final-gate)."
+    },
+    {
+      "runtime": "codex",
+      "command": "/prompts:hep-storm",
+      "adapterPath": "codex/prompts/hep-storm.md",
+      "globalInstallPath": "~/.codex/prompts/hep-storm.md",
+      "scope": "global",
+      "status": "custom-prompt-slash-command",
+      "notes": "Codex plugins cannot register slash commands (skills only). The explicit Stormbreaker loop surface is namespaced as /prompts:hep-storm; same engine as the terminal hep-storm."
+    },
+    {
+      "runtime": "gemini-cli",
+      "command": "/hep-storm",
+      "adapterPath": "gemini/extension/commands/hep-storm.toml",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.2",
+      "scope": "global",
+      "status": "extension-custom-command",
+      "notes": "Fallback user command is also installable at ~/.gemini/commands/hep-storm.toml."
+    },
+    {
+      "runtime": "antigravity",
+      "command": "/hep-storm",
+      "adapterPath": "antigravity/workflows/hep-storm.md",
+      "globalInstallPath": "~/.gemini/antigravity/global_workflows/hep-storm.md",
+      "scope": "global",
+      "status": "workflow-slash-command",
+      "notes": "Project-scope fallback ships at .agents/workflows/hep-storm.md."
+    },
+    {
+      "runtime": "cursor",
+      "command": "/hep-storm",
+      "adapterPath": "cursor/plugin/commands/hep-storm.md",
+      "globalInstallPath": "~/.cursor/commands/hep-storm.md",
+      "scope": "global",
+      "status": "native-slash-command",
+      "notes": "Force-robust Stormbreaker loop. cursor/plugin/ is the marketplace-ready bundle."
+    },
+    {
+      "runtime": "opencode",
+      "command": "/hep-storm",
+      "adapterPath": "opencode/commands/hep-storm.md",
+      "globalInstallPath": "~/.config/opencode/commands/hep-storm.md",
+      "scope": "global",
+      "status": "native-slash-command",
+      "notes": "OpenCode also reads the universal skill at ~/.agents/skills/hephaestus-storm and supports MCP."
+    },
+    {
+      "runtime": "openclaw",
+      "command": "/skill hephaestus-storm",
+      "adapterPath": "openclaw/skills/hephaestus-storm/SKILL.md",
+      "globalInstallPath": "~/.openclaw/skills/hephaestus-storm/SKILL.md",
+      "scope": "global",
+      "status": "skill-slash-command",
+      "notes": "AgentSkills spec; native /hep-storm registration follows commands.nativeSkills. Also loaded from ~/.agents/skills."
+    },
+    {
+      "runtime": "hermes-agent",
+      "command": "hephaestus-storm",
+      "adapterPath": "hermes/skills/hephaestus-storm/SKILL.md",
+      "globalInstallPath": "~/.hermes/skills/hephaestus-storm/SKILL.md",
+      "scope": "global",
+      "status": "skill",
+      "notes": "AgentSkills spec skill; runs the Stormbreaker loop via the local Hephaestus runtime."
+    },
+    {
       "runtime": "agentlas-terminal",
       "command": "hep-storm",
       "adapterPath": "bin/hep-storm",
@@ -194,7 +266,7 @@
       "runtime": "gemini-cli",
       "command": "/hep-cloud",
       "adapterPath": "gemini/extension/commands/hep-cloud.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.1",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.2",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hep-cloud.toml."
@@ -515,6 +587,6 @@
   ],
   "postCreationUserMessage": {
     "required": true,
-    "template": "global_commands: Agentlas terminal/app plain language through native Agentlas/Hephaestus tools; Claude Code /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-connect; Codex /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect; Gemini CLI /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; Antigravity /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; Cursor /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; OpenCode /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload. Meaning: build/create = /hep-build; borrow public Hub agents = /hep-network; share/use my Agentlas Cloud packages = /hep-cloud; search candidates = /hep-search; explicit named agent call = /hep-call; upload gate = /hep-upload; Telegram gateway setup = /hep-connect or /prompts:hep-connect. Research loadouts, Stormbreaker, and lower-level options are selected automatically by context."
+    "template": "global_commands: Agentlas terminal/app plain language through native Agentlas/Hephaestus tools; Claude Code /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-connect; Codex /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect; Gemini CLI /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; Antigravity /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; Cursor /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; OpenCode /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload. Meaning: build/create = /hep-build; borrow public Hub agents = /hep-network; share/use my Agentlas Cloud packages = /hep-cloud; search candidates = /hep-search; explicit named agent call = /hep-call; upload gate = /hep-upload; Telegram gateway setup = /hep-connect or /prompts:hep-connect; force-robust verified loop to completion = /hep-storm (Codex /prompts:hep-storm). Research loadouts and lower-level options are selected automatically by context; /hep-storm is the explicit, force-robust Stormbreaker loop surface (verifier-first, no fake pass)."
   }
 }

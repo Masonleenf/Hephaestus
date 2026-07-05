@@ -83,33 +83,43 @@ External LLM hosts expose these commands:
 - `/hep-search <request>` — compare Cloud and Hub candidates without invoking.
 - `/hep-call <slugs> <context>` — prepare explicitly named Hub/cloud agents.
 - `/hep-upload <agent-folder>` — ask Cloud-vs-Hub before any upload action.
+- `/hep-storm <request>` — force-robust Stormbreaker loop: route the goal,
+  materialize a verified pipeline fabric (`hephaestus hep-storm` =
+  `stormbreaker run`), then have the host model execute it to completion under
+  the verifier-first, no-fake-pass Stormbreaker Loop protocol; Codex uses
+  `/prompts:hep-storm`.
 - `/hep-connect <target>` — Telegram setup helper in Claude Code; Codex uses
   `/prompts:hep-connect`.
 
 Network routing is backed by the local-first router
-(`docs/hephaestus-network-2.0.md`). Fresh installs expose the six core external
+(`docs/hephaestus-network-2.0.md`). Fresh installs expose the seven core external
 work commands above, plus `/hep-connect` where the host can guide the Desktop
-Telegram setup flow. `hep-storm` and other lower-level controls may remain
-available to native tools, MCP tool selection, automation, and debugging, but
-they are not part of the visible external work command set. Stormbreaker packet auto-run is
+Telegram setup flow. `/hep-storm` is a first-class external work command: it runs
+the force-robust Stormbreaker loop (`stormbreaker run`) and the host model
+executes the returned pipeline under the Stormbreaker Loop protocol. Other
+lower-level controls may remain available to native tools, MCP tool selection,
+automation, and debugging, but they are not part of the visible external work
+command set. Stormbreaker packet auto-run is
 available through the runner when routing returns a runnable `execution_fabric`
 and `--plan-only` is not present. Required visible external surfaces:
 
 - Claude Code: `.claude/commands/hep-build.md`,
   `.claude/commands/hep-network.md`, `.claude/commands/hep-cloud.md`,
   `.claude/commands/hep-search.md`, `.claude/commands/hep-call.md`,
-  `.claude/commands/hep-upload.md`, and `.claude/commands/hep-connect.md`
+  `.claude/commands/hep-upload.md`, `.claude/commands/hep-storm.md`, and
+  `.claude/commands/hep-connect.md`
   (+ global copies).
 - Codex: `codex/prompts/hep-build.md`,
   `codex/prompts/hep-network.md`, `codex/prompts/hep-cloud.md`,
   `codex/prompts/hep-search.md`, `codex/prompts/hep-call.md`,
-  `codex/prompts/hep-upload.md`, and `codex/prompts/hep-connect.md`.
+  `codex/prompts/hep-upload.md`, `codex/prompts/hep-storm.md`, and
+  `codex/prompts/hep-connect.md`.
 - Gemini CLI: `gemini/extension/commands/hep-build.toml`,
   `hep-network.toml`, `hep-cloud.toml`, `hep-search.toml`, `hep-call.toml`,
-  and `hep-upload.toml` (+ `~/.gemini/commands/` fallbacks).
+  `hep-upload.toml`, and `hep-storm.toml` (+ `~/.gemini/commands/` fallbacks).
 - Antigravity: `antigravity/workflows/hep-build.md`,
-  `hep-network.md`, `hep-cloud.md`, `hep-search.md`, `hep-call.md`, and
-  `hep-upload.md`
+  `hep-network.md`, `hep-cloud.md`, `hep-search.md`, `hep-call.md`,
+  `hep-upload.md`, and `hep-storm.md`
   (+ `~/.gemini/antigravity*/global_workflows/`).
 - Cursor: command files under `cursor/plugin/commands/hep-*.md`, with
   `cursor/rules/hephaestus.mdc` as the per-project fallback — reacts to
@@ -118,9 +128,10 @@ and `--plan-only` is not present. Required visible external surfaces:
   `hep-network "<request>"` is the standalone Hub-only Network alias,
   `hep-cloud "<request>"` is the cloud/share surface, `hep-search` compares
   Cloud/Hub candidates, `hep-call` prepares exact named agents, and
-  `hep-upload <agent-folder>` asks Cloud-vs-Hub first. Native Agentlas Terminal
-  should prefer plain language over exposing these as required commands.
-  `hep-storm` is a lower-level automation helper.
+  `hep-upload <agent-folder>` asks Cloud-vs-Hub first, and `hep-storm
+  "<request>"` runs the force-robust Stormbreaker loop (`stormbreaker run`).
+  Native Agentlas Terminal should prefer plain language over exposing these as
+  required commands.
 - Generic AGENTS.md / local-model runtimes: see
   `docs/runtime-fallback-adapters.md`.
 
