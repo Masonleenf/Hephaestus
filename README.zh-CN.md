@@ -18,7 +18,7 @@
   <a href="LICENSE">
     <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-green">
   </a>
-  <img alt="Hosts" src="https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Antigravity%20%7C%20Cursor%20%7C%20DeepSeek%20%7C%20GLM%20%7C%20Ollama-black">
+  <img alt="LLMs" src="https://img.shields.io/badge/LLMs-Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Antigravity%20%7C%20Cursor%20%7C%20DeepSeek%20%7C%20GLM%20%7C%20Ollama-black">
 </p>
 
 <p align="center">
@@ -33,23 +33,22 @@
   <a href="README.hi.md">हिन्दी</a>
 </p>
 
-## 粘贴即启动
+## 粘贴即安装
 
-把下面内容粘贴到你正在使用的 AI host，例如 Claude Code、Codex、Gemini CLI、Antigravity 或 Cursor：
+把下面内容粘贴到你正在使用的 LLM，例如 Claude Code、Codex、Gemini CLI、Antigravity 或 Cursor：
 
 ```text
-只为这个 AI host 设置 Hephaestus:
+从这个 GitHub 仓库安装 Hephaestus:
 https://github.com/agentlas-ai/Hephaestus
 
-使用最新 release 和当前 host 的 adapter。不要安装 Agentlas Terminal 或
-Agentlas Desktop；它们是独立的 Agentlas 产品。
+把它注册到 plugin marketplace，安装 plugin，并让 Hephaestus plugin 和
+commands 从下一次 session 开始可用。如果支持 global routing，也请开启。
 
-如果当前 host 支持 global routing，只为这个 host 启用。最后确认这里激活的
-Hephaestus command surface。
+最后确认已启用的 plugin、command surface 和 global routing 状态。
 ```
 
-这个 boot prompt 只面向外部 AI hosts。Agentlas Terminal 和 Agentlas
-Desktop 从各自产品渠道安装。
+当你已经在某个 LLM 里，并希望直接启用 Hephaestus 时使用这段内容。
+如果要用 shell 手动安装，请查看下面的完整安装方法。
 
 <p align="center">
   <img src="assets/hephaestus-network-mcp-demo.gif" alt="Hephaestus Network 2.0 通过 MCP 实时将任务路由给正确的智能体" width="760">
@@ -62,7 +61,7 @@ Desktop 从各自产品渠道安装。
 <p align="center">
   <a href="#agent-os-时代">Agent OS 时代</a>
   ·
-  <a href="#粘贴即启动">粘贴即启动</a>
+  <a href="#粘贴即安装">粘贴即安装</a>
   ·
   <a href="#全部安装方式">全部安装方式</a>
   ·
@@ -77,8 +76,6 @@ Desktop 从各自产品渠道安装。
   <a href="#构建产物--进程打包">系统打包</a>
   ·
   <a href="#按目标查文档">文档索引</a>
-  ·
-  <a href="#桌面外壳--agentlas-desktop">桌面外壳</a>
 </p>
 
 ---
@@ -91,13 +88,13 @@ Desktop 从各自产品渠道安装。
 
 如果你的智能体与单一模型供应商的专有 API 紧耦合，你的组织记忆、自定义工具和面向任务的逻辑实际上就被锁死在该供应商的生态里。
 
-**Hephaestus 是独立的、模型无关的内核。**它不是智能体框架，也不是 API 封装层。它是一个本地优先的 Agent OS——一个统一的执行基底，在任意宿主运行时之上编译、调度并治理可移植的智能体进程。更换底层推理引擎，完整保留整个智能体劳动力。
+**Hephaestus 是独立的、模型无关的内核。**它不是智能体框架，也不是 API 封装层。它是一个本地优先的 Agent OS——一个统一的执行基底，在任意 LLM 运行时之上编译、调度并治理可移植的智能体进程。更换底层推理引擎，完整保留整个智能体劳动力。
 
 Hephaestus 与经典操作系统概念一一对应：
 
 | OS 抽象 | 在 Hephaestus 中的实现 |
 | :--- | :--- |
-| **内核 / 策略门（Policy Gate）** | 确定性路由器 + 安全门。每一次路由动作都会生成可审计的回执；工具执行权限被严格沙箱化，由宿主运行时强制执行。 |
+| **内核 / 策略门（Policy Gate）** | 确定性路由器 + 安全门。每一次路由动作都会生成可审计的回执；工具执行权限被严格沙箱化，由活动运行时强制执行。 |
 | **进程 / 线程** | 独立智能体与多智能体团队被编译为包，附带显式的类型化契约（Routing Card、反作用域、记忆边界与验证垫片）。 |
 | **进程调度器** | Network 2.0 路由（本地优先、质量门控、基准门控的分发），结合 Stormbreaker 的并行执行织体与只追加的运行日志。 |
 | **内存管理（MMU）** | 双边界的受治理记忆：本地项目记忆隔离在本机，持久化晋升由本地 Memory Curator 门控。 |
@@ -131,10 +128,10 @@ Hephaestus 与经典操作系统概念一一对应：
 
 ## 全部安装方式
 
-### 手动安装 Host Adapter
+### 手动安装 LLM Adapter
 
-仅当当前 AI host 无法自行执行设置时使用。它会安装共享的 Hephaestus runner
-和外部 host adapters；不会安装 Agentlas Terminal 或 Agentlas Desktop。
+仅当当前 LLM 无法自行执行设置时使用。它会安装共享的 Hephaestus runner
+以及面向受支持 LLM tools 的 command adapters。
 
 ```bash
 xcode-select --install   # Command line tools (skip if already installed)
@@ -176,13 +173,13 @@ codex plugin add hephaestus@agentlas-core-engine
 
 </details>
 
-**直接开口即可：** 安装完成后，在原生 Agentlas 界面中用自然语言说话即可自动路由任务。在外部宿主工具中，使用下面列出的显式命令。不清楚有哪些智能体时，先从 `/hep-search` 开始。要连接 Telegram，请在 Claude Code 中使用 `/hep-connect`，或在 Codex 中使用 `/prompts:hep-connect`。
+**直接开口即可：** 安装完成后，在原生 Agentlas 界面中用自然语言说话即可自动路由任务。在外部 LLM tools 中，使用下面列出的显式命令。不清楚有哪些智能体时，先从 `/hep-search` 开始。要连接 Telegram，请在 Claude Code 中使用 `/hep-connect`，或在 Codex 中使用 `/prompts:hep-connect`。
 
 ---
 
 ## 命令界面
 
-在原生 Agentlas 环境中，Hephaestus 无需任何命令即可运行。外部 LLM 宿主使用一组刻意精简的可见命令。Stormbreaker、研究装备（research loadouts）和配置表等系统级设施会根据上下文自动挂载：
+在原生 Agentlas 环境中，Hephaestus 无需任何命令即可运行。外部 LLM tools 使用一组刻意精简的可见命令。Stormbreaker、研究装备（research loadouts）和配置表等系统级设施会根据上下文自动挂载：
 
 | 系统子系统 | Shell 命令 | 示例 |
 | :--- | :--- | :--- |
@@ -196,24 +193,6 @@ codex plugin add hephaestus@agentlas-core-engine
 
 ---
 
-## 桌面外壳 — Agentlas Desktop
-
-[Agentlas Desktop](https://agentlas.cloud/desktop) 是这套 Agent OS 的图形外壳——同样的内核、调度器与治理子系统，以可视化方式操作。Desktop 0.6.0 内置并锁定 Hephaestus v1.1.10 引擎；应用与其内核版本互相锁定，作为一个整体自动更新。
-
-| Shell 表面 | 操作对象 |
-| :--- | :--- |
-| **聊天工作区** | 绑定到任意运行时的自然语言会话——Claude Code、Codex、Gemini CLI、Antigravity、BYOK API（DeepSeek、GLM、Kimi）或本地 Ollama——支持实时流式输出、转向队列与按聊天隔离的工作目录。 |
-| **构建菜单** | 包上 UI 的 Meta-Agent Factory：访谈门控的构建（成批的简报问题以原生问题卡片呈现），随后在磁盘上产出真实的包文件。 |
-| **智能体库与 Hub** | 你编译的智能体、团队与借用的 Hub 专家——面向 Agentlas Hub 包注册表进行安装、版本化、发布与定价。 |
-| **特遣队与蜂群** | 借用的多智能体特遣队、带机器规格并发滑杆的并行蜂群执行，以及面向长时程工作的持续实时运行。 |
-| **自动化** | Cron/事件/文件监听触发器被编译为并行 DAG 工作流，并配有可视化图编辑器——用 OS 术语说，就是定时调度的智能体进程。 |
-| **记忆与进化面板** | 将受治理记忆子系统可视化：策展工单、已晋升的行动手册、自我进化提案与安全复扫。 |
-
-桌面外壳执行与 CLI 相同的边界：BYOC 在你的机器和你的订阅上执行、路由决策留有回执、记忆本地优先。下载：[agentlas.cloud/desktop](https://agentlas.cloud/desktop)。
-
-
----
-
 ## OS 子系统
 
 ### Meta-Agent Factory — 进程创建
@@ -223,7 +202,7 @@ codex plugin add hephaestus@agentlas-core-engine
 | :--- | :--- | :--- |
 | **单智能体** | `10-single-agent-builder` | 独立工作者，带本地化技能、记忆契约与运行时适配器。 |
 | **多智能体团队** | `20-multi-agent-team-builder` | 层级化团队，包含 PM Orchestrator、Memory Curator、Policy Gate、QA 与校验脚本。 |
-| **工作区打包器** | `30-agentlas-packager` | 编译好的捆绑包，可直接用于桌面导入、CLI 执行或 GitHub 分发。 |
+| **工作区打包器** | `30-agentlas-packager` | 编译好的捆绑包，可直接用于 runtime 导入、CLI 执行或 GitHub 分发。 |
 
 *简报访谈门：* 构建器通过**简报访谈门**（[docs/builder-interview-research-gate.md](docs/builder-interview-research-gate.md)）启动流程：进行透镜驱动的提问、评估歧义阈值、检索一手来源，并输出 Work Brief。
 
@@ -235,13 +214,13 @@ codex plugin add hephaestus@agentlas-core-engine
   <img src="assets/hephaestus-network-architecture.svg" alt="Figure 2. Hephaestus Network 2.0 A2A networking architecture">
 </p>
 
-<sub>图 2. A2A 调度：宿主运行时、本地优先编排器、路由卡、本地记忆，以及 Agentlas Hub 的 A2A/MCP 兜底。</sub>
+<sub>图 2. A2A 调度：LLM 运行时、本地优先编排器、路由卡、本地记忆，以及 Agentlas Hub 的 A2A/MCP 兜底。</sub>
 
 *   **Routing Card（路由卡）：** 每个智能体、团队和插件都随附一张标准化卡片，包含触发器、反触发器、能力、风险画像与记忆参数。未通过验证的卡片会被排除在路由之外。
 *   **本地优先分发：** 分发首先在本地解析（项目覆盖 $\rightarrow$ 本地卡片）。经由 Agentlas Hub 的外部查询会被脱敏为关键词；你的原始提示永远不会离开本地环境。
 *   **临时特遣队：** 复合请求会分解为 Hub/本地特遣队计划，打包 Stormbreaker 信封、会话提示与本体路径。被点名的专家会被动态调度，并由一个临时编排器管理任务交接。
-*   **回执驱动的执行：** 每个路由决策都会写下回执。路由器只决定调用哪个智能体或包；工具执行权限始终被严格沙箱化，由宿主运行时管理。
-*   **双语基准测试：** 自动路由由一套双语（韩语 + 英语）基准门控，要求 top-3 召回率 $\ge 90\%$ 且零隐私泄漏。低置信度路径会升级到宿主级 Router Agent 重排序。
+*   **回执驱动的执行：** 每个路由决策都会写下回执。路由器只决定调用哪个智能体或包；工具执行权限始终被严格沙箱化，由活动运行时管理。
+*   **双语基准测试：** 自动路由由一套双语（韩语 + 英语）基准门控，要求 top-3 召回率 $\ge 90\%$ 且零隐私泄漏。低置信度路径会升级到 runtime 级 Router Agent 重排序。
 
 详情：[docs/hephaestus-network-2.0.md](docs/hephaestus-network-2.0.md) · 运行时支持矩阵：[docs/runtime-fallback-adapters.md](docs/runtime-fallback-adapters.md)
 
@@ -311,7 +290,7 @@ agentlas-cloud route "run the release check" --caller local/orchestrator .
 *   **本地优先的数据边界：** 原始文本、文档与数据库文件保留在本地。对外交互经过脱敏且需显式选择加入。
 
 ### 框架的位置
-CrewAI、LangChain 与各厂商的智能体 SDK 扮演的是**库**的角色——非常适合在单个进程内编写自定义智能体逻辑。Hephaestus 则作为**宿主基底**运作：它跨工作区运行时对智能体进行规格化、打包、路由、运行、审计与迁移。框架代码在 Hephaestus 包内部运行；内核只要求智能体遵守其目录契约与 Routing Card。
+CrewAI、LangChain 与各厂商的智能体 SDK 扮演的是**库**的角色——非常适合在单个进程内编写自定义智能体逻辑。Hephaestus 则作为**运行时基底**运作：它跨工作区运行时对智能体进行规格化、打包、路由、运行、审计与迁移。框架代码在 Hephaestus 包内部运行；内核只要求智能体遵守其目录契约与 Routing Card。
 
 ---
 
@@ -360,7 +339,7 @@ Hephaestus 将智能体打包为标准目录布局，任何工作区运行时都
 
 ## 公共安全边界
 
-本仓库**不**包含托管的 Agentlas 计费/账户逻辑、生产云凭据、客户数据库、原始私有会话记录、桌面钥匙串管理器或私有部署脚本。
+本仓库**不**包含 Agentlas 计费/账户逻辑、生产云凭据、客户数据库、原始私有会话记录、原生钥匙串管理器或私有部署脚本。
 
 由 Hephaestus 编译的公开输出包必须排除本地绝对路径、API 密钥、服务账号密钥、`.env` 机密、原始会话记录、客户日志与私人开发者笔记。
 

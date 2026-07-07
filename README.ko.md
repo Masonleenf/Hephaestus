@@ -18,7 +18,7 @@
   <a href="LICENSE">
     <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-green">
   </a>
-  <img alt="Hosts" src="https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Antigravity%20%7C%20Cursor%20%7C%20DeepSeek%20%7C%20GLM%20%7C%20Ollama-black">
+  <img alt="LLMs" src="https://img.shields.io/badge/LLMs-Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Antigravity%20%7C%20Cursor%20%7C%20DeepSeek%20%7C%20GLM%20%7C%20Ollama-black">
 </p>
 
 <p align="center">
@@ -33,24 +33,24 @@
   <a href="README.hi.md">हिन्दी</a>
 </p>
 
-## 붙여넣어 부팅하기
+## 붙여넣어 설치하기
 
-지금 쓰는 AI 호스트, 예를 들어 Claude Code, Codex, Gemini CLI, Antigravity,
+지금 쓰는 LLM, 예를 들어 Claude Code, Codex, Gemini CLI, Antigravity,
 Cursor에 아래 내용을 붙여넣으세요:
 
 ```text
-이 AI 호스트에만 Hephaestus를 설정해줘:
+이 GitHub 저장소에서 Hephaestus를 설치해줘:
 https://github.com/agentlas-ai/Hephaestus
 
-최신 릴리즈와 이 호스트용 어댑터를 사용해. Agentlas Terminal이나
-Agentlas Desktop은 설치하지 마; 둘은 별도 Agentlas 제품이야.
+플러그인 마켓플레이스에 등록하고 플러그인으로 설치해줘.
+다음 세션부터 Hephaestus 플러그인과 명령이 바로 동작하게 설정해줘.
+전역 라우팅을 지원하면 그것도 켜줘.
 
-이 호스트가 전역 라우팅을 지원하면 이 호스트에만 활성화해. 마지막에는
-여기서 어떤 Hephaestus command surface가 활성화됐는지 확인해줘.
+마지막에는 활성화된 플러그인, 명령 표면, 전역 라우팅 상태를 확인해줘.
 ```
 
-이 부팅 프롬프트는 외부 AI 호스트용입니다. Agentlas Terminal과 Agentlas
-Desktop은 각 제품 채널에서 따로 설치합니다.
+이미 쓰고 있는 LLM에서 Hephaestus를 바로 활성화하고 싶을 때
+사용하세요. 셸에서 직접 설치하려면 아래 전체 설치 방법을 보세요.
 
 <p align="center">
   <img src="assets/hephaestus-network-mcp-demo.gif" alt="MCP를 통해 태스크를 실시간으로 올바른 에이전트에 라우팅하는 Hephaestus Network 2.0" width="760">
@@ -63,7 +63,7 @@ Desktop은 각 제품 채널에서 따로 설치합니다.
 <p align="center">
   <a href="#에이전트-os-시대">에이전트 OS 시대</a>
   ·
-  <a href="#붙여넣어-부팅하기">붙여넣어 부팅하기</a>
+  <a href="#붙여넣어-설치하기">붙여넣어 설치하기</a>
   ·
   <a href="#전체-설치-방법">전체 설치 방법</a>
   ·
@@ -78,8 +78,6 @@ Desktop은 각 제품 채널에서 따로 설치합니다.
   <a href="#무엇을-만들어내는가-프로세스-패키징">시스템 패키징</a>
   ·
   <a href="#목표별-문서">문서 레지스트리</a>
-  ·
-  <a href="#데스크톱-셸--agentlas-desktop">데스크톱 셸</a>
 </p>
 
 ---
@@ -92,13 +90,13 @@ Desktop은 각 제품 채널에서 따로 설치합니다.
 
 에이전트가 단일 모델 제공자의 독점 API에 강하게 결합되어 있다면, 조직의 메모리, 커스텀 도구, 태스크별 로직은 사실상 그 벤더의 생태계에 묶이게 됩니다.
 
-**Hephaestus는 어떤 모델에도 묶이지 않는 독립 커널입니다.** 에이전트 프레임워크도, API 래퍼도 아닙니다. 로컬 우선 에이전트 운영체제로서, 어떤 호스트 런타임에서든 이식 가능한 에이전트 프로세스를 컴파일·스케줄링·관리하는 통합 실행 기반입니다. 밑단의 추론 엔진을 갈아끼워도 워크포스 전체는 그대로 유지됩니다.
+**Hephaestus는 어떤 모델에도 묶이지 않는 독립 커널입니다.** 에이전트 프레임워크도, API 래퍼도 아닙니다. 로컬 우선 에이전트 운영체제로서, 어떤 LLM 런타임에서든 이식 가능한 에이전트 프로세스를 컴파일·스케줄링·관리하는 통합 실행 기반입니다. 밑단의 추론 엔진을 갈아끼워도 워크포스 전체는 그대로 유지됩니다.
 
 Hephaestus는 고전적인 운영체제 개념에 그대로 대응됩니다:
 
 | OS 추상화 | Hephaestus에서의 구현 |
 | :--- | :--- |
-| **커널 / 정책 게이트** | 결정적 라우터 + 보안 게이트. 모든 라우팅 동작은 감사 가능한 영수증을 남기며, 도구 실행 권한은 엄격히 샌드박스되어 호스트 런타임이 강제합니다. |
+| **커널 / 정책 게이트** | 결정적 라우터 + 보안 게이트. 모든 라우팅 동작은 감사 가능한 영수증을 남기며, 도구 실행 권한은 엄격히 샌드박스되어 활성 런타임이 강제합니다. |
 | **프로세스 / 스레드** | 명시적 타입 계약(Routing Card, 안티스코프, 메모리 경계, 검증 심)을 갖춘 패키지로 컴파일되는 독립 에이전트와 멀티 에이전트 팀. |
 | **프로세스 스케줄러** | Network 2.0 라우팅(로컬 우선·품질 게이트·벤치마크 게이트 디스패치)과 Stormbreaker의 병렬 실행 패브릭, 추가 전용(append-only) 실행 저널의 결합. |
 | **메모리 관리(MMU)** | 두 경계로 관리되는 메모리: 로컬 프로젝트 메모리는 머신 안에 격리되고, 영구 승격은 로컬 Memory Curator가 게이트합니다. |
@@ -132,11 +130,10 @@ Hephaestus는 고전적인 운영체제 개념에 그대로 대응됩니다:
 
 ## 전체 설치 방법
 
-### 수동 호스트 어댑터 설치
+### 수동 LLM 어댑터 설치
 
-현재 AI 호스트가 자체 설정을 실행할 수 없을 때만 사용하세요. 공유 Hephaestus
-runner와 외부 호스트 어댑터를 설치하며, Agentlas Terminal이나 Agentlas
-Desktop은 설치하지 않습니다.
+현재 LLM이 자체 설정을 실행할 수 없을 때만 사용하세요. 공유 Hephaestus
+runner와 지원되는 LLM 도구용 명령 어댑터를 설치합니다.
 
 ```bash
 xcode-select --install   # Command line tools (skip if already installed)
@@ -149,7 +146,7 @@ curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts
 ```bash
 hep-global install
 ```
-이 명령은 `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`에 관리용 marker block을 추가합니다. 이후 Codex, Claude Code, Antigravity/Gemini는 네이티브 Agentlas 세션처럼 일반 프롬프트를 처리합니다. 실질 작업의 라우팅 순서는 Hephaestus Network 먼저, Hephaestus Cloud 두 번째, 로컬 에이전트 세 번째, 로컬 호스트 스킬 마지막입니다. Network나 Cloud가 크레딧, 권한, 적합도 문제로 막히면 그 경계를 알리고 다음 fallback으로 내려갑니다. 명령은 여러 번 실행해도 같은 block만 갱신하며, 수정 전 timestamp 백업을 남깁니다.
+이 명령은 `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`에 관리용 marker block을 추가합니다. 이후 Codex, Claude Code, Antigravity/Gemini는 네이티브 Agentlas 세션처럼 일반 프롬프트를 처리합니다. 실질 작업의 라우팅 순서는 Hephaestus Network 먼저, Hephaestus Cloud 두 번째, 로컬 에이전트 세 번째, 로컬 스킬 마지막입니다. Network나 Cloud가 크레딧, 권한, 적합도 문제로 막히면 그 경계를 알리고 다음 fallback으로 내려갑니다. 명령은 여러 번 실행해도 같은 block만 갱신하며, 수정 전 timestamp 백업을 남깁니다.
 
 상태 줄은 라우터 명령이 아니라 최종 작업자를 표시합니다. 한국어 세션에서는
 `사용 에이전트: <agent names>. 이유: <short reason>.`를 쓰고, 마지막
@@ -164,7 +161,7 @@ fallback이 스킬이면 `사용 스킬: <skill names>. 이유: <short reason>.`
 | 명령 | 역할 |
 | --- | --- |
 | `hep-global install` | Codex, Claude Code, Antigravity/Gemini에 관리용 router block을 설치하거나 갱신합니다. |
-| `hep-global status` | 각 호스트 파일에 router block이 설치되어 있는지 확인합니다. |
+| `hep-global status` | 각 런타임 파일에 router block이 설치되어 있는지 확인합니다. |
 | `hep-global remove` | Hephaestus가 관리하는 router block만 제거합니다. 기존 사용자 내용은 유지합니다. |
 | `hep-global install --target codex` | `~/.codex/AGENTS.md`에만 설치합니다. |
 | `hep-global install --target claude` | `~/.claude/CLAUDE.md`에만 설치합니다. |
@@ -209,13 +206,13 @@ codex plugin add hephaestus@agentlas-core-engine
 
 </details>
 
-**그냥 말하세요:** 설치 후 네이티브 Agentlas 인터페이스에서는 평문으로 말하면 태스크가 자동 라우팅됩니다. 외부 호스트 도구에서는 아래에 나열된 명시적 명령을 사용하세요. 어떤 에이전트가 있는지 모를 때는 `/hep-search`부터 시작하세요. Telegram을 연결하려면 Claude Code에서는 `/hep-connect`, Codex에서는 `/prompts:hep-connect`를 사용하세요.
+**그냥 말하세요:** 설치 후 네이티브 Agentlas 인터페이스에서는 평문으로 말하면 태스크가 자동 라우팅됩니다. 외부 LLM 도구에서는 아래에 나열된 명시적 명령을 사용하세요. 어떤 에이전트가 있는지 모를 때는 `/hep-search`부터 시작하세요. Telegram을 연결하려면 Claude Code에서는 `/hep-connect`, Codex에서는 `/prompts:hep-connect`를 사용하세요.
 
 ---
 
 ## 명령 표면
 
-네이티브 Agentlas 환경 안에서 Hephaestus는 명령어 없이 동작합니다. 외부 LLM 호스트는 의도적으로 작게 유지한 가시 명령 집합을 사용합니다. Stormbreaker, 리서치 로드아웃, 설정 테이블 같은 시스템 수준 유틸리티는 컨텍스트에서 자동으로 붙습니다:
+네이티브 Agentlas 환경 안에서 Hephaestus는 명령어 없이 동작합니다. 외부 LLM 도구는 의도적으로 작게 유지한 가시 명령 집합을 사용합니다. Stormbreaker, 리서치 로드아웃, 설정 테이블 같은 시스템 수준 유틸리티는 컨텍스트에서 자동으로 붙습니다:
 
 | 시스템 서브시스템 | 셸 명령 | 예시 |
 | :--- | :--- | :--- |
@@ -230,24 +227,6 @@ codex plugin add hephaestus@agentlas-core-engine
 
 ---
 
-## 데스크톱 셸 — Agentlas Desktop
-
-[Agentlas Desktop](https://agentlas.cloud/desktop)은 이 에이전트 OS의 그래픽 셸입니다 — 동일한 커널, 스케줄러, 거버넌스 서브시스템을 시각적으로 운용합니다. Desktop 0.6.0에는 Hephaestus v1.1.10 엔진이 번들로 고정되어 함께 배포되며, 앱과 커널은 버전이 서로 잠긴 채 하나의 단위로 자동 업데이트됩니다.
-
-| 셸 표면 | 운용 대상 |
-| :--- | :--- |
-| **채팅 워크스페이스** | 어떤 런타임에든 바인딩되는 평문 세션 — Claude Code, Codex, Gemini CLI, Antigravity, BYOK API(DeepSeek, GLM, Kimi), 로컬 Ollama — 라이브 스트리밍, 스티어링 큐, 채팅별 작업 폴더를 지원합니다. |
-| **빌드 메뉴** | UI 뒤에서 돌아가는 Meta-Agent Factory: 인터뷰 게이트 빌드(브리핑 질문 묶음이 네이티브 질문 카드로 렌더링됨) 후 디스크에 실제 패키지 파일을 생성합니다. |
-| **에이전트 라이브러리 & 허브** | 직접 컴파일한 에이전트와 팀, 빌려 온 Hub 전문가들 — Agentlas Hub 패키지 레지스트리를 상대로 설치·버저닝·발행·가격 책정을 수행합니다. |
-| **태스크 포스 & 스웜** | 빌려 온 멀티 에이전트 태스크 포스, 머신 사양 기반 동시성 슬라이더가 달린 병렬 스웜 실행, 장기 작업을 위한 연속 라이브 실행. |
-| **자동화** | 크론/이벤트/파일 감시 트리거를 시각적 그래프 에디터가 딸린 병렬 DAG 워크플로우로 컴파일합니다 — OS 용어로 말하면 스케줄된 에이전트 프로세스입니다. |
-| **메모리 & 진화 패널** | 관리형 메모리 서브시스템의 가시화: 큐레이터 티켓, 승격된 플레이북, 자기 진화 제안, 보안 재스캔. |
-
-데스크톱 셸은 CLI와 동일한 경계를 강제합니다: 내 머신과 내 구독으로 실행하는 BYOC, 라우팅 결정마다 남는 영수증, 로컬 우선 메모리. 다운로드: [agentlas.cloud/desktop](https://agentlas.cloud/desktop).
-
-
----
-
 ## OS 서브시스템
 
 ### Meta-Agent Factory — 프로세스 생성
@@ -257,7 +236,7 @@ codex plugin add hephaestus@agentlas-core-engine
 | :--- | :--- | :--- |
 | **싱글 에이전트** | `10-single-agent-builder` | 로컬화된 스킬, 메모리 계약, 런타임 어댑터를 갖춘 독립 워커. |
 | **멀티 에이전트 팀** | `20-multi-agent-team-builder` | PM Orchestrator, Memory Curator, Policy Gate, QA, 검증 스크립트를 포함하는 계층형 팀. |
-| **워크스페이스 패키저** | `30-agentlas-packager` | 데스크톱 임포트, CLI 실행, GitHub 배포가 가능한 컴파일 번들. |
+| **워크스페이스 패키저** | `30-agentlas-packager` | 런타임 임포트, CLI 실행, GitHub 배포가 가능한 컴파일 번들. |
 
 *Briefing Interview Gate:* 빌더는 **briefing interview gate**([docs/builder-interview-research-gate.md](docs/builder-interview-research-gate.md))로 프로세스를 시작합니다: 렌즈 기반 질문을 수행하고, 모호성 임계값을 평가하고, 1차 출처를 검색하고, work brief를 출력합니다.
 
@@ -269,13 +248,13 @@ codex plugin add hephaestus@agentlas-core-engine
   <img src="assets/hephaestus-network-architecture.svg" alt="Figure 2. Hephaestus Network 2.0 A2A networking architecture">
 </p>
 
-<sub>그림 2. A2A 스케줄링: 호스트 런타임, 로컬 우선 오케스트레이터, 라우팅 카드, 로컬 메모리, Agentlas Hub A2A/MCP 폴백.</sub>
+<sub>그림 2. A2A 스케줄링: LLM 런타임, 로컬 우선 오케스트레이터, 라우팅 카드, 로컬 메모리, Agentlas Hub A2A/MCP 폴백.</sub>
 
 *   **Routing Cards:** 모든 에이전트, 팀, 플러그인은 트리거, 안티트리거, 능력, 리스크 프로필, 메모리 파라미터를 담은 표준화된 카드를 함께 배포합니다. 검증에 실패한 카드는 라우팅에서 제외됩니다.
 *   **로컬 우선 디스패치:** 디스패치는 먼저 로컬에서 해석됩니다(프로젝트 오버라이드 $\rightarrow$ 로컬 카드). Agentlas Hub를 통한 외부 조회는 키워드 수준으로 마스킹되며, 원시 프롬프트는 절대 로컬 환경을 벗어나지 않습니다.
 *   **임시 태스크 포스:** 복합 요청은 Hub/로컬 Task Force 플랜으로 분해되어 Stormbreaker 엔벨로프, 세션 힌트, 온톨로지 경로를 함께 담습니다. 이름이 지목된 전문가들이 동적으로 스케줄되고, 임시 오케스트레이터가 태스크 핸드오프를 관리합니다.
-*   **영수증 기반 실행:** 모든 라우팅 결정은 영수증을 남깁니다. 라우터는 어떤 에이전트나 패키지를 호출할지만 결정하며, 도구 실행 권한은 여전히 엄격히 샌드박스된 채 호스트 런타임이 관리합니다.
-*   **이중 언어 벤치마크:** 자동 라우팅은 top-3 recall $\ge 90\%$와 프라이버시 유출 0건을 요구하는 이중 언어(한국어 + 영어) 벤치마크로 게이트됩니다. 저신뢰도 경로는 호스트 수준의 Router Agent 리랭킹으로 에스컬레이션됩니다.
+*   **영수증 기반 실행:** 모든 라우팅 결정은 영수증을 남깁니다. 라우터는 어떤 에이전트나 패키지를 호출할지만 결정하며, 도구 실행 권한은 여전히 엄격히 샌드박스된 채 활성 런타임이 관리합니다.
+*   **이중 언어 벤치마크:** 자동 라우팅은 top-3 recall $\ge 90\%$와 프라이버시 유출 0건을 요구하는 이중 언어(한국어 + 영어) 벤치마크로 게이트됩니다. 저신뢰도 경로는 런타임 수준의 Router Agent 리랭킹으로 에스컬레이션됩니다.
 
 자세한 내용: [docs/hephaestus-network-2.0.md](docs/hephaestus-network-2.0.md) · 런타임 지원 매트릭스: [docs/runtime-fallback-adapters.md](docs/runtime-fallback-adapters.md)
 
@@ -345,7 +324,7 @@ agentlas-cloud route "run the release check" --caller local/orchestrator .
 *   **로컬 우선 데이터 경계:** 원시 텍스트, 문서, 데이터베이스 파일은 로컬에 남습니다. 외부 트랜잭션은 마스킹되며 옵트인입니다.
 
 ### 프레임워크의 자리
-CrewAI, LangChain, 각 벤더의 에이전트 SDK는 **라이브러리**로 기능합니다 — 단일 프로세스 안에서 커스텀 에이전트 로직을 작성하기에 훌륭합니다. Hephaestus는 **호스트 기반(substrate)**으로 동작합니다: 워크스페이스 런타임 전반에서 에이전트를 명세하고, 패키징하고, 라우팅하고, 실행하고, 감사하고, 마이그레이션합니다. 프레임워크 코드는 Hephaestus 패키지 안에서 실행되며, 커널은 에이전트가 디렉터리 계약과 Routing Card를 준수할 것만을 요구합니다.
+CrewAI, LangChain, 각 벤더의 에이전트 SDK는 **라이브러리**로 기능합니다 — 단일 프로세스 안에서 커스텀 에이전트 로직을 작성하기에 훌륭합니다. Hephaestus는 **런타임 기반(substrate)**으로 동작합니다: 워크스페이스 런타임 전반에서 에이전트를 명세하고, 패키징하고, 라우팅하고, 실행하고, 감사하고, 마이그레이션합니다. 프레임워크 코드는 Hephaestus 패키지 안에서 실행되며, 커널은 에이전트가 디렉터리 계약과 Routing Card를 준수할 것만을 요구합니다.
 
 ---
 
@@ -394,7 +373,7 @@ Hephaestus는 어떤 워크스페이스 런타임이든 파싱·설치·검증·
 
 ## 공개 안전 경계
 
-이 저장소에는 호스팅된 Agentlas 결제/계정 로직, 프로덕션 클라우드 자격 증명, 고객 데이터베이스, 원시 비공개 대화 기록, 데스크톱 키체인 관리자, 비공개 배포 스크립트가 포함되어 있지 **않습니다**.
+이 저장소에는 Agentlas 결제/계정 로직, 프로덕션 클라우드 자격 증명, 고객 데이터베이스, 원시 비공개 대화 기록, 네이티브 키체인 관리자, 비공개 배포 스크립트가 포함되어 있지 **않습니다**.
 
 Hephaestus가 컴파일하는 공개 산출 패키지에는 로컬 절대 경로, API 키, 서비스 계정 키, `.env` 시크릿, 원시 대화 기록, 고객 로그, 비공개 개발자 노트가 들어가서는 안 됩니다.
 

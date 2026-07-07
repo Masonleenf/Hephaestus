@@ -18,7 +18,7 @@
   <a href="LICENSE">
     <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-green">
   </a>
-  <img alt="Hosts" src="https://img.shields.io/badge/hosts-Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Antigravity%20%7C%20Cursor%20%7C%20DeepSeek%20%7C%20GLM%20%7C%20Ollama-black">
+  <img alt="LLMs" src="https://img.shields.io/badge/LLMs-Claude%20Code%20%7C%20Codex%20%7C%20Gemini%20%7C%20Antigravity%20%7C%20Cursor%20%7C%20DeepSeek%20%7C%20GLM%20%7C%20Ollama-black">
 </p>
 
 <p align="center">
@@ -33,24 +33,24 @@
   <a href="README.hi.md">हिन्दी</a>
 </p>
 
-## Paste to Boot
+## Paste to Install
 
-Paste this into the AI host you are using now, such as Claude Code, Codex,
+Paste this into the LLM you are using now, such as Claude Code, Codex,
 Gemini CLI, Antigravity, or Cursor:
 
 ```text
-Set up Hephaestus for this AI host only:
+Install Hephaestus from this GitHub repo:
 https://github.com/agentlas-ai/Hephaestus
 
-Use the latest release and this host's adapter. Do not install Agentlas
-Terminal or Agentlas Desktop; those are separate Agentlas products.
+Register it with the plugin marketplace, install the plugin, and make the
+Hephaestus plugin and commands available from my next session. If global routing
+is supported, turn that on too.
 
-If this host supports global routing, enable it for this host. Then confirm
-which Hephaestus command surface is active here.
+At the end, confirm the active plugin, command surface, and global routing status.
 ```
 
-This boot prompt is for external AI hosts only. Agentlas Terminal and Agentlas
-Desktop install from their own product channels.
+Use this when you are already inside an LLM and want Hephaestus active
+there. For direct shell commands, see the install methods below.
 
 <p align="center">
   <img src="assets/hephaestus-network-mcp-demo.gif" alt="Hephaestus Network 2.0 routing a task live to the right agent over MCP" width="760">
@@ -63,7 +63,7 @@ Desktop install from their own product channels.
 <p align="center">
   <a href="#the-agent-os-era">The Agent OS Era</a>
   ·
-  <a href="#paste-to-boot">Paste to Boot</a>
+  <a href="#paste-to-install">Paste to Install</a>
   ·
   <a href="#all-install-methods">All Install Methods</a>
   ·
@@ -78,8 +78,6 @@ Desktop install from their own product channels.
   <a href="#what-it-builds">System Packaging</a>
   ·
   <a href="#docs-by-goal">Docs Registry</a>
-  ·
-  <a href="#the-desktop-shell--agentlas-desktop">Desktop Shell</a>
 </p>
 
 ---
@@ -92,13 +90,13 @@ This shifts the critical engineering question for teams: **Whose operating syste
 
 If your agents are tightly coupled to a single model provider's proprietary API, your organizational memory, custom tools, and task-specific logic are effectively locked into that vendor's ecosystem.
 
-**Hephaestus is the independent, model-agnostic kernel.** It is not an agent framework or an API wrapper. It is a local-first Agent Operating System—a unified execution substrate that compiles, schedules, and governs portable agent processes across any host runtime. Swap the underlying reasoning engine; preserve the entire workforce.
+**Hephaestus is the independent, model-agnostic kernel.** It is not an agent framework or an API wrapper. It is a local-first Agent Operating System—a unified execution substrate that compiles, schedules, and governs portable agent processes across LLM runtimes. Swap the underlying reasoning engine; preserve the entire workforce.
 
 Hephaestus maps directly to classical operating system concepts:
 
 | OS Abstraction | Implementation in Hephaestus |
 | :--- | :--- |
-| **Kernel / Policy Gate** | Deterministic router + security gates. Every routing action yields an auditable receipt; tool execution permissions are strictly sandboxed and enforced by the host runtime. |
+| **Kernel / Policy Gate** | Deterministic router + security gates. Every routing action yields an auditable receipt; tool execution permissions are strictly sandboxed and enforced by the active runtime. |
 | **Processes / Threads** | Independent agents and multi-agent teams compiled as packages with explicit, typed contracts (Routing Cards, anti-scopes, memory boundaries, and verification shims). |
 | **Process Scheduler** | Network 2.0 routing (local-first, quality-gated, and benchmark-gated dispatch) combined with Stormbreaker's parallel execution fabric and append-only run journals. |
 | **Memory Management (MMU)** | Two-boundary governed memory: local project memory remains isolated on the machine, while durable promotions are gated by a local Memory Curator. |
@@ -132,11 +130,10 @@ Agents generated from vague, single-sentence prompts fail under real-world edge 
 
 ## All Install Methods
 
-### Manual Host Adapter Install
+### Manual LLM Adapter Install
 
-Use this only when your current AI host cannot run setup for you. It installs
-the shared Hephaestus runner and external host adapters; it does not install
-Agentlas Terminal or Agentlas Desktop.
+Use this only when your current LLM cannot run setup for you. It installs the
+shared Hephaestus runner and command adapters for supported LLM tools.
 
 ```bash
 xcode-select --install   # Command line tools (skip if already installed)
@@ -149,7 +146,7 @@ This installs the neutral runner at `~/.agentlas/runtime/current/bin/hephaestus`
 ```bash
 hep-global install
 ```
-This appends a managed marker block to `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, and `~/.gemini/GEMINI.md`. After that, Codex, Claude Code, and Antigravity/Gemini can treat ordinary prompts more like Agentlas-native sessions. For substantial work the router order is: Hephaestus Network first, Hephaestus Cloud second, local agents third, and local host skills last. If Network or Cloud is blocked by credits, entitlement, or a poor match, the host reports that boundary and continues down the fallback order. The command is idempotent and keeps a timestamped backup before editing.
+This appends a managed marker block to `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, and `~/.gemini/GEMINI.md`. After that, Codex, Claude Code, and Antigravity/Gemini can treat ordinary prompts more like Agentlas-native sessions. For substantial work the router order is: Hephaestus Network first, Hephaestus Cloud second, local agents third, and local skills last. If Network or Cloud is blocked by credits, entitlement, or a poor match, the runtime reports that boundary and continues down the fallback order. The command is idempotent and keeps a timestamped backup before editing.
 
 The status line names final workers, not router commands. Korean sessions use
 `사용 에이전트: <agent names>. 이유: <short reason>.` or, for final skill
@@ -162,7 +159,7 @@ Global router command reference:
 | Command | What it does |
 | --- | --- |
 | `hep-global install` | Install or refresh the managed router block for Codex, Claude Code, and Antigravity/Gemini. |
-| `hep-global status` | Show whether each host file has the managed router block. |
+| `hep-global status` | Show whether each runtime file has the managed router block. |
 | `hep-global remove` | Remove only the managed Hephaestus router block. Existing user content stays in place. |
 | `hep-global install --target codex` | Install only `~/.codex/AGENTS.md`. |
 | `hep-global install --target claude` | Install only `~/.claude/CLAUDE.md`. |
@@ -207,13 +204,13 @@ Clone the repo and copy `AGENTS.md`, `agent.md`, `agents/`, `skills/`, `modes/`,
 
 </details>
 
-**Just talk:** After installation, speak in plain language within native Agentlas interfaces to auto-route tasks. In external host tools, use the explicit commands listed below. When you don't know what agents exist, start with `/hep-search`. To connect Telegram, use `/hep-connect` in Claude Code or `/prompts:hep-connect` in Codex.
+**Just talk:** After installation, speak in plain language within native Agentlas interfaces to auto-route tasks. In external LLM tools, use the explicit commands listed below. When you don't know what agents exist, start with `/hep-search`. To connect Telegram, use `/hep-connect` in Claude Code or `/prompts:hep-connect` in Codex.
 
 ---
 
 ## The Command Surface
 
-Inside native Agentlas environments, Hephaestus operates commandless. External LLM hosts utilize a deliberately small visible command set. System-level utilities like Stormbreaker, research loadouts, and configuration tables attach automatically from context:
+Inside native Agentlas environments, Hephaestus operates commandless. External LLM tools use a deliberately small visible command set. System-level utilities like Stormbreaker, research loadouts, and configuration tables attach automatically from context:
 
 | System Subsystem | Shell Command | Example |
 | :--- | :--- | :--- |
@@ -228,24 +225,6 @@ Inside native Agentlas environments, Hephaestus operates commandless. External L
 
 ---
 
-## The Desktop Shell — Agentlas Desktop
-
-[Agentlas Desktop](https://agentlas.cloud/desktop) is the graphical shell for this Agent OS — the same kernel, scheduler, and governance subsystems, operated visually. Desktop 0.6.0 ships with the Hephaestus v1.1.10 engine bundled and pinned; the app and its kernel version-lock together and auto-update as one unit.
-
-| Shell Surface | What it operates |
-| :--- | :--- |
-| **Chat Workspaces** | Plain-language sessions bound to any runtime — Claude Code, Codex, Gemini CLI, Antigravity, BYOK APIs (DeepSeek, GLM, Kimi), or local Ollama — with live streaming, steering queues, and per-chat working folders. |
-| **Build Menu** | The Meta-Agent Factory behind a UI: interview-gated builds (batched briefing questions rendered as native question cards), then real package files on disk. |
-| **Agent Library & Hub** | Your compiled agents, teams, and borrowed Hub specialists — install, version, publish, and price them against the Agentlas Hub package registry. |
-| **Task Forces & Swarm** | Borrowed multi-agent task forces, parallel swarm execution with a machine-spec concurrency slider, and continuous live runs for long-horizon work. |
-| **Automations** | Cron/event/file-watch triggers compiled into parallel DAG workflows with a visual graph editor — scheduled agent processes, in OS terms. |
-| **Memory & Evolution Panels** | The governed-memory subsystem made visible: curator tickets, promoted playbooks, self-evolution proposals, and security re-scans. |
-
-The Desktop shell enforces the same boundaries as the CLI: BYOC execution on your machine and your subscriptions, receipts for routing decisions, and local-first memory. Download: [agentlas.cloud/desktop](https://agentlas.cloud/desktop).
-
-
----
-
 ## The OS Subsystems
 
 ### Meta-Agent Factory — Process Creation
@@ -255,7 +234,7 @@ A unified compilation factory using three builders. Every generated package regi
 | :--- | :--- | :--- |
 | **Single-Agent** | `10-single-agent-builder` | Standalone worker with localized skills, memory contracts, and runtime adapters. |
 | **Multi-Agent Team** | `20-multi-agent-team-builder` | Hierarchical team containing a PM Orchestrator, Memory Curator, Policy Gate, QA, and validation scripts. |
-| **Workspace Packager** | `30-agentlas-packager` | Compiled bundle ready for desktop import, CLI execution, or GitHub distribution. |
+| **Workspace Packager** | `30-agentlas-packager` | Compiled bundle ready for runtime import, CLI execution, or GitHub distribution. |
 
 *Briefing Interview Gate:* Builders initiate the process using the **briefing interview gate** ([docs/builder-interview-research-gate.md](docs/builder-interview-research-gate.md)): conducting lens-driven questions, evaluating the ambiguity threshold, searching primary sources, and outputting the work brief.
 
@@ -267,13 +246,13 @@ A unified compilation factory using three builders. Every generated package regi
   <img src="assets/hephaestus-network-architecture.svg" alt="Figure 2. Hephaestus Network 2.0 A2A networking architecture">
 </p>
 
-<sub>Figure 2. A2A scheduling: host runtimes, local-first orchestrator, routing cards, local memory, and the Agentlas Hub A2A/MCP fallback.</sub>
+<sub>Figure 2. A2A scheduling: LLM runtimes, local-first orchestrator, routing cards, local memory, and the Agentlas Hub A2A/MCP fallback.</sub>
 
 *   **Routing Cards:** Every agent, team, and plugin ships a standardized card containing triggers, anti-triggers, capabilities, risk profiles, and memory parameters. Cards failing verification are excluded from routing.
 *   **Local-First Dispatch:** Dispatch is resolved locally first (project overrides $\rightarrow$ local cards). Outer lookups via the Agentlas Hub are redacted to keywords; your raw prompts never leave your local environment.
 *   **Temporary Task Forces:** Composite requests decompose into Hub/local Task Force plans, packing Stormbreaker envelopes, session hints, and ontology pathways. Named specialists are scheduled dynamically, and a temporary orchestrator manages task handoffs.
-*   **Receipt-Driven Execution:** Every routing decision writes a receipt. The router determines only which agent or package to invoke; tool execution permissions remain strictly sandboxed and managed by the host runtime.
-*   **Bilingual Benchmarking:** Auto-routing is gated by a bilingual (Korean + English) benchmark requiring top-3 recall $\ge 90\%$ and zero privacy leaks. Low-confidence paths escalate to host-level Router Agent re-ranking.
+*   **Receipt-Driven Execution:** Every routing decision writes a receipt. The router determines only which agent or package to invoke; tool execution permissions remain strictly sandboxed and managed by the active runtime.
+*   **Bilingual Benchmarking:** Auto-routing is gated by a bilingual (Korean + English) benchmark requiring top-3 recall $\ge 90\%$ and zero privacy leaks. Low-confidence paths escalate to runtime-level Router Agent re-ranking.
 
 Details: [docs/hephaestus-network-2.0.md](docs/hephaestus-network-2.0.md) · Runtime support matrix: [docs/runtime-fallback-adapters.md](docs/runtime-fallback-adapters.md)
 
@@ -343,7 +322,7 @@ Enterprises do not need another way to write isolated Python agents. They need t
 *   **Local-First Data Boundary:** Raw text, documents, and database files remain local. External transactions are redacted and opt-in.
 
 ### Where Frameworks Fit
-CrewAI, LangChain, and vendor agent SDKs function as **libraries**—excellent for writing custom agent logic inside a single process. Hephaestus operates as the **host substrate**: it specifies, packages, routes, runs, audits, and migrates agents across workspace runtimes. Framework code runs inside Hephaestus packages; the kernel only requires that agents honor their directory contracts and Routing Cards.
+CrewAI, LangChain, and vendor agent SDKs function as **libraries**—excellent for writing custom agent logic inside a single process. Hephaestus operates as the **runtime substrate**: it specifies, packages, routes, runs, audits, and migrates agents across workspace runtimes. Framework code runs inside Hephaestus packages; the kernel only requires that agents honor their directory contracts and Routing Cards.
 
 ---
 
@@ -392,7 +371,7 @@ Hephaestus packages agents into a standard directory layout that any workspace r
 
 ## Public Safety Boundary
 
-This repository does **not** include hosted Agentlas billing/account logic, production cloud credentials, customer databases, raw private transcripts, desktop keychain managers, or private deployment scripts.
+This repository does **not** include Agentlas billing/account logic, production cloud credentials, customer databases, raw private transcripts, native keychain managers, or private deployment scripts.
 
 Public output packages compiled by Hephaestus must exclude local absolute paths, API keys, service-account keys, `.env` secrets, raw transcripts, customer logs, or private developer notes.
 
