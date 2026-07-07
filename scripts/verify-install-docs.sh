@@ -98,6 +98,7 @@ done
 rg -q 'Codex does not accept `/plugin marketplace add` inside the app' README.md || fail "README.md does not warn about Codex /plugin"
 rg -q 'Codex 앱 안에서는 `/plugin marketplace add`가 동작하지 않습니다' README.ko.md || fail "README.ko.md does not warn about Codex /plugin"
 rg -q '/plugins' README.md README.ko.md codex/README.md assets/install-codex-chat.svg assets/install-codex-cli.svg || fail "Codex /plugins browser command missing"
+rg -q -- '--target antigravity' README.md README.ko.md antigravity/README.md || fail "Antigravity global router target docs missing"
 rg -q 'xcode-select --install' README.md README.ko.md claude/README.md codex/README.md scripts/preflight-macos.sh || fail "macOS xcode-select preflight missing"
 rg -q 'git --version' README.md README.ko.md claude/README.md codex/README.md scripts/preflight-macos.sh || fail "git verification missing"
 
@@ -119,6 +120,8 @@ assert claude["version"] == expected_version, claude["version"]
 assert "skills" not in claude, claude.get("skills")
 assert manifest["package"] == "hephaestus", manifest["package"]
 
+assert manifest["entrypoints"]["hephaestusCli"].endswith("bin/hephaestus")
+assert manifest["entrypoints"]["hephaestusGlobalCli"].endswith("bin/hep-global")
 assert manifest["entrypoints"]["claudeHephaestusBuildCommand"].endswith("hep-build.md")
 assert manifest["entrypoints"]["claudeHephaestusNetworkCommand"].endswith("hep-network.md")
 assert manifest["entrypoints"]["claudeHephaestusCloudCommand"].endswith("hep-cloud.md")
@@ -170,6 +173,7 @@ for path in \
   bin/hep-call \
   bin/hep-upload \
   bin/hep-storm \
+  bin/hep-global \
   bin/ontology \
   claude/plugins/agentlas-core-engine-meta-agent/bin/hephaestus \
   claude/plugins/agentlas-core-engine-meta-agent/bin/hep-build \
@@ -179,6 +183,7 @@ for path in \
   claude/plugins/agentlas-core-engine-meta-agent/bin/hep-call \
   claude/plugins/agentlas-core-engine-meta-agent/bin/hep-upload \
   claude/plugins/agentlas-core-engine-meta-agent/bin/hep-storm \
+  claude/plugins/agentlas-core-engine-meta-agent/bin/hep-global \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hephaestus \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hep-build \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hep-network \
@@ -187,6 +192,7 @@ for path in \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hep-call \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hep-upload \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hep-storm \
+  codex/plugins/agentlas-core-engine-meta-agent/bin/hep-global \
   scripts/install.sh \
   scripts/install-all-runtimes.sh \
   scripts/preflight-macos.sh \

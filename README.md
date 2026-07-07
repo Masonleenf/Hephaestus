@@ -33,6 +33,14 @@
   <a href="README.hi.md">हिन्दी</a>
 </p>
 
+## Quickstart
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
+```
+
+This installs the neutral runner and registers command adapters for Claude Code, Codex, Gemini CLI, Antigravity, and Cursor. To also install global prompt routing for Codex, Claude Code, and Antigravity/Gemini, run `hep-global install` after the installer or set `HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1` on the install command. Prefer a plugin, a manual copy, or letting your AI install it for you? See [All Install Methods](#all-install-methods).
+
 <p align="center">
   <img src="assets/hephaestus-network-mcp-demo.gif" alt="Hephaestus Network 2.0 routing a task live to the right agent over MCP" width="760">
 </p>
@@ -40,14 +48,6 @@
 <p align="center">
   <sub>Specialists pulled from the hub, assembled into a temporary task force, and routed live over MCP — no per-task agent setup.</sub>
 </p>
-
-## Quickstart
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
-```
-
-This installs the neutral runner and registers command adapters for Claude Code, Codex, Gemini CLI, Antigravity, and Cursor. Prefer a plugin, a manual copy, or letting your AI install it for you? See [All Install Methods](#all-install-methods).
 
 <p align="center">
   <a href="#the-agent-os-era">The Agent OS Era</a>
@@ -134,6 +134,9 @@ retry, and confirm which command surface is active in this tool:
 - External LLM hosts expose the core work commands: build, network, cloud,
   search, call, upload. Claude Code and Codex also expose the Telegram setup
   helper: connect.
+- Optional global router: after the terminal installer, run `hep-global install`
+  if you want Codex, Claude Code, and Antigravity/Gemini to route ordinary
+  prompts through Network, Cloud, local agents, then local skills.
 ```
 
 ### Fresh macOS Check
@@ -147,6 +150,41 @@ git --version            # Confirm git is available
 curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
 ```
 This installs the neutral runner at `~/.agentlas/runtime/current/bin/hephaestus` and registers the command adapters for Claude Code, Codex, Gemini CLI, Antigravity, and Cursor. The installer verifies each runtime surface after registration.
+
+### Optional Global Router
+```bash
+hep-global install
+```
+This appends a managed marker block to `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, and `~/.gemini/GEMINI.md`. After that, Codex, Claude Code, and Antigravity/Gemini can treat ordinary prompts more like Agentlas-native sessions. For substantial work the router order is: Hephaestus Network first, Hephaestus Cloud second, local agents third, and local host skills last. If Network or Cloud is blocked by credits, entitlement, or a poor match, the host reports that boundary and continues down the fallback order. The command is idempotent and keeps a timestamped backup before editing.
+
+The status line names final workers, not router commands. Korean sessions use
+`사용 에이전트: <agent names>. 이유: <short reason>.` or, for final skill
+fallbacks, `사용 스킬: <skill names>. 이유: <short reason>.` English sessions
+use `Agents used: <agent names>. Reason: <short reason>.` or
+`Skills used: <skill names>. Reason: <short reason>.`
+
+Global router command reference:
+
+| Command | What it does |
+| --- | --- |
+| `hep-global install` | Install or refresh the managed router block for Codex, Claude Code, and Antigravity/Gemini. |
+| `hep-global status` | Show whether each host file has the managed router block. |
+| `hep-global remove` | Remove only the managed Hephaestus router block. Existing user content stays in place. |
+| `hep-global install --target codex` | Install only `~/.codex/AGENTS.md`. |
+| `hep-global install --target claude` | Install only `~/.claude/CLAUDE.md`. |
+| `hep-global install --target antigravity` | Install only `~/.gemini/GEMINI.md`, which Antigravity shares with Gemini CLI. |
+| `hep-global install --target codex --target claude --target antigravity` | Explicitly install all supported targets. |
+| `hep-global install --dry-run` | Preview what would change without writing files. |
+| `hep-global install --no-backup` | Edit without writing a timestamped `.bak.*` file. |
+| `hep-global install --home /tmp/test-home` | Test against another home directory. Useful for installer QA. |
+| `hephaestus global install` | Same command through the main Hephaestus runner. |
+| `~/.agentlas/runtime/current/bin/hephaestus global status` | Use the installed runtime directly when shell shims are not on `PATH`. |
+
+Install every runtime and enable the global router in one terminal command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1 bash
+```
 
 ### Per-Runtime Plugin Drivers
 
@@ -167,7 +205,7 @@ claude plugin install hephaestus@agentlas-core-engine
 
 From your OS terminal:
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.6
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.7
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *Note: Codex does not accept `/plugin marketplace add` inside the app — run the two commands above in your OS terminal. The OS-terminal CLI command is singular (`codex plugin`); inside the Codex app, the plugin browser slash command is plural (`/plugins`). After install, `/prompts:hep-build` is the in-app entry.*
@@ -203,7 +241,7 @@ Inside native Agentlas environments, Hephaestus operates commandless. External L
 
 ## The Desktop Shell — Agentlas Desktop
 
-[Agentlas Desktop](https://agentlas.cloud/desktop) is the graphical shell for this Agent OS — the same kernel, scheduler, and governance subsystems, operated visually. Desktop 0.6.0 ships with the Hephaestus v1.1.6 engine bundled and pinned; the app and its kernel version-lock together and auto-update as one unit.
+[Agentlas Desktop](https://agentlas.cloud/desktop) is the graphical shell for this Agent OS — the same kernel, scheduler, and governance subsystems, operated visually. Desktop 0.6.0 ships with the Hephaestus v1.1.7 engine bundled and pinned; the app and its kernel version-lock together and auto-update as one unit.
 
 | Shell Surface | What it operates |
 | :--- | :--- |

@@ -73,6 +73,22 @@ def main(argv: list[str] | None = None) -> int:
     update = sub.add_parser("update", help="Check for or install the latest Hephaestus runtime")
     update.add_argument("--check", action="store_true", help="Only report whether a newer release is available")
 
+    global_router = sub.add_parser("global", help="Install or remove Hephaestus global router prompt blocks")
+    global_sub = global_router.add_subparsers(dest="global_command", required=True)
+    for global_name in ("install", "remove", "status"):
+        global_cmd = global_sub.add_parser(global_name)
+        global_cmd.add_argument("--home", default=None, help="Home directory to modify (default: current user's home)")
+        global_cmd.add_argument(
+            "--target",
+            action="append",
+            choices=["codex", "claude", "antigravity"],
+            default=[],
+            help="Target host prompt file. Repeatable; defaults to codex, claude, and antigravity.",
+        )
+        if global_name in {"install", "remove"}:
+            global_cmd.add_argument("--no-backup", action="store_true", help="Do not write a timestamped backup before editing")
+            global_cmd.add_argument("--dry-run", action="store_true", help="Report what would change without writing files")
+
     auth = sub.add_parser("auth", help="Agentlas account sign-in for local runtimes")
     auth_sub = auth.add_subparsers(dest="auth_command", required=True)
     for auth_name in ("status", "login", "ensure", "logout"):
@@ -479,6 +495,34 @@ def main(argv: list[str] | None = None) -> int:
         return emit(run_doctor())
     if args.command == "update":
         return emit(run_update(check_only=args.check))
+    if args.command == "global":
+        from .global_router import global_router_status, install_global_router, remove_global_router
+
+        home = Path(args.home).expanduser() if args.home else None
+        targets = args.target or None
+        try:
+            if args.global_command == "install":
+                return emit(
+                    install_global_router(
+                        home=home,
+                        targets=targets,
+                        backup=not args.no_backup,
+                        dry_run=args.dry_run,
+                    )
+                )
+            if args.global_command == "remove":
+                return emit(
+                    remove_global_router(
+                        home=home,
+                        targets=targets,
+                        backup=not args.no_backup,
+                        dry_run=args.dry_run,
+                    )
+                )
+            if args.global_command == "status":
+                return emit(global_router_status(home=home, targets=targets))
+        except ValueError as exc:
+            return emit({"action": "global_router", "status": "error", "error": str(exc)}) or 2
     if args.command == "auth":
         from .auth import AgentlasAuthError, auth_status, ensure_access_token, login, logout, normalize_base_url, token_path
 
@@ -1417,7 +1461,7 @@ def run_field_test() -> dict[str, Any]:
             "agentId": "agent_private_instagram",
             "ownerId": "owner",
             "creatorId": "creator",
-            "version": "1.1.6",
+            "version": "1.1.7",
             "manifest": wizard["manifest"],
             "files": [{"path": "AGENTS.md", "content": (agent / "AGENTS.md").read_text(encoding="utf-8")}],
             "memory": {"scope": "private", "summary": "private campaign memory", "deltas": ["weekly cadence"]},

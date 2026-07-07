@@ -162,6 +162,19 @@ host-runtime actions. Generated and packaged repos must include
 `.agentlas/routing-card.json` (see `schemas/routing-card.schema.json`); cards
 below `routing_ready` are excluded from auto routing.
 
+`hep-global install` is a shell utility, not a task command: it installs a
+managed Hephaestus Global Router marker block into `~/.codex/AGENTS.md` and
+`~/.claude/CLAUDE.md`, and `~/.gemini/GEMINI.md` for Antigravity/Gemini. That
+block makes ordinary host prompts follow the intended fallback order: Network,
+then Cloud, then local agents, then local skills. If Network or Cloud is
+blocked by credits, entitlement, or fit, the host should report that boundary
+and continue down the fallback order. Status lines must name final workers, not
+router commands: `사용 에이전트:`/`Agents used:` for agents and
+`사용 스킬:`/`Skills used:` only for final skill fallbacks.
+`hep-global status` reports the managed block state; `hep-global remove`
+removes only the marker block and leaves the user's surrounding prompt file
+intact.
+
 Hephaestus Network chooses the agent, team, plugin, or Hub bundle. Hephaestus
 Stormbreaker governs execution after that route is selected: it requires scope
 locking, issue-contract extraction, failure-memory checks, verifier-first

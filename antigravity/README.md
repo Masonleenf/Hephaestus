@@ -46,3 +46,15 @@ Then reopen Antigravity and type `/hep-build`, `/hep-network`,
 or `/hep-cloud`. Antigravity shares the `~/.gemini/` home with the
 Gemini CLI, so this install also keeps the Gemini extension and commands in
 sync.
+
+Optional global router prompt block:
+
+```bash
+hep-global install --target antigravity
+```
+
+This appends a managed Hephaestus block to `~/.gemini/GEMINI.md`, which
+Antigravity shares with Gemini CLI. After that, ordinary Antigravity prompts use
+the same fallback order as the other global-router hosts: Network first, Cloud
+second, local agents third, and local host skills last. Status lines should name
+the final agents or skills, not `hep-network`.

@@ -2,6 +2,26 @@
 
 ## Unreleased
 
+## v1.1.7 - 2026-07-07
+
+- **Global router prompt installer (`hep-global`).** Added
+  `hephaestus global install|status|remove` plus the short `hep-global`
+  shell shim. The installer writes a managed marker block into
+  `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, and `~/.gemini/GEMINI.md` so
+  ordinary Codex, Claude Code, and Antigravity/Gemini prompts can route through
+  Network, Cloud, local agents, then local skills, while respecting signed-in
+  Hub credit gates and naming final workers instead of router commands in
+  status lines. The block is idempotent, removable, and backed up before edits.
+- **Install docs for global routing.** README, Korean README, and runtime
+  adapter docs now describe the optional `hep-global install` flow and the
+  `HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1` one-touch installer opt-in.
+- **Quickstart install moved above the demo media.** The README and Korean
+  README now put the one-line installer in the first viewport, with the optional
+  global-router opt-in directly beside it.
+- **Antigravity global router support.** `hep-global --target antigravity`
+  installs the same routing priority block into `~/.gemini/GEMINI.md`, matching
+  Antigravity's existing global `/hep-*` workflow install surface.
+
 ## v1.1.6 - 2026-07-07
 
 - **Enterprise upload content-safety gate (`hep-upload`).** Hardened the cloud

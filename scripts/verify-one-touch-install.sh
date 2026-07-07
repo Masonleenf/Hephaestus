@@ -3,7 +3,7 @@ set -euo pipefail
 
 repo="${HEPHAESTUS_REPO:-https://github.com/agentlas-ai/Hephaestus}"
 codex_repo="${HEPHAESTUS_CODEX_REPO:-agentlas-ai/Hephaestus}"
-version="${HEPHAESTUS_VERSION:-v1.1.6}"
+version="${HEPHAESTUS_VERSION:-v1.1.7}"
 keep="${HEPHAESTUS_KEEP_SMOKE_DIR:-0}"
 
 fail() {
@@ -97,7 +97,7 @@ echo
 echo "6/7 First-run Agentlas sign-in surface"
 runtime_runner="$shell_home/.agentlas/runtime/current/bin/hephaestus"
 [[ -x "$runtime_runner" ]] || fail "runtime runner is not executable: $runtime_runner"
-for shell_command in hephaestus hep-build hep-network hep-cloud hep-search hep-call hep-upload hep-storm; do
+for shell_command in hephaestus hep-build hep-network hep-cloud hep-search hep-call hep-upload hep-storm hep-global; do
   [[ -x "$shell_home/.local/bin/$shell_command" ]] || fail "short shell command shim was not installed: $shell_command"
 done
 grep -qx "$version" "$shell_home/.agentlas/runtime/current/RELEASE" || fail "runtime current RELEASE marker is not $version"
@@ -189,6 +189,7 @@ echo "Claude Code: /reload-plugins, then /hep-build, /hep-network, /hep-storm, /
 echo "Codex: /prompts:hep-build, /prompts:hep-network, /prompts:hep-storm, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect"
 echo "Codex plugin browser: /plugins"
 echo "Gemini CLI: /extensions list, /commands list, then /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-call, /hep-upload"
+echo "Global router: hep-global install (optional; edits ~/.codex/AGENTS.md, ~/.claude/CLAUDE.md, and ~/.gemini/GEMINI.md with a marker block)"
 echo
 
 if [[ "$keep" == "1" ]]; then

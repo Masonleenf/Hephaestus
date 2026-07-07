@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0",
   "package": "hephaestus",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "Portable three-agent meta-agent team with a local-first ontology runtime for source archive, GraphRAG, Memory Curator tickets, and Agent Working Memory.",
   "entrypoints": {
     "canonical": "AGENTS.md",
@@ -11,6 +11,7 @@
     "claudeMarketplace": ".claude-plugin/marketplace.json",
     "claudePlugin": "claude/plugins/agentlas-core-engine-meta-agent/.claude-plugin/plugin.json",
     "hephaestusCli": "bin/hephaestus",
+    "hephaestusGlobalCli": "bin/hep-global",
     "claudeCommand": ".claude/commands/meta-agent.md",
     "claudeHephaestusBuildCommand": ".claude/commands/hep-build.md",
     "claudeHephaestusNetworkCommand": ".claude/commands/hep-network.md",

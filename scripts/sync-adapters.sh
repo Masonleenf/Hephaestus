@@ -35,6 +35,7 @@ code_files=(
   "bin/hep-call"
   "bin/hep-upload"
   "bin/hep-storm"
+  "bin/hep-global"
   "bin/hephaestus.cmd"
 )
 

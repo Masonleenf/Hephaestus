@@ -130,6 +130,9 @@ and `--plan-only` is not present. Required visible external surfaces:
   Cloud/Hub candidates, `hep-call` prepares exact named agents, and
   `hep-upload <agent-folder>` asks Cloud-vs-Hub first, and `hep-storm
   "<request>"` runs the force-robust Stormbreaker loop (`stormbreaker run`).
+  `hep-global install|status|remove` is a shell utility that manages the
+  Codex/Claude/Antigravity global prompt router marker block; it is not a
+  visible external work command.
   Native Agentlas Terminal should prefer plain language over exposing these as
   required commands.
 - Generic AGENTS.md / local-model runtimes: see

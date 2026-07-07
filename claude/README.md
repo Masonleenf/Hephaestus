@@ -15,6 +15,39 @@ One-command install or update for Claude, Codex, and Gemini:
 curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
 ```
 
+Optional global router prompt block:
+
+```bash
+hep-global install --target claude
+```
+
+This appends a managed Hephaestus block to `~/.claude/CLAUDE.md`, so ordinary
+Claude Code prompts follow the Hephaestus fallback order: Network first, Cloud
+second, local agents third, and local host skills last. If Network or Cloud is
+blocked by credits, entitlement, or a poor match, Claude Code reports that
+boundary and falls back. Claude Code should announce final workers as `Agents
+used: ...` in English contexts or `사용 에이전트: ...` in Korean contexts, not as
+`hep-network`. Use `hep-global remove --target claude` to remove only that
+managed block.
+
+Claude Code global router commands:
+
+| Command | What it does |
+| --- | --- |
+| `hep-global install --target claude` | Install or refresh only `~/.claude/CLAUDE.md`. |
+| `hep-global status --target claude` | Check whether the Claude Code router block is installed. |
+| `hep-global remove --target claude` | Remove only the managed Claude Code router block. |
+| `hep-global install --target claude --dry-run` | Preview the Claude Code edit without writing files. |
+| `hep-global install --target claude --no-backup` | Edit without writing a timestamped backup. |
+| `hephaestus global install --target claude` | Same command through the main runner. |
+| `~/.agentlas/runtime/current/bin/hephaestus global status --target claude` | Use the installed runtime directly when `hep-global` is not on `PATH`. |
+
+To enable this during one-command install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1 bash
+```
+
 After this surface is installed, `/hep-build`, `/hep-network`, `/hep-cloud`,
 `/hep-search`, `/hep-call`, `/hep-upload`, and `/hep-connect` first run the app-host
 auto-update preflight inside Claude Code when the Bash tool is available. That

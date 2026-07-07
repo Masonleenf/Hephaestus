@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-version="${HEPHAESTUS_REF:-v1.1.6}"
+version="${HEPHAESTUS_REF:-v1.1.7}"
 repo="${HEPHAESTUS_REPO:-agentlas-ai/Hephaestus}"
 github_url="${HEPHAESTUS_GITHUB_URL:-https://github.com/$repo}"
 marketplace_name="${HEPHAESTUS_MARKETPLACE:-agentlas-core-engine}"
@@ -164,9 +164,10 @@ install_runtime_home() {
     "$home_dir/bin/hep-network" \
     "$home_dir/bin/hep-cloud" \
     "$home_dir/bin/hep-search" \
-    "$home_dir/bin/hep-call" \
-    "$home_dir/bin/hep-upload" \
-    "$home_dir/bin/hep-storm" 2>/dev/null || true
+	    "$home_dir/bin/hep-call" \
+	    "$home_dir/bin/hep-upload" \
+	    "$home_dir/bin/hep-storm" \
+	    "$home_dir/bin/hep-global" 2>/dev/null || true
   printf '%s\n' "$version" > "$home_dir/RELEASE"
   write_python3_shim "$home_dir/bin" || true
   if [[ ! -e "$home_dir/bin/Hephaestus" ]]; then
@@ -187,9 +188,9 @@ install_runtime_home() {
 
   local user_bin="$HOME/.local/bin"
   if mkdir -p "$user_bin" 2>/dev/null; then
-    local -a shell_commands=(
-      hephaestus hep-build hep-network hep-cloud hep-search hep-call hep-upload hep-storm
-    )
+	  local -a shell_commands=(
+	    hephaestus hep-build hep-network hep-cloud hep-search hep-call hep-upload hep-storm hep-global
+	  )
     local command
     for command in "${shell_commands[@]}"; do
       rm -f "$user_bin/$command" 2>/dev/null || true
@@ -201,7 +202,7 @@ EOF
     done
     if [[ -x "$user_bin/hephaestus" ]]; then
       case ":$PATH:" in
-        *":$user_bin:"*) log "Installed shell commands: hephaestus, hep-build, hep-network, hep-cloud, hep-search, hep-call, hep-upload, hep-storm" ;;
+	        *":$user_bin:"*) log "Installed shell commands: hephaestus, hep-build, hep-network, hep-cloud, hep-search, hep-call, hep-upload, hep-storm, hep-global" ;;
         *) log "Installed shell commands in $user_bin (add ~/.local/bin to PATH to use them)" ;;
       esac
     fi
@@ -707,9 +708,12 @@ main() {
   install_cursor || { warn "Cursor install failed."; failed=$((failed + 1)); }
   install_opencode || { warn "OpenCode install failed."; failed=$((failed + 1)); }
   install_openclaw || { warn "OpenClaw install failed."; failed=$((failed + 1)); }
-  install_hermes || { warn "Hermes install failed."; failed=$((failed + 1)); }
-  bootstrap_networking || warn "Hephaestus Network init failed; run 'hephaestus network init' manually."
-  prune_legacy_public_surfaces
+	  install_hermes || { warn "Hermes install failed."; failed=$((failed + 1)); }
+	  bootstrap_networking || warn "Hephaestus Network init failed; run 'hephaestus network init' manually."
+	  if [[ "${HEPHAESTUS_INSTALL_GLOBAL_ROUTER:-0}" == "1" ]]; then
+	    "$HOME/.agentlas/runtime/current/bin/hephaestus" global install || warn "Global router prompt install failed; run 'hep-global install' manually."
+	  fi
+	  prune_legacy_public_surfaces
 
   log ""
   log "Installed/updated runtimes: $ok"
@@ -725,9 +729,9 @@ main() {
   log "  Antigravity: reopen the workspace, then /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-call, /hep-upload"
   log "  Cursor:      /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-call, /hep-upload"
   log "  OpenCode:    /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-call, /hep-upload"
-  log "  OpenClaw:    /skill hephaestus-storm <request> or /skill hephaestus-network <request>"
-  log "  Hermes:      hephaestus-storm/hephaestus-network skills (+ MCP, see hermes/README.md)"
-  log "  Shell/debug: hep-build \"<request>\", hep-network \"<request>\", hep-cloud \"<request>\", hep-search \"<request>\", hep-call \"agent-a,agent-b\" \"<context>\", hep-upload <agent-folder>, or hep-storm \"<request>\" --background"
+	  log "  OpenClaw:    /skill hephaestus-storm <request> or /skill hephaestus-network <request>"
+	  log "  Hermes:      hephaestus-storm/hephaestus-network skills (+ MCP, see hermes/README.md)"
+	  log "  Shell/debug: hep-build \"<request>\", hep-network \"<request>\", hep-cloud \"<request>\", hep-search \"<request>\", hep-call \"agent-a,agent-b\" \"<context>\", hep-upload <agent-folder>, hep-global install, or hep-storm \"<request>\" --background"
   log "  Ollama/Gemma/DeepSeek local models: docs/local-models.md (MCP: hephaestus mcp serve)"
   log ""
   log "agentlas Hub MCP (agentlas.search, marketplace.*, agentlas.teams.*) was registered too."

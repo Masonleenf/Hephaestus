@@ -38,6 +38,38 @@ One-command install or update for every supported runtime:
 curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
 ```
 
+Optional global router prompt block:
+
+```bash
+hep-global install --target codex
+```
+
+This appends a managed Hephaestus block to `~/.codex/AGENTS.md`, so ordinary
+Codex prompts follow the Hephaestus fallback order: Network first, Cloud second,
+local agents third, and local host skills last. If Network or Cloud is blocked
+by credits, entitlement, or a poor match, Codex reports that boundary and falls
+back. Codex should announce final workers as `Agents used: ...` in English
+contexts or `사용 에이전트: ...` in Korean contexts, not as `hep-network`. Use
+`hep-global remove --target codex` to remove only that managed block.
+
+Codex global router commands:
+
+| Command | What it does |
+| --- | --- |
+| `hep-global install --target codex` | Install or refresh only `~/.codex/AGENTS.md`. |
+| `hep-global status --target codex` | Check whether the Codex router block is installed. |
+| `hep-global remove --target codex` | Remove only the managed Codex router block. |
+| `hep-global install --target codex --dry-run` | Preview the Codex edit without writing files. |
+| `hep-global install --target codex --no-backup` | Edit without writing a timestamped backup. |
+| `hephaestus global install --target codex` | Same command through the main runner. |
+| `~/.agentlas/runtime/current/bin/hephaestus global status --target codex` | Use the installed runtime directly when `hep-global` is not on `PATH`. |
+
+To enable this during one-command install:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1 bash
+```
+
 Inside the Codex app, `/prompts:hep-build`, `/prompts:hep-network`,
 `/prompts:hep-cloud`, `/prompts:hep-search`, `/prompts:hep-call`,
 `/prompts:hep-upload`, and `/prompts:hep-connect` first run the app-host auto-update preflight when Codex
@@ -50,7 +82,7 @@ from the plugin manager.
 Codex-only manual install:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.6
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.7
 codex plugin add hephaestus@agentlas-core-engine
 mkdir -p ~/.codex/prompts
 cp codex/prompts/hep-build.md codex/prompts/hep-network.md codex/prompts/hep-cloud.md codex/prompts/hep-search.md codex/prompts/hep-call.md codex/prompts/hep-upload.md codex/prompts/hep-connect.md ~/.codex/prompts/

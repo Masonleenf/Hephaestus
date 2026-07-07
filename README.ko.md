@@ -33,6 +33,14 @@
   <a href="README.hi.md">हिन्दी</a>
 </p>
 
+## 빠른 시작
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
+```
+
+이 명령은 중립 러너를 설치하고 Claude Code, Codex, Gemini CLI, Antigravity, Cursor용 명령 어댑터를 등록합니다. Codex, Claude Code, Antigravity/Gemini 전역 프롬프트 라우팅까지 켜려면 설치 뒤 `hep-global install`을 실행하거나 설치 명령에 `HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1`을 붙이세요. 플러그인, 수동 복사, 또는 AI에게 설치를 맡기고 싶다면 [전체 설치 방법](#전체-설치-방법)을 참고하세요.
+
 <p align="center">
   <img src="assets/hephaestus-network-mcp-demo.gif" alt="MCP를 통해 태스크를 실시간으로 올바른 에이전트에 라우팅하는 Hephaestus Network 2.0" width="760">
 </p>
@@ -40,14 +48,6 @@
 <p align="center">
   <sub>허브에서 불러온 전문 에이전트들이 임시 태스크포스로 조립되어 MCP로 실시간 라우팅됩니다 — 태스크마다 에이전트를 세팅할 필요가 없습니다.</sub>
 </p>
-
-## 빠른 시작
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
-```
-
-이 명령은 중립 러너를 설치하고 Claude Code, Codex, Gemini CLI, Antigravity, Cursor용 명령 어댑터를 등록합니다. 플러그인, 수동 복사, 또는 AI에게 설치를 맡기고 싶다면 [전체 설치 방법](#전체-설치-방법)을 참고하세요.
 
 <p align="center">
   <a href="#에이전트-os-시대">에이전트 OS 시대</a>
@@ -134,6 +134,9 @@ retry, and confirm which command surface is active in this tool:
 - 외부 LLM 호스트는 핵심 작업 명령을 노출합니다: build, network, cloud,
   search, call, upload. Claude Code와 Codex에는 Telegram 설정 helper인
   connect도 함께 노출됩니다.
+- 선택형 전역 라우터: 터미널 설치 후 일반 프롬프트에서도 Codex와 Claude
+  Code, Antigravity/Gemini가 Network, Cloud, 로컬 에이전트, 로컬 스킬
+  순서로 라우팅하게 하려면 `hep-global install`을 실행하세요.
 ```
 
 ### 새 macOS 점검
@@ -147,6 +150,43 @@ git --version            # Confirm git is available
 curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | bash
 ```
 이 명령은 중립 러너를 `~/.agentlas/runtime/current/bin/hephaestus`에 설치하고, Claude Code, Codex, Gemini CLI, Antigravity, Cursor용 명령 어댑터를 등록합니다. 설치기는 등록이 끝난 뒤 각 런타임 표면을 검증합니다.
+
+### 선택형 전역 라우터
+```bash
+hep-global install
+```
+이 명령은 `~/.codex/AGENTS.md`, `~/.claude/CLAUDE.md`, `~/.gemini/GEMINI.md`에 관리용 marker block을 추가합니다. 이후 Codex, Claude Code, Antigravity/Gemini는 네이티브 Agentlas 세션처럼 일반 프롬프트를 처리합니다. 실질 작업의 라우팅 순서는 Hephaestus Network 먼저, Hephaestus Cloud 두 번째, 로컬 에이전트 세 번째, 로컬 호스트 스킬 마지막입니다. Network나 Cloud가 크레딧, 권한, 적합도 문제로 막히면 그 경계를 알리고 다음 fallback으로 내려갑니다. 명령은 여러 번 실행해도 같은 block만 갱신하며, 수정 전 timestamp 백업을 남깁니다.
+
+상태 줄은 라우터 명령이 아니라 최종 작업자를 표시합니다. 한국어 세션에서는
+`사용 에이전트: <agent names>. 이유: <short reason>.`를 쓰고, 마지막
+fallback이 스킬이면 `사용 스킬: <skill names>. 이유: <short reason>.`를
+씁니다. 영어 세션에서는
+`Agents used: <agent names>. Reason: <short reason>.` 또는
+`Skills used: <skill names>. Reason: <short reason>.`를
+씁니다.
+
+전역 라우터 명령 레퍼런스:
+
+| 명령 | 역할 |
+| --- | --- |
+| `hep-global install` | Codex, Claude Code, Antigravity/Gemini에 관리용 router block을 설치하거나 갱신합니다. |
+| `hep-global status` | 각 호스트 파일에 router block이 설치되어 있는지 확인합니다. |
+| `hep-global remove` | Hephaestus가 관리하는 router block만 제거합니다. 기존 사용자 내용은 유지합니다. |
+| `hep-global install --target codex` | `~/.codex/AGENTS.md`에만 설치합니다. |
+| `hep-global install --target claude` | `~/.claude/CLAUDE.md`에만 설치합니다. |
+| `hep-global install --target antigravity` | Antigravity가 Gemini CLI와 공유하는 `~/.gemini/GEMINI.md`에만 설치합니다. |
+| `hep-global install --target codex --target claude --target antigravity` | 지원되는 모든 타깃을 명시적으로 설치합니다. |
+| `hep-global install --dry-run` | 파일을 쓰지 않고 변경 예정 내용만 확인합니다. |
+| `hep-global install --no-backup` | timestamp `.bak.*` 백업 없이 수정합니다. |
+| `hep-global install --home /tmp/test-home` | 다른 home 디렉터리를 대상으로 테스트합니다. 설치기 QA에 유용합니다. |
+| `hephaestus global install` | 메인 Hephaestus runner를 통한 동일 명령입니다. |
+| `~/.agentlas/runtime/current/bin/hephaestus global status` | shell shim이 `PATH`에 없을 때 설치된 runtime을 직접 호출합니다. |
+
+모든 런타임 설치와 전역 라우터 활성화를 한 줄로 실행하려면:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts/install-all-runtimes.sh | HEPHAESTUS_INSTALL_GLOBAL_ROUTER=1 bash
+```
 
 ### 런타임별 플러그인 드라이버
 
@@ -167,7 +207,7 @@ claude plugin install hephaestus@agentlas-core-engine
 
 OS 터미널에서:
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.6
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.7
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *참고: Codex 앱 안에서는 `/plugin marketplace add`가 동작하지 않습니다 — 위 두 명령을 OS 터미널에서 실행하세요. OS 터미널 CLI 명령은 단수형(`codex plugin`)이고, Codex 앱 안의 플러그인 브라우저 슬래시 명령은 복수형(`/plugins`)입니다. 설치 후에는 `/prompts:hep-build`가 앱 내 진입점입니다.*
@@ -203,7 +243,7 @@ codex plugin add hephaestus@agentlas-core-engine
 
 ## 데스크톱 셸 — Agentlas Desktop
 
-[Agentlas Desktop](https://agentlas.cloud/desktop)은 이 에이전트 OS의 그래픽 셸입니다 — 동일한 커널, 스케줄러, 거버넌스 서브시스템을 시각적으로 운용합니다. Desktop 0.6.0에는 Hephaestus v1.1.6 엔진이 번들로 고정되어 함께 배포되며, 앱과 커널은 버전이 서로 잠긴 채 하나의 단위로 자동 업데이트됩니다.
+[Agentlas Desktop](https://agentlas.cloud/desktop)은 이 에이전트 OS의 그래픽 셸입니다 — 동일한 커널, 스케줄러, 거버넌스 서브시스템을 시각적으로 운용합니다. Desktop 0.6.0에는 Hephaestus v1.1.7 엔진이 번들로 고정되어 함께 배포되며, 앱과 커널은 버전이 서로 잠긴 채 하나의 단위로 자동 업데이트됩니다.
 
 | 셸 표면 | 운용 대상 |
 | :--- | :--- |
