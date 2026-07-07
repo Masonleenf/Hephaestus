@@ -70,8 +70,12 @@ class AgentBrowserCliAdapter:
                 ),
             )
 
+        browser_args = list(getattr(request, "browser_args", []) or [])
+        keep_open = bool(getattr(request, "browser_keep_open", False))
+        base = binary + browser_args
+
         try:
-            opened = self._run(binary + ["open", source_hint])
+            opened = self._run(base + ["open", source_hint])
             if opened.returncode != 0:
                 return None, ResearchAttempt(
                     self.module_id,
@@ -80,7 +84,7 @@ class AgentBrowserCliAdapter:
                     source_hint,
                     weight=self.weight,
                 )
-            snapshot = self._run(binary + ["snapshot", "-i"])
+            snapshot = self._run(base + ["snapshot", "-i"])
             if snapshot.returncode != 0:
                 return None, ResearchAttempt(
                     self.module_id,
@@ -100,11 +104,12 @@ class AgentBrowserCliAdapter:
                 weight=self.weight,
             )
         finally:
-            try:
-                if binary:
-                    self._run(binary + ["close"], timeout=10)
-            except Exception:
-                pass
+            if not keep_open:
+                try:
+                    if binary:
+                        self._run(base + ["close"], timeout=10)
+                except Exception:
+                    pass
 
         text = (snapshot.stdout or "").strip()
         if not text:
@@ -119,7 +124,7 @@ class AgentBrowserCliAdapter:
             extracted_at=utc_now(),
             freshness=request.freshness,
             confidence="usable",
-            limits=["browser_snapshot"],
+            limits=_read_limits(browser_args, keep_open),
             citations=[{"label": title, "url": source_hint}],
         )
         return result, ResearchAttempt(self.module_id, "ok", "snapshot", source_hint, weight=self.weight)
@@ -218,6 +223,128 @@ class AgentBrowserCliAdapter:
             browser_args=list(browser_args or []),
         )
 
+    def run_actions(
+        self,
+        source_hint: str,
+        actions: list[dict[str, str]],
+        *,
+        browser_args: list[str] | None = None,
+        keep_open: bool = False,
+        wait_ms: int = 0,
+    ) -> dict[str, Any]:
+        """Run explicit browser primitives without requiring an LLM provider."""
+
+        safe, reason = classify_url(source_hint)
+        if not safe:
+            return {
+                "status": "blocked",
+                "reason": f"ssrf_blocked:{reason}",
+                "url": source_hint,
+                "module": self.module_id,
+                "steps": [],
+            }
+        if not actions:
+            return {
+                "status": "needs_action",
+                "reason": "browser_action_required",
+                "url": source_hint,
+                "module": self.module_id,
+                "steps": [],
+            }
+
+        binary = self._find_binary()
+        if not binary:
+            return {
+                "status": "module_unavailable",
+                "reason": "agent-browser binary not found",
+                "url": source_hint,
+                "module": self.module_id,
+                "steps": [],
+            }
+
+        base = binary + list(browser_args or [])
+        steps: list[dict[str, Any]] = []
+        snapshot_text = ""
+        status = "ok"
+        reason = ""
+        try:
+            opened = self._run_step(steps, "open", base + ["open", source_hint])
+            if opened.returncode != 0:
+                return _automation_payload(
+                    status="error",
+                    reason=_stderr_reason(opened.stderr),
+                    url=source_hint,
+                    module=self.module_id,
+                    steps=steps,
+                    browser_args=list(browser_args or []),
+                    keep_open=keep_open,
+                )
+
+            if _actions_need_ref_snapshot(actions):
+                preflight = self._run_step(steps, "snapshot:preflight", base + ["snapshot", "-i"])
+                if preflight.returncode != 0:
+                    status = "error"
+                    reason = _stderr_reason(preflight.stderr)
+
+            for index, action in enumerate(actions):
+                if status != "ok":
+                    break
+                action_type = str(action.get("type") or "").strip().lower()
+                target = str(action.get("target") or "").strip()
+                if action_type != "click" or not target:
+                    if action_type == "find_text_click" and target:
+                        clicked = self._run_step(
+                            steps,
+                            f"find_text_click:{index + 1}",
+                            base + ["find", "text", target, "click"],
+                        )
+                    else:
+                        status = "error"
+                        reason = f"unsupported_action:{action_type or 'empty'}"
+                        break
+                else:
+                    clicked = self._run_step(steps, f"click:{index + 1}", base + ["click", target])
+                if clicked.returncode != 0:
+                    status = "error"
+                    reason = _stderr_reason(clicked.stderr)
+                    break
+
+            if wait_ms > 0 and status == "ok":
+                waited = self._run_step(steps, "wait", base + ["wait", str(wait_ms)])
+                if waited.returncode != 0:
+                    status = "error"
+                    reason = _stderr_reason(waited.stderr)
+
+            snapshot = self._run_step(steps, "snapshot", base + ["snapshot", "-i"])
+            snapshot_text = _bounded_text(snapshot.stdout or "")
+            if snapshot.returncode != 0 and status == "ok":
+                status = "error"
+                reason = _stderr_reason(snapshot.stderr)
+        except subprocess.TimeoutExpired:
+            status = "error"
+            reason = "timeout"
+        except OSError as exc:
+            status = "error"
+            reason = _exception_reason(exc)
+        finally:
+            if not keep_open:
+                try:
+                    self._run_step(steps, "close", base + ["close"], timeout=10)
+                except Exception:
+                    pass
+
+        return _automation_payload(
+            status=status,
+            reason=reason,
+            url=source_hint,
+            module=self.module_id,
+            steps=steps,
+            instruction=" ".join(f"{item.get('type')}:{item.get('target')}" for item in actions),
+            snapshot_text=snapshot_text,
+            keep_open=keep_open,
+            browser_args=list(browser_args or []),
+        )
+
     def _find_binary(self) -> list[str] | None:
         override = os.environ.get("AGENTLAS_AGENT_BROWSER_BIN")
         if override:
@@ -309,6 +436,27 @@ def _automation_payload(
             "commands": ["open", "chat", "snapshot", "close" if not keep_open else "keep-open"],
         },
     }
+
+
+def _read_limits(browser_args: list[str], keep_open: bool) -> list[str]:
+    limits = ["browser_snapshot"]
+    if "--cdp" in browser_args:
+        limits.append("browser_cdp_attach")
+    if "--profile" in browser_args:
+        limits.append("browser_persistent_profile")
+    if "--auto-connect" in browser_args:
+        limits.append("browser_auto_connect")
+    if keep_open:
+        limits.append("browser_left_open")
+    return limits
+
+
+def _actions_need_ref_snapshot(actions: list[dict[str, str]]) -> bool:
+    for action in actions:
+        target = str(action.get("target") or "").strip()
+        if target.startswith("@") or re.fullmatch(r"e\d+", target):
+            return True
+    return False
 
 
 def _argv_summary(argv: list[str]) -> list[str]:

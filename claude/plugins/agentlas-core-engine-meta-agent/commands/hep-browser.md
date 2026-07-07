@@ -17,6 +17,12 @@ Behavior:
 - `/hep-browser <url> "<instruction>"` or `/hep-browser <url> --act "<instruction>"`
   performs browser automation through `browser.agent_cli`, then captures a
   snapshot.
+- If the Agentlas Browser CDP port is already live, the command attaches to it
+  by default so logged-in Desktop/browser state is reused.
+- `/hep-browser <url> --click @e1` clicks an explicit snapshot ref.
+- `/hep-browser <url> --click-text "Compose"` clicks visible text without an
+  LLM provider.
+- Add `--wait-ms 2000` when a dynamic app opens dialogs after a short delay.
 - Add `--read` to force snapshot-only mode when extra text is context rather
   than an action.
 - Pass `--cdp`, `--profile`, `--auto-connect`, or `--headed` only when the user
@@ -52,6 +58,7 @@ done
 /hep-browser https://example.com
 /hep-browser https://example.com "click the Docs link and report what changed"
 /hep-browser https://example.com --act "open the pricing section" --cdp 9222 --keep-open
+/hep-browser https://mail.google.com/mail/u/0/#inbox --click-text "Compose" --wait-ms 2000 --keep-open
 /hep-browser https://example.com "summarize this page" --read
 /hep-browser login page render check
 /hep-browser --setup

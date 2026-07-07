@@ -5,6 +5,7 @@ import json
 import os
 import platform
 import shutil
+import socket
 import subprocess
 import sys
 from pathlib import Path
@@ -346,6 +347,9 @@ def main(argv: list[str] | None = None) -> int:
     hep_browser.add_argument("--auto-connect", action="store_true", help="Ask agent-browser to auto-connect to a running browser")
     hep_browser.add_argument("--headed", action="store_true", help="Run agent-browser headed when it launches a browser")
     hep_browser.add_argument("--keep-open", action="store_true", help="Keep the agent-browser session open after automation")
+    hep_browser.add_argument("--wait-ms", type=int, default=0, help="Wait after primitive actions before the final snapshot")
+    hep_browser.add_argument("--click", action="append", default=[], help="Click an explicit agent-browser selector/ref, for example @e1")
+    hep_browser.add_argument("--click-text", action="append", default=[], help="Find visible text and click it without requiring an LLM")
     hep_browser_mode = hep_browser.add_mutually_exclusive_group()
     hep_browser_mode.add_argument("--setup", action="store_true", help="Arm the approved npx agent-browser hardpoint recipe")
     hep_browser_mode.add_argument("--check", action="store_true", help="Run one configured Agentlas browser hardpoint check")
@@ -1253,6 +1257,43 @@ def _run_hep_browser(args: argparse.Namespace) -> int:
             }
         ) or 2
 
+    primitive_actions = _agent_browser_primitive_actions_from_hep_browser(args)
+    if urls and primitive_actions:
+        adapter = AgentBrowserCliAdapter(home=args.home)
+        runs = [
+            adapter.run_actions(
+                url,
+                primitive_actions,
+                browser_args=_agent_browser_args_from_hep_browser(args),
+                keep_open=bool(args.keep_open),
+                wait_ms=max(0, int(getattr(args, "wait_ms", 0) or 0)),
+            )
+            for url in urls
+        ]
+        status = "ok" if all(item.get("status") == "ok" for item in runs) else "error"
+        return emit(
+            {
+                "schema": "agentlas.research.hep_browser.v0",
+                "status": status,
+                "mode": "primitive",
+                "surface": {
+                    "command": "hep-browser",
+                    "default_browser_module": AGENTLAS_BROWSER_MODULE,
+                    "agentlas_browser_first": True,
+                    "automation": True,
+                    "llm_required": False,
+                },
+                "request": {
+                    "urls": urls,
+                    "actions": primitive_actions,
+                    "browser_args": _agent_browser_args_from_hep_browser(args),
+                    "keep_open": bool(args.keep_open),
+                    "wait_ms": max(0, int(getattr(args, "wait_ms", 0) or 0)),
+                },
+                "runs": runs,
+            }
+        ) or (0 if status == "ok" else 1)
+
     action = " ".join([str(item).strip() for item in getattr(args, "act", []) if str(item).strip()]).strip()
     if urls and not action and query and not args.read:
         action = query
@@ -1301,6 +1342,8 @@ def _run_hep_browser(args: argparse.Namespace) -> int:
             "max_weight": "browser_heavy",
             "max_cost": _max_cost_from_args(args),
             "allowed_modules": [AGENTLAS_BROWSER_MODULE],
+            "browser_args": _agent_browser_args_from_hep_browser(args),
+            "browser_keep_open": bool(args.keep_open),
         }
     else:
         provider_modules = [_research_search_provider_module(provider) for provider in args.provider]
@@ -1338,9 +1381,39 @@ def _agent_browser_args_from_hep_browser(args: argparse.Namespace) -> list[str]:
         browser_args.extend(["--profile", str(args.profile)])
     if getattr(args, "auto_connect", False):
         browser_args.append("--auto-connect")
+    if not any(item in browser_args for item in ("--cdp", "--profile", "--auto-connect")):
+        browser_args.extend(_auto_agent_browser_attach_args())
     if getattr(args, "headed", False):
         browser_args.append("--headed")
     return browser_args
+
+
+def _auto_agent_browser_attach_args() -> list[str]:
+    if str(os.environ.get("HEPHAESTUS_BROWSER_AUTO_CDP", "1")).lower() in {"0", "false", "no", "off"}:
+        return []
+    port = str(os.environ.get("AGENTLAS_CDP_PORT") or "9222")
+    return ["--cdp", port] if _local_tcp_port_ready("127.0.0.1", port) else []
+
+
+def _local_tcp_port_ready(host: str, port: str) -> bool:
+    try:
+        with socket.create_connection((host, int(port)), timeout=0.25):
+            return True
+    except (OSError, ValueError):
+        return False
+
+
+def _agent_browser_primitive_actions_from_hep_browser(args: argparse.Namespace) -> list[dict[str, str]]:
+    actions: list[dict[str, str]] = []
+    for target in getattr(args, "click", []) or []:
+        value = str(target or "").strip()
+        if value:
+            actions.append({"type": "click", "target": value})
+    for target in getattr(args, "click_text", []) or []:
+        value = str(target or "").strip()
+        if value:
+            actions.append({"type": "find_text_click", "target": value})
+    return actions
 
 
 def _split_hep_browser_targets(targets: list[str], explicit_urls: list[str]) -> tuple[list[str], list[str]]:

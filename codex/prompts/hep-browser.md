@@ -20,6 +20,11 @@ Behavior:
 - `/prompts:hep-browser <url> "<instruction>"` or
   `/prompts:hep-browser <url> --act "<instruction>"` performs browser
   automation through `browser.agent_cli`, then captures a snapshot.
+- If the Agentlas Browser CDP port is already live, the command attaches to it
+  by default so logged-in Desktop/browser state is reused.
+- Use `--click @e1` or `--click-text "Compose"` for LLM-free browser
+  primitives after the host has selected a ref/text target.
+- Add `--wait-ms 2000` when a dynamic app opens dialogs after a short delay.
 - Add `--read` to force snapshot-only mode when extra text is context rather
   than an action.
 

@@ -1883,6 +1883,7 @@ def test_research_cli_browser_candidates_can_filter_agent_browser(tmp_path, caps
 
 def test_hep_browser_cli_reads_url_with_agent_browser_first(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+    monkeypatch.setenv("HEPHAESTUS_BROWSER_AUTO_CDP", "0")
 
     def fake_run(self, argv, *, timeout=None):
         if argv[-1] == "close":
@@ -1907,6 +1908,44 @@ def test_hep_browser_cli_reads_url_with_agent_browser_first(tmp_path, monkeypatc
     assert payload["results"][0]["platform"] == "browser"
     assert payload["results"][0]["title"] == "Agentlas Browser Page"
     assert payload["receipt"]["module_chain"] == ["browser.agent_cli"]
+
+
+def test_hep_browser_cli_read_forwards_cdp_and_keep_open(tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+    calls = []
+
+    def fake_run(self, argv, *, timeout=None):
+        calls.append(argv)
+        if "snapshot" in argv:
+            return subprocess.CompletedProcess(argv, 0, '- heading "CDP Page" [ref=e1]', "")
+        assert argv == ["agent-browser", "--cdp", "9222", "open", "https://example.com"]
+        return subprocess.CompletedProcess(argv, 0, "opened", "")
+
+    monkeypatch.setattr(AgentBrowserCliAdapter, "_run", fake_run)
+
+    code = main([
+        "hep-browser",
+        "https://example.com",
+        "--read",
+        "--cdp",
+        "9222",
+        "--keep-open",
+        "--home",
+        str(tmp_path),
+    ])
+
+    assert code == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["schema"] == "agentlas.research.v0"
+    assert payload["request"]["browser_args"] == ["--cdp", "9222"]
+    assert payload["request"]["browser_keep_open"] is True
+    assert payload["results"][0]["title"] == "CDP Page"
+    assert "browser_cdp_attach" in payload["results"][0]["limits"]
+    assert "browser_left_open" in payload["results"][0]["limits"]
+    assert calls == [
+        ["agent-browser", "--cdp", "9222", "open", "https://example.com"],
+        ["agent-browser", "--cdp", "9222", "snapshot", "-i"],
+    ]
 
 
 def test_hep_browser_cli_automates_url_when_instruction_is_present(tmp_path, monkeypatch, capsys):
@@ -1951,6 +1990,92 @@ def test_hep_browser_cli_automates_url_when_instruction_is_present(tmp_path, mon
     assert calls[1] == ["agent-browser", "--cdp", "9222", "-q", "chat", "click the CTA"]
     assert calls[2] == ["agent-browser", "--cdp", "9222", "snapshot", "-i"]
     assert calls[3] == ["agent-browser", "--cdp", "9222", "close"]
+
+
+def test_hep_browser_cli_clicks_explicit_ref_without_llm(tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+    calls = []
+
+    def fake_run(self, argv, *, timeout=None):
+        calls.append(argv)
+        if argv[-1] == "close":
+            return subprocess.CompletedProcess(argv, 0, "", "")
+        if "snapshot" in argv:
+            return subprocess.CompletedProcess(argv, 0, '- dialog "New Message" [ref=e9]', "")
+        if "click" in argv:
+            return subprocess.CompletedProcess(argv, 0, "clicked", "")
+        assert argv == ["agent-browser", "--cdp", "9222", "open", "https://example.com"]
+        return subprocess.CompletedProcess(argv, 0, "opened", "")
+
+    monkeypatch.setattr(AgentBrowserCliAdapter, "_run", fake_run)
+
+    code = main([
+        "hep-browser",
+        "https://example.com",
+        "--click",
+        "@e1",
+        "--cdp",
+        "9222",
+        "--home",
+        str(tmp_path),
+    ])
+
+    assert code == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["schema"] == "agentlas.research.hep_browser.v0"
+    assert payload["status"] == "ok"
+    assert payload["mode"] == "primitive"
+    assert payload["surface"]["llm_required"] is False
+    assert payload["request"]["actions"] == [{"type": "click", "target": "@e1"}]
+    assert payload["runs"][0]["snapshot"] == '- dialog "New Message" [ref=e9]'
+    assert calls == [
+        ["agent-browser", "--cdp", "9222", "open", "https://example.com"],
+        ["agent-browser", "--cdp", "9222", "snapshot", "-i"],
+        ["agent-browser", "--cdp", "9222", "click", "@e1"],
+        ["agent-browser", "--cdp", "9222", "snapshot", "-i"],
+        ["agent-browser", "--cdp", "9222", "close"],
+    ]
+
+
+def test_hep_browser_cli_clicks_visible_text_without_llm(tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+    calls = []
+
+    def fake_run(self, argv, *, timeout=None):
+        calls.append(argv)
+        if argv[-1] == "close":
+            return subprocess.CompletedProcess(argv, 0, "", "")
+        if "snapshot" in argv:
+            return subprocess.CompletedProcess(argv, 0, '- dialog "New Message" [ref=e9]', "")
+        if "find" in argv:
+            return subprocess.CompletedProcess(argv, 0, "clicked", "")
+        assert argv == ["agent-browser", "--cdp", "9222", "open", "https://example.com"]
+        return subprocess.CompletedProcess(argv, 0, "opened", "")
+
+    monkeypatch.setattr(AgentBrowserCliAdapter, "_run", fake_run)
+
+    code = main([
+        "hep-browser",
+        "https://example.com",
+        "--click-text",
+        "Compose",
+        "--cdp",
+        "9222",
+        "--home",
+        str(tmp_path),
+    ])
+
+    assert code == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "ok"
+    assert payload["mode"] == "primitive"
+    assert payload["request"]["actions"] == [{"type": "find_text_click", "target": "Compose"}]
+    assert calls == [
+        ["agent-browser", "--cdp", "9222", "open", "https://example.com"],
+        ["agent-browser", "--cdp", "9222", "find", "text", "Compose", "click"],
+        ["agent-browser", "--cdp", "9222", "snapshot", "-i"],
+        ["agent-browser", "--cdp", "9222", "close"],
+    ]
 
 
 def test_research_browser_candidates_prefers_agent_browser_for_structured_extract(monkeypatch):

@@ -8,6 +8,12 @@
   `hep-browser <url> "click the CTA"` or `--act "<instruction>"`; pass
   `--read` to force the old snapshot-only behavior. CDP/profile flags can be
   forwarded to `agent-browser` for Desktop/browser attach flows.
+- **`hep-browser` Desktop CDP attach and primitive clicks.** When the Agentlas
+  Browser CDP port is already live, `hep-browser` now attaches to it by default
+  instead of silently launching a fresh automation profile. Read and primitive
+  modes both forward CDP/profile flags. `--click` and `--click-text` provide
+  LLM-free browser primitives for host-selected refs and visible text, with
+  `--wait-ms` for dynamic app UI before the final snapshot.
 
 ## v1.1.8 - 2026-07-07
 

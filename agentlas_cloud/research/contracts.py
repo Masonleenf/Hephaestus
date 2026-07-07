@@ -85,6 +85,8 @@ class ResearchRequest:
     privacy_scope: str = "public"
     max_weight: str = ""
     max_cost: dict[str, int] = field(default_factory=lambda: dict(DEFAULT_MAX_COST))
+    browser_args: list[str] = field(default_factory=list)
+    browser_keep_open: bool = False
 
     @classmethod
     def from_value(cls, value: "ResearchRequest | dict[str, Any] | str") -> "ResearchRequest":
@@ -109,6 +111,8 @@ class ResearchRequest:
                 privacy_scope=str(payload.get("privacy_scope") or "public"),
                 max_weight=str(payload.get("max_weight") or ""),
                 max_cost=dict(payload.get("max_cost") or DEFAULT_MAX_COST),
+                browser_args=_string_list(payload.get("browser_args")),
+                browser_keep_open=bool(payload.get("browser_keep_open")),
             )
         raise TypeError(f"unsupported research request value: {type(value).__name__}")
 
@@ -125,6 +129,8 @@ class ResearchRequest:
             self.privacy_scope,
             self.max_weight,
             json.dumps(self.max_cost, sort_keys=True, separators=(",", ":")),
+            "\n".join(self.browser_args),
+            str(self.browser_keep_open),
             "\n".join(sorted(self.source_hints)),
             "\n".join(sorted(self.allowed_modules)),
             "\n".join(sorted(self.forbidden_modules)),
@@ -146,6 +152,8 @@ class ResearchRequest:
             "privacy_scope": self.privacy_scope,
             "max_weight": self.max_weight,
             "max_cost": dict(self.max_cost),
+            "browser_args": list(self.browser_args),
+            "browser_keep_open": self.browser_keep_open,
             "request_hash": self.request_hash,
         }
 
