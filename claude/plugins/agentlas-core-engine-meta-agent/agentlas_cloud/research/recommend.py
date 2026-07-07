@@ -143,14 +143,14 @@ def _recommend(signals: dict[str, bool]) -> dict[str, Any]:
         max_requests = 6
         reasons.append("web_search_with_followup_needed")
 
-    if signals["needs_browser"] and signals["blocked_public_web"]:
+    if signals["needs_browser"]:
         loadout = "browser"
         depth = "deep"
         follow_results = max(follow_results, 2)
         max_requests = max(max_requests, 6)
-        reasons.append("browser_escalation_requested_for_blocked_or_dynamic_page")
-    elif signals["needs_browser"]:
-        reasons.append("browser_candidates_relevant_but_not_mounted_by_default")
+        reasons.append("agentlas_browser_hardpoint_auto_selected")
+        if signals["blocked_public_web"]:
+            reasons.append("browser_escalation_requested_for_blocked_or_dynamic_page")
 
     if signals["prefers_official_sources"]:
         query_variants.extend(["official", "docs", "github"])
@@ -172,6 +172,19 @@ def _recommend(signals: dict[str, bool]) -> dict[str, Any]:
 
 
 def _suggested_command(loadout: str, depth: str, follow_results: int, max_requests: int, variants: list[str]) -> str:
+    if loadout == "browser":
+        parts = [
+            "bin/hep-browser '<query>'",
+            "--depth",
+            depth,
+            "--follow-results",
+            str(follow_results),
+            "--max-requests",
+            str(max_requests),
+        ]
+        for variant in _dedupe(variants):
+            parts.extend(["--variant", variant])
+        return " ".join(parts)
     parts = [
         "bin/hephaestus research gather '<query>'",
         "--loadout",

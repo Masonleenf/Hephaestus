@@ -20,6 +20,7 @@ required_files=(
   ".claude/commands/hep-storm.md"
   ".claude/commands/hep-cloud.md"
   ".claude/commands/hep-search.md"
+  ".claude/commands/hep-browser.md"
   ".claude/commands/hep-call.md"
   ".claude/commands/hep-upload.md"
   ".claude/commands/hep-connect.md"
@@ -28,6 +29,7 @@ required_files=(
   "codex/prompts/hep-storm.md"
   "codex/prompts/hep-cloud.md"
   "codex/prompts/hep-search.md"
+  "codex/prompts/hep-browser.md"
   "codex/prompts/hep-call.md"
   "codex/prompts/hep-upload.md"
   "codex/prompts/hep-connect.md"
@@ -36,6 +38,7 @@ required_files=(
   "gemini/extension/commands/hep-storm.toml"
   "gemini/extension/commands/hep-cloud.toml"
   "gemini/extension/commands/hep-search.toml"
+  "gemini/extension/commands/hep-browser.toml"
   "gemini/extension/commands/hep-call.toml"
   "gemini/extension/commands/hep-upload.toml"
   ".gemini/commands/hep-build.toml"
@@ -43,6 +46,7 @@ required_files=(
   ".gemini/commands/hep-storm.toml"
   ".gemini/commands/hep-cloud.toml"
   ".gemini/commands/hep-search.toml"
+  ".gemini/commands/hep-browser.toml"
   ".gemini/commands/hep-call.toml"
   ".gemini/commands/hep-upload.toml"
   "gemini/extension/gemini-extension.json"
@@ -51,6 +55,7 @@ required_files=(
   "antigravity/workflows/hep-storm.md"
   "antigravity/workflows/hep-cloud.md"
   "antigravity/workflows/hep-search.md"
+  "antigravity/workflows/hep-browser.md"
   "antigravity/workflows/hep-call.md"
   "antigravity/workflows/hep-upload.md"
   ".agents/workflows/hep-build.md"
@@ -58,6 +63,7 @@ required_files=(
   ".agents/workflows/hep-storm.md"
   ".agents/workflows/hep-cloud.md"
   ".agents/workflows/hep-search.md"
+  ".agents/workflows/hep-browser.md"
   ".agents/workflows/hep-call.md"
   ".agents/workflows/hep-upload.md"
   ".agents/workflows/hep-connect.md"
@@ -67,6 +73,7 @@ required_files=(
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-storm.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-cloud.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-search.md"
+  "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-browser.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-call.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-upload.md"
   "claude/plugins/agentlas-core-engine-meta-agent/commands/hep-connect.md"
@@ -86,6 +93,7 @@ required_files=(
   "cursor/plugin/commands/hep-storm.md"
   "cursor/plugin/commands/hep-cloud.md"
   "cursor/plugin/commands/hep-search.md"
+  "cursor/plugin/commands/hep-browser.md"
   "cursor/plugin/commands/hep-call.md"
   "cursor/plugin/commands/hep-upload.md"
   "opencode/commands/hep-build.md"
@@ -93,6 +101,7 @@ required_files=(
   "opencode/commands/hep-storm.md"
   "opencode/commands/hep-cloud.md"
   "opencode/commands/hep-search.md"
+  "opencode/commands/hep-browser.md"
   "opencode/commands/hep-call.md"
   "opencode/commands/hep-upload.md"
   "openclaw/skills/hephaestus-network/SKILL.md"
@@ -105,6 +114,7 @@ required_files=(
   "bin/hep-network"
   "bin/hep-cloud"
   "bin/hep-search"
+  "bin/hep-browser"
   "bin/hep-call"
   "bin/hep-upload"
   "bin/hep-storm"
@@ -161,6 +171,7 @@ for alias_command, adapter in {
     "hep-network": "bin/hep-network",
     "hep-cloud": "bin/hep-cloud",
     "hep-search": "bin/hep-search",
+    "hep-browser": "bin/hep-browser",
     "hep-call": "bin/hep-call",
     "hep-upload": "bin/hep-upload",
     "hep-storm": "bin/hep-storm",
@@ -173,7 +184,7 @@ for alias_command, adapter in {
     if not Path(adapter).exists():
         raise SystemExit(f"{alias_command} adapter file does not exist: {adapter}")
 
-for command_name in ("/hep-search", "/prompts:hep-search", "/hep-call", "/prompts:hep-call", "/hep-upload", "/prompts:hep-upload", "/hep-connect", "/prompts:hep-connect", "hephaestus_search", "hephaestus_call"):
+for command_name in ("/hep-search", "/prompts:hep-search", "/hep-browser", "/prompts:hep-browser", "/hep-call", "/prompts:hep-call", "/hep-upload", "/prompts:hep-upload", "/hep-connect", "/prompts:hep-connect", "hephaestus_search", "hephaestus_call"):
     if not any(item.get("command") == command_name for item in registry.get("commands", [])):
         raise SystemExit(f"missing power-user command registry entry: {command_name}")
 connect_entries = {

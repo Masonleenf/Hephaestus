@@ -26,12 +26,16 @@ def test_global_router_install_status_remove(tmp_path: Path) -> None:
     assert BEGIN in codex.read_text(encoding="utf-8")
     assert "Keep this." in codex.read_text(encoding="utf-8")
     assert "insufficient_credits" in claude.read_text(encoding="utf-8")
-    assert "Hephaestus Network first" in codex.read_text(encoding="utf-8")
+    assert "Agentlas Browser first" in codex.read_text(encoding="utf-8")
+    assert "/prompts:hep-browser" in codex.read_text(encoding="utf-8")
     assert "Local host skills last" in codex.read_text(encoding="utf-8")
     assert "Agents used: <agent names>" in codex.read_text(encoding="utf-8")
     assert "사용 에이전트: <agent names>" in codex.read_text(encoding="utf-8")
-    assert "Antigravity/Gemini" in antigravity.read_text(encoding="utf-8")
-    assert "/hep-network <request>" in antigravity.read_text(encoding="utf-8")
+    antigravity_text = antigravity.read_text(encoding="utf-8")
+    assert "Antigravity/Gemini" in antigravity_text
+    assert "/hep-browser" in antigravity_text
+    assert "<url-or-query>" in antigravity_text
+    assert "/hep-network <request>" in antigravity_text
 
     status = global_router_status(home=tmp_path)
     assert all(item["installed"] for item in status["results"])

@@ -25,7 +25,7 @@
       "runtime": "gemini-cli",
       "command": "/hep-build",
       "adapterPath": "gemini/extension/commands/hep-build.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.7",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.8",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hep-build.toml."
@@ -95,7 +95,7 @@
       "runtime": "gemini-cli",
       "command": "/hep-network",
       "adapterPath": "gemini/extension/commands/hep-network.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.7",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.8",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hep-network.toml."
@@ -185,7 +185,7 @@
       "runtime": "gemini-cli",
       "command": "/hep-storm",
       "adapterPath": "gemini/extension/commands/hep-storm.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.7",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.8",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hep-storm.toml."
@@ -266,7 +266,7 @@
       "runtime": "gemini-cli",
       "command": "/hep-cloud",
       "adapterPath": "gemini/extension/commands/hep-cloud.toml",
-      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.7",
+      "globalInstallPath": "gemini extensions install https://github.com/agentlas-ai/Hephaestus --ref v1.1.8",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command is also installable at ~/.gemini/commands/hep-cloud.toml."
@@ -379,6 +379,15 @@
       "notes": "Power-user explicit call: prepare named Hub/cloud agents and return BYOM runtime bundles."
     },
     {
+      "runtime": "claude-code",
+      "command": "/hep-browser",
+      "adapterPath": ".claude/commands/hep-browser.md",
+      "globalInstallPath": "~/.claude/commands/hep-browser.md",
+      "scope": "global",
+      "status": "native-slash-command",
+      "notes": "Power-user browser hardpoint: use Agentlas browser first for rendered, JS-heavy, login-visible, click, and form work."
+    },
+    {
       "runtime": "codex",
       "command": "/prompts:hep-search",
       "adapterPath": "codex/prompts/hep-search.md",
@@ -386,6 +395,15 @@
       "scope": "global",
       "status": "custom-prompt-slash-command",
       "notes": "Codex prompt surface for candidate-only cloud/hub search."
+    },
+    {
+      "runtime": "codex",
+      "command": "/prompts:hep-browser",
+      "adapterPath": "codex/prompts/hep-browser.md",
+      "globalInstallPath": "~/.codex/prompts/hep-browser.md",
+      "scope": "global",
+      "status": "custom-prompt-slash-command",
+      "notes": "Codex prompt surface for Agentlas browser hardpoint work."
     },
     {
       "runtime": "codex",
@@ -401,6 +419,15 @@
       "command": "/hep-search",
       "adapterPath": "gemini/extension/commands/hep-search.toml",
       "globalInstallPath": "~/.gemini/commands/hep-search.toml",
+      "scope": "global",
+      "status": "extension-custom-command",
+      "notes": "Fallback user command installed by scripts/install-all-runtimes.sh."
+    },
+    {
+      "runtime": "gemini-cli",
+      "command": "/hep-browser",
+      "adapterPath": "gemini/extension/commands/hep-browser.toml",
+      "globalInstallPath": "~/.gemini/commands/hep-browser.toml",
       "scope": "global",
       "status": "extension-custom-command",
       "notes": "Fallback user command installed by scripts/install-all-runtimes.sh."
@@ -424,6 +451,14 @@
     },
     {
       "runtime": "antigravity",
+      "command": "/hep-browser",
+      "adapterPath": "antigravity/workflows/hep-browser.md",
+      "globalInstallPath": "~/.gemini/antigravity/global_workflows/hep-browser.md",
+      "scope": "global",
+      "status": "workflow-slash-command"
+    },
+    {
+      "runtime": "antigravity",
       "command": "/hep-call",
       "adapterPath": "antigravity/workflows/hep-call.md",
       "globalInstallPath": "~/.gemini/antigravity/global_workflows/hep-call.md",
@@ -440,6 +475,14 @@
     },
     {
       "runtime": "cursor",
+      "command": "/hep-browser",
+      "adapterPath": "cursor/plugin/commands/hep-browser.md",
+      "globalInstallPath": "~/.cursor/commands/hep-browser.md",
+      "scope": "global",
+      "status": "native-slash-command"
+    },
+    {
+      "runtime": "cursor",
       "command": "/hep-call",
       "adapterPath": "cursor/plugin/commands/hep-call.md",
       "globalInstallPath": "~/.cursor/commands/hep-call.md",
@@ -451,6 +494,14 @@
       "command": "/hep-search",
       "adapterPath": "opencode/commands/hep-search.md",
       "globalInstallPath": "~/.config/opencode/commands/hep-search.md",
+      "scope": "global",
+      "status": "native-slash-command"
+    },
+    {
+      "runtime": "opencode",
+      "command": "/hep-browser",
+      "adapterPath": "opencode/commands/hep-browser.md",
+      "globalInstallPath": "~/.config/opencode/commands/hep-browser.md",
       "scope": "global",
       "status": "native-slash-command"
     },
@@ -488,6 +539,15 @@
       "scope": "terminal",
       "status": "shell-command-alias",
       "notes": "Candidate-only cloud/hub search."
+    },
+    {
+      "runtime": "agentlas-terminal",
+      "command": "hep-browser",
+      "adapterPath": "bin/hep-browser",
+      "globalInstallPath": "hep-browser <url-or-query>",
+      "scope": "terminal",
+      "status": "shell-command-alias",
+      "notes": "Short Agentlas browser hardpoint command; maps to hephaestus hep-browser."
     },
     {
       "runtime": "agentlas-terminal",
@@ -587,6 +647,6 @@
   ],
   "postCreationUserMessage": {
     "required": true,
-    "template": "global_commands: Agentlas terminal/app plain language through native Agentlas/Hephaestus tools; Claude Code /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-connect; Codex /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect; Gemini CLI /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; Antigravity /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; Cursor /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload; OpenCode /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload. Meaning: build/create = /hep-build; borrow public Hub agents = /hep-network; share/use my Agentlas Cloud packages = /hep-cloud; search candidates = /hep-search; explicit named agent call = /hep-call; upload gate = /hep-upload; Telegram gateway setup = /hep-connect or /prompts:hep-connect; force-robust verified loop to completion = /hep-storm (Codex /prompts:hep-storm). Research loadouts and lower-level options are selected automatically by context; /hep-storm is the explicit, force-robust Stormbreaker loop surface (verifier-first, no fake pass)."
+    "template": "global_commands: Agentlas terminal/app plain language through native Agentlas/Hephaestus tools; Claude Code /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload, /hep-connect; Codex /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-browser, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect; Gemini CLI /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload; Antigravity /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload; Cursor /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload; OpenCode /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload. Meaning: build/create = /hep-build; borrow public Hub agents = /hep-network; share/use my Agentlas Cloud packages = /hep-cloud; search candidates = /hep-search; browser-required work = /hep-browser; explicit named agent call = /hep-call; upload gate = /hep-upload; Telegram gateway setup = /hep-connect or /prompts:hep-connect; force-robust verified loop to completion = /hep-storm (Codex /prompts:hep-storm). Research loadouts and lower-level options are selected automatically by context; /hep-browser is the short Agentlas browser hardpoint surface; /hep-storm is the explicit, force-robust Stormbreaker loop surface (verifier-first, no fake pass)."
   }
 }

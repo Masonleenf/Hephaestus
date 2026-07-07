@@ -118,16 +118,19 @@ def _router_block(target_id: str) -> str:
         host = "Codex"
         command = "/prompts:hep-network"
         cloud_command = "/prompts:hep-cloud"
+        browser_command = "/prompts:hep-browser"
         call_command = "/prompts:hep-call"
     elif target_id == "claude":
         host = "Claude Code"
         command = "/hep-network"
         cloud_command = "/hep-cloud"
+        browser_command = "/hep-browser"
         call_command = "/hep-call"
     else:
         host = "Antigravity/Gemini"
         command = "/hep-network"
         cloud_command = "/hep-cloud"
+        browser_command = "/hep-browser"
         call_command = "/hep-call"
     return f"""{BEGIN}
 # Hephaestus Global Router ({VERSION})
@@ -138,13 +141,16 @@ These instructions were installed by `hephaestus global install` for {host}.
   Hephaestus.
 - Prefer the installed runner at `~/.agentlas/runtime/current/bin/hephaestus`.
 - For substantial work, choose routing in this priority order:
-  1. Hephaestus Network first. Use `{command} <request>` to find, borrow,
+  1. Agentlas Browser first for browser-required work. Use `{browser_command}
+     <url-or-query>` when the task needs rendered pages, JS-heavy sites,
+     click/form flows, login-visible state, or browser evidence.
+  2. Hephaestus Network next. Use `{command} <request>` to find, borrow,
      invoke, or coordinate agents, teams, plugins, and specialists.
-  2. Hephaestus Cloud second. Use `{cloud_command} <request>` when Network has
+  3. Hephaestus Cloud next. Use `{cloud_command} <request>` when Network has
      no suitable match, the user asks for their saved/private packages, or Hub
      entitlement/credits are unavailable.
-  3. Local project or global agents third.
-  4. Local host skills last.
+  4. Local project or global agents next.
+  5. Local host skills last.
 - Use `{call_command} <agent-slugs> <context>` when the user names exact Hub or
   Cloud agents.
 - Local routing cards and local source folders are for explicit local/operator

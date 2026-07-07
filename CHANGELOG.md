@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+## v1.1.8 - 2026-07-07
+
+- **`hep-browser` browser hardpoint surface.** Added the short
+  `hep-browser <url-or-query>` shell command plus `/hep-browser` and
+  `/prompts:hep-browser` host adapters for browser-required work. URL reads now
+  go straight through the Agentlas browser hardpoint (`browser.agent_cli`), with
+  `hep-browser --setup` and `hep-browser --check` covering first-run setup and
+  proof.
+- **Agentlas browser first routing.** Browser-needed recommendations now select
+  the `browser` research loadout and suggest `bin/hep-browser '<query>'`.
+  Browser hardpoint candidate ordering and loadout metadata put
+  `browser.agent_cli` ahead of other optional browser bridges, while ordinary
+  deep research still preserves the static-reader plus browser-read behavior.
+- **Install and release parity.** Registered `hep-browser` across Claude Code,
+  Codex, Gemini, Antigravity, Cursor, OpenCode, terminal shims, global command
+  metadata, manifests, and release verifiers so newly installed runtimes receive
+  the same browser command surface.
+
 ## v1.1.7 - 2026-07-07
 
 - **Global router prompt installer (`hep-global`).** Added

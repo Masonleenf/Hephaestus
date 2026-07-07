@@ -9,6 +9,7 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlsplit
 
 from .runtime import AgentlasMockStore, compile_runtime_bundle, read_agent_file, run_setup_wizard, scan_agent_folder
 from .update import maybe_auto_update, reconcile_adapters, run_update, write_python_shims
@@ -27,6 +28,7 @@ RESEARCH_SEARCH_PROVIDER_HINTS = {
     "github": "github",
     "jina": "jina",
 }
+AGENTLAS_BROWSER_MODULE = "browser.agent_cli"
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -326,6 +328,20 @@ def main(argv: list[str] | None = None) -> int:
     call.add_argument("--runtime", default="terminal")
     call.add_argument("--version", default="latest")
     call.add_argument("--local-inventory", default=None, help="JSON array or comma list of installed plugin names for Hub plugin resolution")
+
+    hep_browser = sub.add_parser("hep-browser", help="Short Agentlas browser hardpoint command")
+    hep_browser.add_argument("target", nargs="*", help="URL(s) to open or task/search text")
+    hep_browser.add_argument("--url", action="append", default=[], help="Explicit http/https URL to read through Agentlas browser")
+    hep_browser.add_argument("--query", default=None, help="Task/search text when URLs are supplied")
+    hep_browser.add_argument("--provider", action="append", choices=RESEARCH_SEARCH_PROVIDERS, default=[], help="Search provider for query mode, repeatable")
+    hep_browser.add_argument("--variant", action="append", default=[], help="Search query variant, repeatable: official, docs, github, reddit, threads, news, or a short literal suffix")
+    hep_browser.add_argument("--depth", default="deep", choices=["quick", "deep"], help="Use deep browser follow-up reads by default")
+    hep_browser.add_argument("--follow-results", type=int, default=2, help="Read top N result URLs in query mode, bounded by request budget")
+    hep_browser.add_argument("--max-requests", type=int, default=None, help="Optional request budget for search and follow-up reads")
+    hep_browser.add_argument("--home", default=None, help="Networking home for hardpoint config and receipts")
+    hep_browser_mode = hep_browser.add_mutually_exclusive_group()
+    hep_browser_mode.add_argument("--setup", action="store_true", help="Arm the approved npx agent-browser hardpoint recipe")
+    hep_browser_mode.add_argument("--check", action="store_true", help="Run one configured Agentlas browser hardpoint check")
 
     research = sub.add_parser("research", help="Agentlas Research Engine phase-0 tools")
     research_sub = research.add_subparsers(dest="research_command", required=True)
@@ -876,6 +892,8 @@ def main(argv: list[str] | None = None) -> int:
                 local_inventory=parse_local_inventory(args.local_inventory),
             )
         )
+    if args.command == "hep-browser":
+        return _run_hep_browser(args)
     if args.command == "route":
         from .networking import init_networking, route_request
         from .networking.bootstrap import networking_home
@@ -1194,6 +1212,99 @@ def main(argv: list[str] | None = None) -> int:
     return 2
 
 
+def _run_hep_browser(args: argparse.Namespace) -> int:
+    from .research import run_research, run_research_bridge_check, run_research_hardpoints
+
+    urls, query_parts = _split_hep_browser_targets(args.target, args.url)
+    if args.setup:
+        return emit(
+            run_research_hardpoints(
+                action="arm",
+                module_id=AGENTLAS_BROWSER_MODULE,
+                recipe="npx-agent-browser",
+                home=args.home,
+            )
+        )
+    if args.check:
+        return emit(
+            run_research_bridge_check(
+                module_id=AGENTLAS_BROWSER_MODULE,
+                url=(urls[0] if urls else "https://example.com"),
+                home=args.home,
+            )
+        )
+
+    query = (args.query or " ".join(query_parts)).strip()
+    if not urls and not query:
+        return emit(
+            {
+                "schema": "agentlas.research.hep_browser.v0",
+                "status": "needs_target",
+                "usage": "hep-browser <url-or-query> [--setup|--check]",
+                "default_browser_module": AGENTLAS_BROWSER_MODULE,
+            }
+        ) or 2
+
+    if urls:
+        request = {
+            "query": query or "Agentlas browser read",
+            "intent": "hep-browser:read",
+            "source_hints": urls,
+            "loadout": "auto",
+            "depth": args.depth,
+            "follow_results": args.follow_results,
+            "query_variants": args.variant,
+            "max_weight": "browser_heavy",
+            "max_cost": _max_cost_from_args(args),
+            "allowed_modules": [AGENTLAS_BROWSER_MODULE],
+        }
+    else:
+        provider_modules = [_research_search_provider_module(provider) for provider in args.provider]
+        source_hints = (
+            [f"search:{_research_search_provider_hint(provider)}:{query}" for provider in args.provider]
+            if args.provider
+            else [f"search:auto:{query}"]
+        )
+        request = {
+            "query": query,
+            "intent": "hep-browser:gather",
+            "source_hints": source_hints,
+            "loadout": "browser",
+            "depth": args.depth,
+            "follow_results": args.follow_results,
+            "query_variants": args.variant,
+            "max_weight": "browser_heavy",
+            "max_cost": _max_cost_from_args(args),
+            "allowed_modules": provider_modules,
+        }
+    result = run_research(request, home=args.home)
+    result["surface"] = {
+        "command": "hep-browser",
+        "default_browser_module": AGENTLAS_BROWSER_MODULE,
+        "agentlas_browser_first": True,
+    }
+    return emit(result)
+
+
+def _split_hep_browser_targets(targets: list[str], explicit_urls: list[str]) -> tuple[list[str], list[str]]:
+    urls: list[str] = []
+    query_parts: list[str] = []
+    for value in [*explicit_urls, *targets]:
+        item = str(value or "").strip()
+        if not item:
+            continue
+        if _is_http_url(item):
+            urls.append(item)
+        else:
+            query_parts.append(item)
+    return _dedupe(urls), query_parts
+
+
+def _is_http_url(value: str) -> bool:
+    parsed = urlsplit(value)
+    return parsed.scheme.lower() in {"http", "https"} and bool(parsed.netloc)
+
+
 def emit(payload: Any) -> int:
     configure_utf8_stdio()
     print(json.dumps(payload, ensure_ascii=False, indent=2, sort_keys=True))
@@ -1461,7 +1572,7 @@ def run_field_test() -> dict[str, Any]:
             "agentId": "agent_private_instagram",
             "ownerId": "owner",
             "creatorId": "creator",
-            "version": "1.1.7",
+            "version": "1.1.8",
             "manifest": wizard["manifest"],
             "files": [{"path": "AGENTS.md", "content": (agent / "AGENTS.md").read_text(encoding="utf-8")}],
             "memory": {"scope": "private", "summary": "private campaign memory", "deltas": ["weekly cadence"]},

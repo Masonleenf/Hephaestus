@@ -34,12 +34,14 @@ scan_files=(
   gemini/extension/commands/hep-network.toml
   gemini/extension/commands/hep-cloud.toml
   gemini/extension/commands/hep-search.toml
+  gemini/extension/commands/hep-browser.toml
   gemini/extension/commands/hep-call.toml
   gemini/extension/commands/hep-upload.toml
   .gemini/commands/hep-build.toml
   .gemini/commands/hep-network.toml
   .gemini/commands/hep-cloud.toml
   .gemini/commands/hep-search.toml
+  .gemini/commands/hep-browser.toml
   .gemini/commands/hep-call.toml
   .gemini/commands/hep-upload.toml
   manifest.json
@@ -126,6 +128,7 @@ assert manifest["entrypoints"]["claudeHephaestusBuildCommand"].endswith("hep-bui
 assert manifest["entrypoints"]["claudeHephaestusNetworkCommand"].endswith("hep-network.md")
 assert manifest["entrypoints"]["claudeHephaestusCloudCommand"].endswith("hep-cloud.md")
 assert manifest["entrypoints"]["claudeHephaestusSearchCommand"].endswith("hep-search.md")
+assert manifest["entrypoints"]["claudeHephaestusBrowserCommand"].endswith("hep-browser.md")
 assert manifest["entrypoints"]["claudeHephaestusCallCommand"].endswith("hep-call.md")
 assert manifest["entrypoints"]["claudeHephaestusUploadCommand"].endswith("hep-upload.md")
 assert manifest["entrypoints"]["claudeHephaestusConnectCommand"].endswith("hep-connect.md")
@@ -133,6 +136,7 @@ assert manifest["entrypoints"]["codexHephaestusBuildPrompt"].endswith("hep-build
 assert manifest["entrypoints"]["codexHephaestusNetworkPrompt"].endswith("hep-network.md")
 assert manifest["entrypoints"]["codexHephaestusCloudPrompt"].endswith("hep-cloud.md")
 assert manifest["entrypoints"]["codexHephaestusSearchPrompt"].endswith("hep-search.md")
+assert manifest["entrypoints"]["codexHephaestusBrowserPrompt"].endswith("hep-browser.md")
 assert manifest["entrypoints"]["codexHephaestusCallPrompt"].endswith("hep-call.md")
 assert manifest["entrypoints"]["codexHephaestusUploadPrompt"].endswith("hep-upload.md")
 assert manifest["entrypoints"]["codexHephaestusConnectPrompt"].endswith("hep-connect.md")
@@ -141,12 +145,14 @@ assert manifest["entrypoints"]["geminiHephaestusBuildCommand"].endswith("hep-bui
 assert manifest["entrypoints"]["geminiHephaestusNetworkCommand"].endswith("hep-network.toml")
 assert manifest["entrypoints"]["geminiHephaestusCloudCommand"].endswith("hep-cloud.toml")
 assert manifest["entrypoints"]["geminiHephaestusSearchCommand"].endswith("hep-search.toml")
+assert manifest["entrypoints"]["geminiHephaestusBrowserCommand"].endswith("hep-browser.toml")
 assert manifest["entrypoints"]["geminiHephaestusCallCommand"].endswith("hep-call.toml")
 assert manifest["entrypoints"]["geminiHephaestusUploadCommand"].endswith("hep-upload.toml")
 assert manifest["entrypoints"]["antigravityBuildWorkflow"].endswith("antigravity/workflows/hep-build.md")
 assert manifest["entrypoints"]["antigravityNetworkWorkflow"].endswith("antigravity/workflows/hep-network.md")
 assert manifest["entrypoints"]["antigravityCloudWorkflow"].endswith("antigravity/workflows/hep-cloud.md")
 assert manifest["entrypoints"]["antigravitySearchWorkflow"].endswith("antigravity/workflows/hep-search.md")
+assert manifest["entrypoints"]["antigravityBrowserWorkflow"].endswith("antigravity/workflows/hep-browser.md")
 assert manifest["entrypoints"]["antigravityCallWorkflow"].endswith("antigravity/workflows/hep-call.md")
 assert manifest["entrypoints"]["antigravityUploadWorkflow"].endswith("antigravity/workflows/hep-upload.md")
 assert manifest["entrypoints"]["agentlasHephaestusConnectWorkflow"].endswith(".agents/workflows/hep-connect.md")
@@ -170,6 +176,7 @@ for path in \
   bin/hep-network \
   bin/hep-cloud \
   bin/hep-search \
+  bin/hep-browser \
   bin/hep-call \
   bin/hep-upload \
   bin/hep-storm \
@@ -180,6 +187,7 @@ for path in \
   claude/plugins/agentlas-core-engine-meta-agent/bin/hep-network \
   claude/plugins/agentlas-core-engine-meta-agent/bin/hep-cloud \
   claude/plugins/agentlas-core-engine-meta-agent/bin/hep-search \
+  claude/plugins/agentlas-core-engine-meta-agent/bin/hep-browser \
   claude/plugins/agentlas-core-engine-meta-agent/bin/hep-call \
   claude/plugins/agentlas-core-engine-meta-agent/bin/hep-upload \
   claude/plugins/agentlas-core-engine-meta-agent/bin/hep-storm \
@@ -189,6 +197,7 @@ for path in \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hep-network \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hep-cloud \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hep-search \
+  codex/plugins/agentlas-core-engine-meta-agent/bin/hep-browser \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hep-call \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hep-upload \
   codex/plugins/agentlas-core-engine-meta-agent/bin/hep-storm \

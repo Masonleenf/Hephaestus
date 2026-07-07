@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
-version="${HEPHAESTUS_REF:-v1.1.7}"
+version="${HEPHAESTUS_REF:-v1.1.8}"
 repo="${HEPHAESTUS_REPO:-agentlas-ai/Hephaestus}"
 github_url="${HEPHAESTUS_GITHUB_URL:-https://github.com/$repo}"
 marketplace_name="${HEPHAESTUS_MARKETPLACE:-agentlas-core-engine}"
@@ -164,6 +164,7 @@ install_runtime_home() {
     "$home_dir/bin/hep-network" \
     "$home_dir/bin/hep-cloud" \
     "$home_dir/bin/hep-search" \
+    "$home_dir/bin/hep-browser" \
 	    "$home_dir/bin/hep-call" \
 	    "$home_dir/bin/hep-upload" \
 	    "$home_dir/bin/hep-storm" \
@@ -189,7 +190,7 @@ install_runtime_home() {
   local user_bin="$HOME/.local/bin"
   if mkdir -p "$user_bin" 2>/dev/null; then
 	  local -a shell_commands=(
-	    hephaestus hep-build hep-network hep-cloud hep-search hep-call hep-upload hep-storm hep-global
+	    hephaestus hep-build hep-network hep-cloud hep-search hep-browser hep-call hep-upload hep-storm hep-global
 	  )
     local command
     for command in "${shell_commands[@]}"; do
@@ -202,7 +203,7 @@ EOF
     done
     if [[ -x "$user_bin/hephaestus" ]]; then
       case ":$PATH:" in
-	        *":$user_bin:"*) log "Installed shell commands: hephaestus, hep-build, hep-network, hep-cloud, hep-search, hep-call, hep-upload, hep-storm, hep-global" ;;
+	        *":$user_bin:"*) log "Installed shell commands: hephaestus, hep-build, hep-network, hep-cloud, hep-search, hep-browser, hep-call, hep-upload, hep-storm, hep-global" ;;
         *) log "Installed shell commands in $user_bin (add ~/.local/bin to PATH to use them)" ;;
       esac
     fi
@@ -306,7 +307,7 @@ write_claude_commands() {
   ensure_downloaded_source || return 1
   mkdir -p "$HOME/.claude/commands"
   local name src dest
-  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-call.md hep-upload.md hep-connect.md hep-storm.md; do
+  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-browser.md hep-call.md hep-upload.md hep-connect.md hep-storm.md; do
     src="$source_dir/.claude/commands/$name"
     dest="$HOME/.claude/commands/$name"
     rm -f "$dest"
@@ -316,7 +317,7 @@ write_claude_commands() {
         "$HOME/.claude/commands/hephaestus-build.md" "$HOME/.claude/commands/hephaestus-network.md" \
         "$HOME/.claude/commands/hephaestus-cloud.md" "$HOME/.claude/commands/hephaestus-search.md" \
         "$HOME/.claude/commands/hephaestus-call.md"
-  log "Refreshed Claude commands: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-connect, /hep-storm"
+  log "Refreshed Claude commands: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload, /hep-connect, /hep-storm"
 }
 
 remove_codex_existing() {
@@ -335,7 +336,7 @@ write_codex_prompts() {
   [[ -d "$prompts_src" ]] || { warn "codex prompts not found: $prompts_src"; return 1; }
   mkdir -p "$HOME/.codex/prompts"
   local name
-  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-call.md hep-upload.md hep-connect.md hep-storm.md; do
+  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-browser.md hep-call.md hep-upload.md hep-connect.md hep-storm.md; do
     rm -f "$HOME/.codex/prompts/$name"
     cp "$prompts_src/$name" "$HOME/.codex/prompts/$name" || return 1
   done
@@ -343,7 +344,7 @@ write_codex_prompts() {
         "$HOME/.codex/prompts/hephaestus-build.md" "$HOME/.codex/prompts/hephaestus-network.md" \
         "$HOME/.codex/prompts/hephaestus-cloud.md" "$HOME/.codex/prompts/hephaestus-search.md" \
         "$HOME/.codex/prompts/hephaestus-call.md"
-  log "Installed Codex custom prompts: /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect, /prompts:hep-storm"
+  log "Installed Codex custom prompts: /prompts:hep-build, /prompts:hep-network, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-browser, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect, /prompts:hep-storm"
 }
 
 install_codex() {
@@ -420,7 +421,7 @@ write_gemini_fallback_command() {
   local command_dir="$HOME/.gemini/commands"
   mkdir -p "$command_dir"
   local name
-  for name in hep-build.toml hep-network.toml hep-cloud.toml hep-search.toml hep-call.toml hep-upload.toml hep-storm.toml; do
+  for name in hep-build.toml hep-network.toml hep-cloud.toml hep-search.toml hep-browser.toml hep-call.toml hep-upload.toml hep-storm.toml; do
     rm -f "$command_dir/$name"
     cp "$source_dir/gemini/extension/commands/$name" "$command_dir/$name" || return 1
   done
@@ -428,7 +429,7 @@ write_gemini_fallback_command() {
         "$command_dir/hephaestus-build.toml" "$command_dir/hephaestus-network.toml" \
         "$command_dir/hephaestus-cloud.toml" "$command_dir/hephaestus-search.toml" \
         "$command_dir/hephaestus-call.toml"
-  log "Installed Gemini fallback commands: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-storm"
+  log "Installed Gemini fallback commands: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload, /hep-storm"
 }
 
 install_gemini() {
@@ -486,7 +487,7 @@ install_antigravity() {
       local global_dir="$data_dir/global_workflows"
       mkdir -p "$global_dir"
       local name
-      for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-call.md hep-upload.md hep-storm.md; do
+      for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-browser.md hep-call.md hep-upload.md hep-storm.md; do
         rm -f "$global_dir/$name"
         cp "$source_dir/antigravity/workflows/$name" "$global_dir/$name" || return 1
       done
@@ -494,7 +495,7 @@ install_antigravity() {
             "$global_dir/hephaestus-build.md" "$global_dir/hephaestus-network.md" \
             "$global_dir/hephaestus-cloud.md" "$global_dir/hephaestus-search.md" \
             "$global_dir/hephaestus-call.md"
-      log "Installed Antigravity global workflows: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-storm"
+      log "Installed Antigravity global workflows: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload, /hep-storm"
       installed=$((installed + 1))
     fi
   done
@@ -543,7 +544,7 @@ install_cursor() {
   ensure_downloaded_source || return 1
   mkdir -p "$HOME/.cursor/commands" "$HOME/.cursor/skills"
   local name
-  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-call.md hep-upload.md hep-storm.md; do
+  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-browser.md hep-call.md hep-upload.md hep-storm.md; do
     rm -f "$HOME/.cursor/commands/$name"
     cp "$source_dir/cursor/plugin/commands/$name" "$HOME/.cursor/commands/$name" || return 1
   done
@@ -555,7 +556,7 @@ install_cursor() {
     rm -rf "$HOME/.cursor/skills/$name"
     cp -R "$source_dir/skills/$name" "$HOME/.cursor/skills/$name" || return 1
   done
-  log "Installed Cursor commands (/hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-storm) and skills."
+  log "Installed Cursor commands (/hep-build, /hep-network, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload, /hep-storm) and skills."
   ok=$((ok + 1))
 }
 
@@ -570,7 +571,7 @@ install_opencode() {
   ensure_downloaded_source || return 1
   mkdir -p "$HOME/.config/opencode/commands"
   local name
-  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-call.md hep-upload.md hep-storm.md; do
+  for name in hep-build.md hep-network.md hep-cloud.md hep-search.md hep-browser.md hep-call.md hep-upload.md hep-storm.md; do
     rm -f "$HOME/.config/opencode/commands/$name"
     cp "$source_dir/opencode/commands/$name" "$HOME/.config/opencode/commands/$name" || return 1
   done
@@ -578,7 +579,7 @@ install_opencode() {
         "$HOME/.config/opencode/commands/hephaestus-build.md" "$HOME/.config/opencode/commands/hephaestus-network.md" \
         "$HOME/.config/opencode/commands/hephaestus-cloud.md" "$HOME/.config/opencode/commands/hephaestus-search.md" \
         "$HOME/.config/opencode/commands/hephaestus-call.md"
-  log "Installed OpenCode commands: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-storm"
+  log "Installed OpenCode commands: /hep-build, /hep-network, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload, /hep-storm"
   ok=$((ok + 1))
 }
 
@@ -723,15 +724,15 @@ main() {
   log "Restart open Claude Code, Codex, Gemini, Antigravity, Cursor, OpenCode, OpenClaw, and Hermes apps."
   log "Then use:"
   log "  Agentlas:    describe the task in plain language; native tools choose the path"
-  log "  Claude Code: /reload-plugins, then /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-call, /hep-upload, /hep-connect"
-  log "  Codex:       /prompts:hep-build, /prompts:hep-network, /prompts:hep-storm, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect"
-  log "  Gemini CLI:  /extensions list or /commands list, then /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-call, /hep-upload"
-  log "  Antigravity: reopen the workspace, then /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-call, /hep-upload"
-  log "  Cursor:      /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-call, /hep-upload"
-  log "  OpenCode:    /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-call, /hep-upload"
+  log "  Claude Code: /reload-plugins, then /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload, /hep-connect"
+  log "  Codex:       /prompts:hep-build, /prompts:hep-network, /prompts:hep-storm, /prompts:hep-cloud, /prompts:hep-search, /prompts:hep-browser, /prompts:hep-call, /prompts:hep-upload, /prompts:hep-connect"
+  log "  Gemini CLI:  /extensions list or /commands list, then /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload"
+  log "  Antigravity: reopen the workspace, then /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload"
+  log "  Cursor:      /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload"
+  log "  OpenCode:    /hep-build, /hep-network, /hep-storm, /hep-cloud, /hep-search, /hep-browser, /hep-call, /hep-upload"
 	  log "  OpenClaw:    /skill hephaestus-storm <request> or /skill hephaestus-network <request>"
 	  log "  Hermes:      hephaestus-storm/hephaestus-network skills (+ MCP, see hermes/README.md)"
-	  log "  Shell/debug: hep-build \"<request>\", hep-network \"<request>\", hep-cloud \"<request>\", hep-search \"<request>\", hep-call \"agent-a,agent-b\" \"<context>\", hep-upload <agent-folder>, hep-global install, or hep-storm \"<request>\" --background"
+	  log "  Shell/debug: hep-build \"<request>\", hep-network \"<request>\", hep-cloud \"<request>\", hep-search \"<request>\", hep-browser <url-or-query>, hep-call \"agent-a,agent-b\" \"<context>\", hep-upload <agent-folder>, hep-global install, or hep-storm \"<request>\" --background"
   log "  Ollama/Gemma/DeepSeek local models: docs/local-models.md (MCP: hephaestus mcp serve)"
   log ""
   log "agentlas Hub MCP (agentlas.search, marketplace.*, agentlas.teams.*) was registered too."

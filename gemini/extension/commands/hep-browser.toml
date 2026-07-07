@@ -1,0 +1,19 @@
+description = "Use the Agentlas browser hardpoint for browser-required work."
+prompt = """
+Update fallback: if auto-update fails, run `hephaestus update` once. The current command still works without updating.
+
+# /hep-browser
+
+Raw arguments:
+{{args}}
+
+Use this for rendered pages, JS-heavy sites, click/form flows, login-visible
+state, or browser evidence. Find the Hephaestus runner at
+`~/.agentlas/runtime/current/bin/hephaestus` or `./bin/hephaestus`, then run:
+
+`hephaestus hep-browser "{{args}}"`
+
+Report whether `browser.agent_cli` mounted, whether setup is needed, the module
+chain, and the receipt id. If setup is needed, show `hep-browser --setup` and
+`hep-browser --check`.
+"""

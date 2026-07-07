@@ -27,7 +27,7 @@ LATEST_RELEASE_URL = os.environ.get(
 )
 DEFAULT_TTL_SECONDS = 24 * 60 * 60
 CORE_DIRS = ("bin", "agentlas_cloud", "ontology")
-HEP_COMMANDS = ("hep-build", "hep-network", "hep-cloud", "hep-search", "hep-call", "hep-upload")
+HEP_COMMANDS = ("hep-build", "hep-network", "hep-cloud", "hep-search", "hep-browser", "hep-call", "hep-upload")
 HEP_SKILLS = ("hephaestus-network", "hephaestus-cloud")
 AUTO_UPDATE_MARKER = "auto-update.json"
 

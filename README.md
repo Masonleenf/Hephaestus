@@ -193,7 +193,7 @@ claude plugin install hephaestus@agentlas-core-engine
 
 From your OS terminal:
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.7
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.8
 codex plugin add hephaestus@agentlas-core-engine
 ```
 *Note: Codex does not accept `/plugin marketplace add` inside the app — run the two commands above in your OS terminal. The OS-terminal CLI command is singular (`codex plugin`); inside the Codex app, the plugin browser slash command is plural (`/plugins`). After install, `/prompts:hep-build` is the in-app entry.*
@@ -221,6 +221,7 @@ Inside native Agentlas environments, Hephaestus operates commandless. External L
 | **A2A Scheduler** | `/hep-network` | `/hep-network split this launch plan into research, copy, QA, and release agents` |
 | **Cloud State Sync** | `/hep-cloud` | `/hep-cloud use my saved finance analyst agent to review this report` |
 | **Directory Search** | `/hep-search` | `/hep-search find agents for a market report workflow` |
+| **Browser Hardpoint** | `/hep-browser` or `/prompts:hep-browser` | `/hep-browser https://example.com` |
 | **Inter-Process Call (IPC)** | `/hep-call` | `/hep-call market-researcher, report-writer {draft a market report}` |
 | **Package Exporter** | `/hep-upload` | `/hep-upload ./agents/customer-support-hq` |
 | **Telegram Setup** | `/hep-connect` or `/prompts:hep-connect` | `/hep-connect Telegram for Marketing Agent Team` |
@@ -229,7 +230,7 @@ Inside native Agentlas environments, Hephaestus operates commandless. External L
 
 ## The Desktop Shell — Agentlas Desktop
 
-[Agentlas Desktop](https://agentlas.cloud/desktop) is the graphical shell for this Agent OS — the same kernel, scheduler, and governance subsystems, operated visually. Desktop 0.6.0 ships with the Hephaestus v1.1.7 engine bundled and pinned; the app and its kernel version-lock together and auto-update as one unit.
+[Agentlas Desktop](https://agentlas.cloud/desktop) is the graphical shell for this Agent OS — the same kernel, scheduler, and governance subsystems, operated visually. Desktop 0.6.0 ships with the Hephaestus v1.1.8 engine bundled and pinned; the app and its kernel version-lock together and auto-update as one unit.
 
 | Shell Surface | What it operates |
 | :--- | :--- |

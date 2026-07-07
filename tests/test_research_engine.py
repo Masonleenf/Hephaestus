@@ -105,6 +105,7 @@ def test_hephaestus_help_mentions_public_web_research_loadout():
     help_text = (Path(__file__).resolve().parents[1] / "bin" / "hephaestus").read_text()
 
     assert "--research-loadout auto|safe|public-web|social|browser|full|recommended" in help_text
+    assert "bin/hephaestus hep-browser <url-or-query> [--setup|--check]" in help_text
     assert 'research search "<query>" [--variant reddit] [--loadout safe|public-web|social]' in help_text
 
 
@@ -775,7 +776,7 @@ def test_research_profile_auto_is_source_aware_for_threads(monkeypatch):
     assert profile["footprint"]["unready_mounted_module_count"] == 0
 
 
-def test_research_recommendation_keeps_agent_browser_research_detached(tmp_path, monkeypatch):
+def test_research_recommendation_auto_selects_agent_browser_for_browser_work(tmp_path, monkeypatch):
     monkeypatch.delenv("AGENTLAS_STAGEHAND_SNAPSHOT_CMD", raising=False)
     monkeypatch.setattr("agentlas_cloud.research.armory.shutil.which", lambda name: None)
 
@@ -787,14 +788,16 @@ def test_research_recommendation_keeps_agent_browser_research_detached(tmp_path,
     assert payload["schema"] == "agentlas.research.recommendation.v0"
     assert payload["commands_will_run"] is False
     assert payload["network_will_run"] is False
-    assert payload["recommendation"]["loadout"] == "public-web"
-    assert "browser_candidates_relevant_but_not_mounted_by_default" in payload["recommendation"]["reasons"]
-    assert payload["recommendation"]["mount_decision"]["browser_hardpoints"] == "detached"
+    assert payload["recommendation"]["loadout"] == "browser"
+    assert "agentlas_browser_hardpoint_auto_selected" in payload["recommendation"]["reasons"]
+    assert payload["recommendation"]["suggested_command"].startswith("bin/hep-browser '<query>'")
+    assert payload["recommendation"]["mount_decision"]["browser_hardpoints"] == "mounted"
     assert payload["recommendation"]["mount_decision"]["adaptive_public_reader"] == "mounted"
-    assert payload["recommendation"]["mount_decision"]["next_escalation"] == "browser"
-    assert payload["footprint"]["browser_module_count"] == 0
-    assert not any(module.startswith("browser.") for module in payload["plan_preview"]["mounted_modules"])
-    assert "read.insane_fetch" in {module["id"] for module in payload["loadout_profile"]["mounted_modules"]}
+    assert payload["recommendation"]["mount_decision"]["operator_approval_recommended"] is True
+    assert payload["footprint"]["browser_module_count"] == 7
+    profile_modules = [module["id"] for module in payload["loadout_profile"]["mounted_modules"]]
+    assert profile_modules.index("browser.agent_cli") < profile_modules.index("browser.playwright_mcp")
+    assert "read.insane_fetch" in set(profile_modules)
 
 
 def test_research_recommendation_prefers_public_social_without_api(monkeypatch):
@@ -847,7 +850,7 @@ def test_research_preflight_recommended_uses_public_social_without_api(monkeypat
     assert not any(hint.startswith("threads:keyword:") for hint in payload["plan_preview"]["source_hints_before_budget"])
 
 
-def test_research_preflight_recommended_keeps_browser_hardpoints_detached(tmp_path, monkeypatch):
+def test_research_preflight_recommended_mounts_agent_browser_for_browser_work(tmp_path, monkeypatch):
     monkeypatch.setattr("agentlas_cloud.research.armory.shutil.which", lambda name: None)
 
     payload = run_research_preflight(query="agent browser modules 찾아봐", home=tmp_path)
@@ -857,21 +860,19 @@ def test_research_preflight_recommended_keeps_browser_hardpoints_detached(tmp_pa
     assert payload["network_will_run"] is False
     assert payload["browser_will_run"] is False
     assert payload["requested_loadout"] == "recommended"
-    assert payload["resolved_loadout"] == "public-web"
-    assert payload["summary"]["browser_modules_mounted"] is False
-    assert payload["summary"]["browser_module_count"] == 0
-    assert payload["slot_summary"]["browser"]["mounted_count"] == 0
-    assert payload["slot_summary"]["browser"]["detached_count"] >= 6
-    assert payload["recommendation"]["mount_decision"]["browser_hardpoints"] == "detached"
+    assert payload["resolved_loadout"] == "browser"
+    assert payload["summary"]["browser_modules_mounted"] is True
+    assert payload["summary"]["browser_module_count"] == 7
+    assert payload["slot_summary"]["browser"]["mounted_count"] == 7
+    assert payload["slot_summary"]["browser"]["detached_count"] == 0
+    assert payload["recommendation"]["mount_decision"]["browser_hardpoints"] == "mounted"
     assert payload["mount_decision"]["source"] == "recommendation"
-    assert payload["mount_decision"]["browser_hardpoints"] == "detached"
+    assert payload["mount_decision"]["browser_hardpoints"] == "mounted"
     assert payload["mount_decision"]["adaptive_public_reader"] == "mounted"
-    assert payload["mount_decision"]["operator_approval_recommended"] is False
+    assert payload["mount_decision"]["operator_approval_recommended"] is True
     mounted_ids = {module["id"] for module in payload["mounted_modules"]}
     assert "read.insane_fetch" in mounted_ids
-    assert not any(module_id.startswith("browser.") for module_id in mounted_ids)
-    detached_heavy_ids = {module["id"] for module in payload["heavy_modules_detached"]}
-    assert "browser.agent_cli" in detached_heavy_ids
+    assert "browser.agent_cli" in mounted_ids
     assert payload["boundaries"]["heavy_modules_are_detachable"] is True
 
 
@@ -1804,12 +1805,12 @@ def test_research_browser_candidates_lists_detached_hardpoints_without_running(m
     assert payload["credentials_exposed_to_model"] is False
     ids = [item["module_id"] for item in payload["candidates"]]
     assert ids == [
+        "browser.agent_cli",
         "browser.playwright_mcp",
         "browser.browser_use",
         "browser.stagehand",
         "browser.steel",
         "browser.hyperagent",
-        "browser.agent_cli",
         "browser.browseros",
     ]
     stagehand = next(item for item in payload["candidates"] if item["module_id"] == "browser.stagehand")
@@ -1837,7 +1838,7 @@ def test_research_browser_candidates_recognizes_english_agent_browser_query():
 
     assert payload["recommendation"]["status"] in {"ready", "needs_setup"}
     assert payload["recommendation"]["module_id"] == "browser.agent_cli"
-    assert payload["recommendation"]["reason"] == "browser_snapshot_requested"
+    assert payload["recommendation"]["reason"] == "agent_browser_first_for_browser_task"
     assert payload["recommendation"]["preferred_loadout"] == "browser"
     assert payload["recommendation"]["mount_browser"] is True
 
@@ -1878,17 +1879,46 @@ def test_research_cli_browser_candidates_can_filter_agent_browser(tmp_path, caps
     assert payload["recommendation"]["status"] in {"ready", "needs_setup"}
 
 
-def test_research_browser_candidates_recommends_stagehand_for_structured_extract(monkeypatch):
+def test_hep_browser_cli_reads_url_with_agent_browser_first(tmp_path, monkeypatch, capsys):
+    monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+
+    def fake_run(self, argv, *, timeout=None):
+        if argv[-1] == "close":
+            return subprocess.CompletedProcess(argv, 0, "", "")
+        if "snapshot" in argv:
+            return subprocess.CompletedProcess(argv, 0, '- heading "Agentlas Browser Page" [ref=e1]', "")
+        assert argv == ["agent-browser", "open", "https://example.com"]
+        return subprocess.CompletedProcess(argv, 0, "opened", "")
+
+    monkeypatch.setattr(AgentBrowserCliAdapter, "_run", fake_run)
+
+    code = main(["hep-browser", "https://example.com", "--home", str(tmp_path)])
+
+    assert code == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["schema"] == "agentlas.research.v0"
+    assert payload["status"] == "ok"
+    assert payload["surface"]["command"] == "hep-browser"
+    assert payload["surface"]["default_browser_module"] == "browser.agent_cli"
+    assert payload["request"]["allowed_modules"] == ["browser.agent_cli"]
+    assert payload["request"]["max_weight"] == "browser_heavy"
+    assert payload["results"][0]["platform"] == "browser"
+    assert payload["results"][0]["title"] == "Agentlas Browser Page"
+    assert payload["receipt"]["module_chain"] == ["browser.agent_cli"]
+
+
+def test_research_browser_candidates_prefers_agent_browser_for_structured_extract(monkeypatch):
     monkeypatch.setenv("AGENTLAS_STAGEHAND_SNAPSHOT_CMD", "stagehand-snapshot {url}")
+    monkeypatch.setattr("agentlas_cloud.research.armory.shutil.which", lambda name: None)
 
     payload = run_research_browser_candidates(query="dynamic page structured extraction")
 
-    assert payload["recommendation"]["module_id"] == "browser.stagehand"
-    assert payload["recommendation"]["status"] == "ready"
-    assert payload["recommendation"]["reason"] == "structured_browser_extraction_requested"
-    assert payload["recommendation"]["check_command"] == "bin/hephaestus research bridge-check --module browser.stagehand --url https://example.com"
-    assert payload["recommendation"]["setup_commands"][0].startswith("AGENTLAS_STAGEHAND_SNAPSHOT_CMD=")
-    assert payload["recommendation"]["operator_approval_required"] is True
+    assert payload["recommendation"]["module_id"] == "browser.agent_cli"
+    assert payload["recommendation"]["status"] == "needs_setup"
+    assert payload["recommendation"]["reason"] == "agent_browser_first_for_browser_task"
+    assert payload["recommendation"]["check_command"] == "bin/hephaestus research bridge-check --module browser.agent_cli --url https://example.com"
+    assert payload["recommendation"]["setup_commands"][0] == "bin/hephaestus research hardpoints --arm browser.agent_cli --recipe npx-agent-browser"
+    assert payload["recommendation"]["operator_approval_required"] is False
 
 
 def test_research_platform_contracts_describe_threads_without_secrets(monkeypatch):
@@ -2009,6 +2039,7 @@ def test_research_cli_lists_loadouts(capsys):
     assert "browser.steel" in loadouts["browser"]["allowed_modules"]
     assert "browser.hyperagent" in loadouts["browser"]["allowed_modules"]
     assert "browser.agent_cli" in loadouts["browser"]["allowed_modules"]
+    assert loadouts["browser"]["allowed_modules"].index("browser.agent_cli") < loadouts["browser"]["allowed_modules"].index("browser.playwright_mcp")
     assert loadouts["full"]["max_weight"] == "browser_heavy"
 
 
@@ -2932,9 +2963,9 @@ def test_research_cli_gather_recommended_resolves_before_running(tmp_path, monke
 
     assert code == 0
     payload = json.loads(capsys.readouterr().out)
-    assert payload["request"]["loadout"] == "public-web"
+    assert payload["request"]["loadout"] == "browser"
     assert len(seen_requests) == 1
-    assert seen_requests[0]["loadout"] == "public-web"
+    assert seen_requests[0]["loadout"] == "browser"
     assert seen_requests[0]["follow_results"] == 3
     assert seen_requests[0]["max_cost"]["requests"] == 6
     assert not any(str(key).startswith("_") for key in seen_requests[0])

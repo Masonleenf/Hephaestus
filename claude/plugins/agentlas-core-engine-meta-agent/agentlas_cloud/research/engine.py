@@ -256,12 +256,12 @@ def default_registry(*, home: Path | str | None = None) -> AdapterRegistry:
     registry.register(HttpReaderAdapter())
     registry.register(InsaneFetchAdapter())
     registry.register(JinaReaderAdapter())
+    registry.register(AgentBrowserCliAdapter(home=home))
     registry.register(PlaywrightMcpAdapter())
     registry.register(BrowserUseAdapter())
     registry.register(StagehandBrowserAdapter())
     registry.register(SteelBrowserAdapter())
     registry.register(HyperAgentBrowserAdapter())
-    registry.register(AgentBrowserCliAdapter(home=home))
     registry.register(BrowserOSBrowserAdapter())
     return registry
 

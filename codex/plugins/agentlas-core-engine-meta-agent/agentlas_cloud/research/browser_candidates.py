@@ -16,6 +16,23 @@ from .registry import AdapterRegistry
 
 BROWSER_CANDIDATES: tuple[dict[str, Any], ...] = (
     {
+        "module_id": "browser.agent_cli",
+        "name": "agent-browser",
+        "kind": "local_agent_browser_cli",
+        "execution_scope": "local_cli_or_selected_provider",
+        "data_boundary": "cli_receives_requested_url; provider modes require env credentials outside engine",
+        "recommended_for": ["lightest_local_agent_browser", "snapshot_refs", "operator_armed_hardpoint"],
+        "not_for": ["unapproved_provider_credentials"],
+        "primary_sources": [
+            "https://github.com/vercel-labs/agent-browser",
+            "https://agent-browser.dev/",
+        ],
+        "fit": "compact local browser CLI with interactive refs and snapshot output for agents",
+        "why_detached": "The binary is useful but optional; missing installs must be nonfatal.",
+        "mount_when": "Use as the lightest local agent-browser mount when the CLI is installed or armed.",
+        "setup_env": "AGENTLAS_AGENT_BROWSER_BIN",
+    },
+    {
         "module_id": "browser.playwright_mcp",
         "name": "Playwright MCP",
         "kind": "local_mcp_browser",
@@ -101,23 +118,6 @@ BROWSER_CANDIDATES: tuple[dict[str, Any], ...] = (
         "setup_env": "AGENTLAS_HYPERAGENT_SNAPSHOT_CMD",
     },
     {
-        "module_id": "browser.agent_cli",
-        "name": "agent-browser",
-        "kind": "local_agent_browser_cli",
-        "execution_scope": "local_cli_or_selected_provider",
-        "data_boundary": "cli_receives_requested_url; provider modes require env credentials outside engine",
-        "recommended_for": ["lightest_local_agent_browser", "snapshot_refs", "operator_armed_hardpoint"],
-        "not_for": ["unapproved_provider_credentials"],
-        "primary_sources": [
-            "https://github.com/vercel-labs/agent-browser",
-            "https://agent-browser.dev/",
-        ],
-        "fit": "compact local browser CLI with interactive refs and snapshot output for agents",
-        "why_detached": "The binary is useful but optional; missing installs must be nonfatal.",
-        "mount_when": "Use as the lightest local agent-browser mount when the CLI is installed or armed.",
-        "setup_env": "AGENTLAS_AGENT_BROWSER_BIN",
-    },
-    {
         "module_id": "browser.browseros",
         "name": "BrowserOS",
         "kind": "local_agentic_browser_app",
@@ -162,7 +162,13 @@ def run_research_browser_candidates(
         payload["weight"] = getattr(adapter, "weight", "browser_heavy") if adapter else "browser_heavy"
         payload["registered"] = adapter is not None
         payload["readiness"] = module_readiness(adapter) if adapter else {"state": "not_registered", "reason": "adapter_missing"}
-        payload["operator_approval_required"] = payload["execution_scope"] != "local" or payload["module_id"] in {"browser.browser_use", "browser.steel", "browser.hyperagent", "browser.browseros"}
+        payload["operator_approval_required"] = (
+            payload["module_id"] != "browser.agent_cli"
+            and (
+                payload["execution_scope"] != "local"
+                or payload["module_id"] in {"browser.browser_use", "browser.steel", "browser.hyperagent", "browser.browseros"}
+            )
+        )
         payload["mount_plan"] = _mount_plan(payload)
         candidates.append(payload)
 
@@ -198,14 +204,9 @@ def _recommend_browser_candidate(*, query: str, candidates: list[dict[str, Any]]
     by_id = {candidate["module_id"]: candidate for candidate in candidates}
     for module_id in order:
         candidate = by_id.get(module_id)
-        if not candidate:
-            continue
-        if candidate.get("registered") and candidate.get("readiness", {}).get("state") == "ready":
-            return _recommendation_payload(candidate, compact, signals, ready=True)
-    for module_id in order:
-        candidate = by_id.get(module_id)
         if candidate:
-            return _recommendation_payload(candidate, compact, signals, ready=False)
+            ready = bool(candidate.get("registered") and candidate.get("readiness", {}).get("state") == "ready")
+            return _recommendation_payload(candidate, compact, signals, ready=ready)
     return {
         "status": "no_match",
         "query": compact,
@@ -265,20 +266,25 @@ def _query_signals(query: str) -> dict[str, bool]:
 
 
 def _preferred_order(signals: dict[str, bool]) -> list[str]:
+    agent_browser_first = ["browser.agent_cli"]
     if signals["local_first"]:
-        return ["browser.agent_cli", "browser.playwright_mcp", "browser.browseros", "browser.stagehand"]
+        return agent_browser_first + ["browser.playwright_mcp", "browser.browseros", "browser.stagehand"]
     if signals["scale_or_stealth"]:
-        return ["browser.steel", "browser.hyperagent", "browser.browser_use", "browser.agent_cli"]
+        return agent_browser_first + ["browser.steel", "browser.hyperagent", "browser.browser_use"]
     if signals["structured"]:
-        return ["browser.stagehand", "browser.hyperagent", "browser.browser_use", "browser.playwright_mcp"]
+        return agent_browser_first + ["browser.stagehand", "browser.hyperagent", "browser.browser_use", "browser.playwright_mcp"]
     if signals["interactive"]:
-        return ["browser.browser_use", "browser.stagehand", "browser.hyperagent", "browser.agent_cli"]
+        return agent_browser_first + ["browser.browser_use", "browser.stagehand", "browser.hyperagent"]
     if signals["snapshot"]:
-        return ["browser.agent_cli", "browser.playwright_mcp", "browser.stagehand"]
+        return agent_browser_first + ["browser.playwright_mcp", "browser.stagehand"]
     return []
 
 
 def _recommendation_reason(candidate: dict[str, Any], signals: dict[str, bool]) -> str:
+    if candidate.get("module_id") == "browser.agent_cli" and any(
+        signals[key] for key in ("local_first", "scale_or_stealth", "structured", "interactive", "snapshot")
+    ):
+        return "agent_browser_first_for_browser_task"
     if signals["local_first"]:
         return "local_first_browser_requested"
     if signals["scale_or_stealth"]:

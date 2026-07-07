@@ -199,6 +199,7 @@ Usage:
   bin/hephaestus hep-storm "<request>" [--background] [--executor-command <cmd>] [--research-evidence] [--research-loadout auto|safe|public-web|social|browser|full|recommended]  # shorthand
   bin/hephaestus hep-cloud "<request>" [--project <dir>] [--no-hub]   # search ONLY my own cloud packages (보관함)
   bin/hephaestus hep-search "<request>" [--limit 10]     # show cloud + Hub candidates only
+  bin/hephaestus hep-browser <url-or-query> [--setup|--check]  # use Agentlas browser hardpoint first
   bin/hephaestus research doctor|status|credentials|modules|armory|profile|bridge-contract|bridge-check|platform-contract|platform-check|loadouts | research plan <url> [--loadout public-web|browser] [--depth deep] | research gather "<query>" [--variant docs] [--follow-results 3] | research search "<query>" [--variant reddit] [--loadout safe|public-web|social] | research read <url> [--loadout public-web|browser] [--depth deep] [--max-weight browser_heavy]  # lightweight Research Engine
   bin/hephaestus hep-call "agent-a,agent-b" "<context>"  # prepare named Hub/cloud agents
   bin/hephaestus hep-upload <agent-folder>          # ask Cloud vs Hub before upload
@@ -332,6 +333,9 @@ EOF
 		    ;;
 		  search|hep-search|hephaestus-search|Hephaestus-search)
 		    run_python_module agentlas_cloud search "$@"
+		    ;;
+		  browser|hep-browser|hephaestus-browser|Hephaestus-browser)
+		    run_python_module agentlas_cloud hep-browser "$@"
 		    ;;
 		  research)
 		    run_python_module agentlas_cloud research "$@"

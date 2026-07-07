@@ -71,7 +71,7 @@ curl -fsSL https://raw.githubusercontent.com/agentlas-ai/Hephaestus/main/scripts
 ```
 
 Inside the Codex app, `/prompts:hep-build`, `/prompts:hep-network`,
-`/prompts:hep-cloud`, `/prompts:hep-search`, `/prompts:hep-call`,
+`/prompts:hep-cloud`, `/prompts:hep-search`, `/prompts:hep-browser`, `/prompts:hep-call`,
 `/prompts:hep-upload`, and `/prompts:hep-connect` first run the app-host auto-update preflight when Codex
 has local command execution. That preflight refreshes
 `~/.agentlas/runtime/current` and installed prompt/plugin surfaces without
@@ -82,10 +82,10 @@ from the plugin manager.
 Codex-only manual install:
 
 ```bash
-codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.7
+codex plugin marketplace add agentlas-ai/Hephaestus --ref v1.1.8
 codex plugin add hephaestus@agentlas-core-engine
 mkdir -p ~/.codex/prompts
-cp codex/prompts/hep-build.md codex/prompts/hep-network.md codex/prompts/hep-cloud.md codex/prompts/hep-search.md codex/prompts/hep-call.md codex/prompts/hep-upload.md codex/prompts/hep-connect.md ~/.codex/prompts/
+cp codex/prompts/hep-build.md codex/prompts/hep-network.md codex/prompts/hep-cloud.md codex/prompts/hep-search.md codex/prompts/hep-browser.md codex/prompts/hep-call.md codex/prompts/hep-upload.md codex/prompts/hep-connect.md ~/.codex/prompts/
 ```
 
 The OS-terminal Codex CLI command is singular: `codex plugin`, not
@@ -101,6 +101,7 @@ Open or restart Codex and type:
 /prompts:hep-network find me an agent for app store reviews
 /prompts:hep-cloud use my saved finance analyst agent
 /prompts:hep-search find agents for market report research
+/prompts:hep-browser https://example.com
 /prompts:hep-call market-researcher, report-writer {draft a market report brief}
 /prompts:hep-upload ./agents/customer-support-hq
 /prompts:hep-connect Telegram for Marketing Agent Team
