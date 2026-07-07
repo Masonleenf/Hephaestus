@@ -1224,9 +1224,22 @@ def main(argv: list[str] | None = None) -> int:
     return 2
 
 
+def _hep_browser_engine(args: argparse.Namespace):
+    """Resolve the hep-browser engine. Default = the user's own agentlas-browser launcher
+    (dedicated logged-in profile + approval + learn-and-replay skills, no third-party binary).
+    Set AGENTLAS_BROWSER_ENGINE=agent-browser to fall back to the external agent-browser CLI."""
+    engine = str(os.environ.get("AGENTLAS_BROWSER_ENGINE", "agentlas")).strip().lower()
+    if engine in {"agent-browser", "agent_cli", "vercel", "cli"}:
+        from .research.adapters.agent_browser_cli import AgentBrowserCliAdapter
+
+        return AgentBrowserCliAdapter(home=args.home)
+    from .research.adapters.agentlas_browser import AgentlasBrowserAdapter
+
+    return AgentlasBrowserAdapter(home=args.home)
+
+
 def _run_hep_browser(args: argparse.Namespace) -> int:
     from .research import run_research, run_research_bridge_check, run_research_hardpoints
-    from .research.adapters.agent_browser_cli import AgentBrowserCliAdapter
 
     raw_urls, query_parts = _split_hep_browser_targets(args.target, args.url)
     urls, url_rewrites = _humanize_hep_browser_urls(raw_urls, raw=bool(getattr(args, "raw_url", False)))
@@ -1261,7 +1274,7 @@ def _run_hep_browser(args: argparse.Namespace) -> int:
 
     primitive_actions = _agent_browser_primitive_actions_from_hep_browser(args)
     if urls and primitive_actions:
-        adapter = AgentBrowserCliAdapter(home=args.home)
+        adapter = _hep_browser_engine(args)
         runs = [
             adapter.run_actions(
                 url,
@@ -1302,7 +1315,7 @@ def _run_hep_browser(args: argparse.Namespace) -> int:
     if urls and not action and query and not args.read:
         action = query
     if urls and action and not args.read:
-        adapter = AgentBrowserCliAdapter(home=args.home)
+        adapter = _hep_browser_engine(args)
         runs = [
             adapter.automate(
                 url,
@@ -1734,7 +1747,7 @@ def run_field_test() -> dict[str, Any]:
             "agentId": "agent_private_instagram",
             "ownerId": "owner",
             "creatorId": "creator",
-            "version": "1.1.9",
+            "version": "1.1.10",
             "manifest": wizard["manifest"],
             "files": [{"path": "AGENTS.md", "content": (agent / "AGENTS.md").read_text(encoding="utf-8")}],
             "memory": {"scope": "private", "summary": "private campaign memory", "deltas": ["weekly cadence"]},

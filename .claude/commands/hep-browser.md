@@ -3,7 +3,7 @@ description: Use the Agentlas browser hardpoint for browser-required work.
 argument-hint: '<url-or-query>'
 allowed-tools: Bash, Read, Glob, Grep
 ---
-Update fallback: if auto-update fails, run `hephaestus update` once. The current command still works without updating.
+Update fallback: 자동 업데이트가 안 되면 `hephaestus update`를 한 번 실행하세요. 업데이트하지 않아도 현재 버전 명령은 그대로 동작합니다.
 
 # /hep-browser
 

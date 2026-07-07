@@ -1883,6 +1883,7 @@ def test_research_cli_browser_candidates_can_filter_agent_browser(tmp_path, caps
 
 def test_hep_browser_cli_reads_url_with_agent_browser_first(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+    monkeypatch.setenv("AGENTLAS_BROWSER_ENGINE", "agent-browser")
     monkeypatch.setenv("HEPHAESTUS_BROWSER_AUTO_CDP", "0")
 
     def fake_run(self, argv, *, timeout=None):
@@ -1912,6 +1913,7 @@ def test_hep_browser_cli_reads_url_with_agent_browser_first(tmp_path, monkeypatc
 
 def test_hep_browser_cli_prefers_human_gmail_url(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+    monkeypatch.setenv("AGENTLAS_BROWSER_ENGINE", "agent-browser")
     monkeypatch.setenv("HEPHAESTUS_BROWSER_AUTO_CDP", "0")
     calls = []
 
@@ -1944,6 +1946,7 @@ def test_hep_browser_cli_prefers_human_gmail_url(tmp_path, monkeypatch, capsys):
 
 def test_hep_browser_cli_raw_url_preserves_gmail_shell_url(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+    monkeypatch.setenv("AGENTLAS_BROWSER_ENGINE", "agent-browser")
     monkeypatch.setenv("HEPHAESTUS_BROWSER_AUTO_CDP", "0")
     calls = []
 
@@ -1975,6 +1978,7 @@ def test_hep_browser_cli_raw_url_preserves_gmail_shell_url(tmp_path, monkeypatch
 
 def test_hep_browser_cli_read_forwards_cdp_and_keep_open(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+    monkeypatch.setenv("AGENTLAS_BROWSER_ENGINE", "agent-browser")
     calls = []
 
     def fake_run(self, argv, *, timeout=None):
@@ -2013,6 +2017,7 @@ def test_hep_browser_cli_read_forwards_cdp_and_keep_open(tmp_path, monkeypatch, 
 
 def test_hep_browser_cli_automates_url_when_instruction_is_present(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+    monkeypatch.setenv("AGENTLAS_BROWSER_ENGINE", "agent-browser")
     calls = []
 
     def fake_run(self, argv, *, timeout=None):
@@ -2057,6 +2062,7 @@ def test_hep_browser_cli_automates_url_when_instruction_is_present(tmp_path, mon
 
 def test_hep_browser_cli_clicks_explicit_ref_without_llm(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+    monkeypatch.setenv("AGENTLAS_BROWSER_ENGINE", "agent-browser")
     calls = []
 
     def fake_run(self, argv, *, timeout=None):
@@ -2102,6 +2108,7 @@ def test_hep_browser_cli_clicks_explicit_ref_without_llm(tmp_path, monkeypatch, 
 
 def test_hep_browser_cli_clicks_visible_text_without_llm(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("AGENTLAS_AGENT_BROWSER_BIN", "agent-browser")
+    monkeypatch.setenv("AGENTLAS_BROWSER_ENGINE", "agent-browser")
     calls = []
 
     def fake_run(self, argv, *, timeout=None):

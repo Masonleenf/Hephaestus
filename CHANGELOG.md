@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## v1.1.9 - 2026-07-07
+## v1.1.10 - 2026-07-07
 
 - **Router no longer crashes on list-form `locale_coverage` cards.** Routing
   a Korean query against a card whose `locale_coverage` was a bare locale
