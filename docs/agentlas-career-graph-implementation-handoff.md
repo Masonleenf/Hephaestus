@@ -74,7 +74,7 @@ ledger-first Agentlas Career Graph:
 
 ## Current Verification
 
-Run from `/Users/mason/Documents/Agentlas_F/agentlas_desktop/Hephaestus`:
+Run from `<agentlas-os-repo>`:
 
 ```bash
 scripts/verify-package.sh
@@ -83,7 +83,7 @@ python3 -m pytest tests/test_career_graph_runtime.py tests/test_upload.py
 git diff --check
 ```
 
-Run from `/Users/mason/Documents/Agentlas_F/agentlas_desktop`:
+Run from `<agentlas-desktop-repo>`:
 
 ```bash
 npm run typecheck
@@ -92,7 +92,7 @@ node scripts/smoke-renderer-ui.cjs --logic-only
 git diff --check
 ```
 
-Run from `/Users/mason/Documents/Agentlas_F/agentlas_terminal`:
+Run from `<agentlas-terminal-repo>`:
 
 ```bash
 node --check engine/agentlas.cjs
@@ -103,7 +103,7 @@ node --check engine/agentlas-i18n.cjs
 git diff --check
 ```
 
-Run from `/Users/mason/Documents/Agentlas_F/agentlas/AgentsAtlas/app`:
+Run from `<agentlas-web-app>`:
 
 ```bash
 npm run typecheck

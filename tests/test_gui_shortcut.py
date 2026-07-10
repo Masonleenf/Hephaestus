@@ -2,8 +2,10 @@ import base64
 import hashlib
 import json
 
+import pytest
+
 from agentlas_cloud.networking import init_networking, save_card
-from agentlas_cloud.networking.gui_shortcut import open_local_gui_shortcut
+from agentlas_cloud.networking.gui_shortcut import _materialize_cloud_package, open_local_gui_shortcut
 from test_network_cards import make_ready_card
 
 
@@ -121,14 +123,15 @@ def test_hub_gui_shortcut_preempts_local_paid_card(tmp_path, monkeypatch):
     def fake_call(name, arguments=None, home=None, timeout=60):
         assert name == "marketplace.get_manifest"
         assert arguments == {"kind": "agent", "slug": "agentlas-startup-founder-studio"}
+        files = [
+            _cloud_file("agentlas.json", json.dumps({"ui": {"launcher": "scripts/open.py"}})),
+            _cloud_file("scripts/open.py", "print('hub')\n"),
+        ]
         return {
             "name": "Startup Founder Studio",
             "cloudPackage": {
-                "packageHash": "sha256:test",
-                "files": [
-                    _cloud_file("agentlas.json", json.dumps({"ui": {"launcher": "scripts/open.py"}})),
-                    _cloud_file("scripts/open.py", "print('hub')\n"),
-                ],
+                "packageHash": _cloud_package_hash(files),
+                "files": files,
             },
         }
 
@@ -151,3 +154,57 @@ def test_hub_gui_shortcut_preempts_local_paid_card(tmp_path, monkeypatch):
     assert result["local_routing"] == "skipped"
     assert result["hub_routing"] == "cloud_package_installed"
     assert "selected" not in result
+
+
+def test_cloud_package_restore_is_exact_and_preserves_last_valid_asset_on_failure(tmp_path):
+    root = tmp_path / "cloud-installs" / "portable-agent"
+    root.mkdir(parents=True)
+    (root / "AGENTS.md").write_text("old agent\n", encoding="utf-8")
+    (root / "removed-in-v2.md").write_text("stale\n", encoding="utf-8")
+    (root / ".agentlas-cloud-package.json").write_text(
+        json.dumps({"packageHash": "sha256:v1"}),
+        encoding="utf-8",
+    )
+    v2_files = [
+        _cloud_file("AGENTS.md", "new agent\n"),
+        _cloud_file("skills/core/SKILL.md", "portable skill\n"),
+    ]
+    v2_hash = _cloud_package_hash(v2_files)
+
+    _materialize_cloud_package(root, v2_files, package_hash=v2_hash)
+
+    assert (root / "AGENTS.md").read_text(encoding="utf-8") == "new agent\n"
+    assert not (root / "removed-in-v2.md").exists()
+
+    (root / "AGENTS.md").write_text("locally mutated\n", encoding="utf-8")
+    _materialize_cloud_package(root, v2_files, package_hash=v2_hash)
+    assert (root / "AGENTS.md").read_text(encoding="utf-8") == "new agent\n"
+
+    broken = _cloud_file("AGENTS.md", "broken update\n")
+    broken["sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="integrity failed"):
+        _materialize_cloud_package(root, [broken], package_hash="0" * 64)
+
+    assert (root / "AGENTS.md").read_text(encoding="utf-8") == "new agent\n"
+    marker = json.loads((root / ".agentlas-cloud-package.json").read_text(encoding="utf-8"))
+    assert marker["packageHash"] == v2_hash
+
+    aggregate_mismatch = [_cloud_file("AGENTS.md", "aggregate mismatch\n")]
+    with pytest.raises(ValueError, match="aggregate integrity failed"):
+        _materialize_cloud_package(root, aggregate_mismatch, package_hash="f" * 64)
+    assert (root / "AGENTS.md").read_text(encoding="utf-8") == "new agent\n"
+
+    duplicate = [_cloud_file("AGENTS.md", "first\n"), _cloud_file("./AGENTS.md", "second\n")]
+    with pytest.raises(ValueError, match="duplicate cloud package path"):
+        _materialize_cloud_package(root, duplicate, package_hash=_cloud_package_hash(duplicate))
+    assert (root / "AGENTS.md").read_text(encoding="utf-8") == "new agent\n"
+
+
+def _cloud_package_hash(files):
+    aggregate = hashlib.sha256()
+    for item in sorted(files, key=lambda file: file["path"]):
+        aggregate.update(item["path"].encode("utf-8"))
+        aggregate.update(b"\0")
+        aggregate.update(item["sha256"].encode("ascii"))
+        aggregate.update(b"\0")
+    return aggregate.hexdigest()

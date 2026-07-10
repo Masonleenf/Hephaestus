@@ -3,6 +3,12 @@
 This repository is the public architecture and foldering source of truth for
 Agentlas Core Engine Meta-Agent packages.
 
+It also owns the public [Agent Trust contract](agent-trust-contract.md): an
+agent is a portable, owner-scoped, inspectable, restorable asset rather than a
+disposable program or one-vendor chat setting. Product-specific Web, Desktop,
+Terminal, and account implementations must mirror that contract without moving
+their private implementation into this repository.
+
 It defines the portable contract that hosted services, desktop apps, terminal
 tools, and runtime adapters should mirror when they create, repair, import, or
 publish Agentlas-compatible agents and teams.
@@ -46,6 +52,7 @@ These files are the public contract surface:
 - `README.md`
 - `ARCHITECTURE.md`
 - `docs/source-of-truth.md`
+- `docs/agent-trust-contract.md`
 - `docs/runtime-sync-boundaries.md`
 - `docs/mode-classifier.md`
 - `docs/clarify-question-loop.md`
@@ -154,6 +161,8 @@ change:
 The following behaviors are public contracts in this repo:
 
 - mode auto-detection;
+- Agent Trust ownership, portability, public/private, restore, and execution
+  boundaries;
 - clarify question loop;
 - `.agentlas` local auto-activation.
 - `.agentlas/global-commands.json` with final `global_commands` handoff.

@@ -14,10 +14,12 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import hashlib
 from typing import Any
+import uuid
 
 from .bootstrap import networking_home
 from .card_lint import effective_status
@@ -295,25 +297,61 @@ def _cloud_install_root() -> Path:
 
 
 def _materialize_cloud_package(root: Path, files: list[dict[str, Any]], *, package_hash: str) -> None:
-    root.mkdir(parents=True, exist_ok=True)
-    marker = root / ".agentlas-cloud-package.json"
-    current_hash = None
+    root.parent.mkdir(parents=True, exist_ok=True)
+    nonce = f"{os.getpid()}-{uuid.uuid4().hex}"
+    staging = root.with_name(f".{root.name}.installing-{nonce}")
+    backup = root.with_name(f".{root.name}.backup-{nonce}")
+    seen: set[str] = set()
+    verified_files: list[tuple[str, str]] = []
+    moved_existing = False
+    installed = False
     try:
-        current_hash = json.loads(marker.read_text(encoding="utf-8")).get("packageHash")
-    except (OSError, ValueError):
-        current_hash = None
-    overwrite = current_hash != package_hash
-    for item in files:
-        rel = str(item.get("path") or "")
-        target = _safe_install_path(root, rel)
-        raw = _decode_package_file(item)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        if overwrite or not target.exists():
+        staging.mkdir()
+        for item in files:
+            rel = str(item.get("path") or "").replace("\\", "/")
+            target = _safe_install_path(staging, rel)
+            canonical_rel = target.relative_to(staging.resolve()).as_posix()
+            if canonical_rel in seen:
+                raise ValueError(f"duplicate cloud package path: {rel}")
+            seen.add(canonical_rel)
+            raw = _decode_package_file(item)
+            verified_files.append((canonical_rel, str(item.get("sha256") or "").lower()))
+            target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(raw)
-    marker.write_text(
-        json.dumps({"packageHash": package_hash, "installedAt": _now_iso()}, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+        expected_package_hash = package_hash.lower().removeprefix("sha256:")
+        if len(expected_package_hash) != 64 or any(char not in "0123456789abcdef" for char in expected_package_hash):
+            raise ValueError("cloud package aggregate hash is missing or invalid")
+        aggregate = hashlib.sha256()
+        for rel, digest in sorted(verified_files):
+            aggregate.update(rel.encode("utf-8"))
+            aggregate.update(b"\0")
+            aggregate.update(digest.encode("ascii"))
+            aggregate.update(b"\0")
+        if aggregate.hexdigest() != expected_package_hash:
+            raise ValueError("cloud package aggregate integrity failed")
+        (staging / ".agentlas-cloud-package.json").write_text(
+            json.dumps({"packageHash": package_hash, "installedAt": _now_iso()}, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+        # A restored Cloud agent is one immutable asset snapshot. Swap the
+        # managed directory as a whole so deleted files and local mutations do
+        # not produce a hybrid package across versions.
+        if root.exists():
+            root.rename(backup)
+            moved_existing = True
+        staging.rename(root)
+        installed = True
+    except Exception:
+        if moved_existing and not root.exists() and backup.exists():
+            backup.rename(root)
+            moved_existing = False
+        raise
+    finally:
+        if staging.exists():
+            shutil.rmtree(staging, ignore_errors=True)
+        if installed and backup.exists():
+            shutil.rmtree(backup, ignore_errors=True)
 
 
 def _decode_package_file(item: dict[str, Any]) -> bytes:

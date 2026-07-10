@@ -36,6 +36,7 @@ The canonical core is runtime-neutral:
 - `AGENTS.md`
 - `agent.md`
 - `docs/source-of-truth.md`
+- `docs/agent-trust-contract.md`
 - `docs/runtime-sync-boundaries.md`
 - `docs/mode-classifier.md`
 - `docs/clarify-question-loop.md`
@@ -102,7 +103,14 @@ The canonical core is runtime-neutral:
 
 ## Public Runtime Contracts
 
-Three runtime behaviors are public contracts here, not private product code:
+The following runtime behaviors are public contracts here, not private product
+code:
+
+- Agent Trust contract: agents are portable user assets with explicit package
+  identity, owner-scoped private storage, public/private separation, local
+  execution boundaries, governed learning, restore evidence, and no implied
+  hosted Agent Cloud VM. Agentlas Terminal is an existing surface to harden,
+  not a product to recreate.
 
 - Mode classifier: choose `single-agent-creator`, `team-builder`, or
   `agentlas-packager` before generation.

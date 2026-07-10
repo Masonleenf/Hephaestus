@@ -228,7 +228,7 @@ Gap:
 
 - The runtime currently represents document/source retrieval more than agent
   career.
-- Local evidence under `/Users/mason/Documents/Agentlas_F` shows activation
+- Local evidence under `<workspace>` shows activation
   skeletons and empty source manifests, not a live project-wide ontology DB:
   `ontology-sources.json` files have `sources: []`, and no
   `.agentlas/ontology-runtime.sqlite` was found under the checked tree.

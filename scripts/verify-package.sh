@@ -20,6 +20,7 @@ required_files=(
   "gemini/extension/gemini-extension.json"
   "gemini/extension/GEMINI.md"
   "docs/source-of-truth.md"
+  "docs/agent-trust-contract.md"
   "docs/runtime-sync-boundaries.md"
   "docs/mode-classifier.md"
   "docs/clarify-question-loop.md"

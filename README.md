@@ -14,6 +14,10 @@
 </p>
 
 <p align="center">
+  <strong>We are Agent Trust. Your agent is not a program. It is an asset. — Agentlas —</strong>
+</p>
+
+<p align="center">
   <sub>An agent you create is not tied to one model workspace or computer. To retrieve it from Cloud elsewhere, install Agentlas OS on a supported host and sign in.</sub>
 </p>
 
@@ -99,6 +103,10 @@ surface active there. For direct shell commands, see the install methods below.
 An agent you create should remain an asset you can move, rather than a
 setting trapped in one chat, one model-vendor workspace, or one computer.
 Agentlas separates three jobs that ordinary agent builders blur together:
+
+This is the public [Agent Trust contract](docs/agent-trust-contract.md): a
+portable, owner-scoped, inspectable, and restorable package contract—not a
+claim of regulated financial or legal trust services.
 
 | Value | What Agentlas does | Entry point in an external LLM host |
 | --- | --- | --- |
