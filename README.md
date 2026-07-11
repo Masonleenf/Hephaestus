@@ -63,12 +63,61 @@ Use this when you are already inside an LLM and want the Agentlas command
 surface active there. For direct shell commands, see the install methods below.
 
 <p align="center">
-  <img src="assets/hephaestus-network-mcp-demo.gif" alt="Hephaestus Network 2.0 routing a task live to the right agent over MCP" width="760">
+  <a href="https://agentlas.cloud/desktop">
+    <img src="assets/readme/agentlas-desktop-hero.png" alt="Agentlas Desktop dashboard with local agents, owner-private Agent Cloud, Hub specialists, connected model hosts, and automations" width="960">
+  </a>
 </p>
 
 <p align="center">
-  <sub>Borrow specialists, route them locally, and verify real work across your LLMs, browser, files, memory, and tools.</sub>
+  <sub>Build, own, borrow, and run agents across your local workspace, private Agent Cloud, and the public Agentlas Hub.</sub>
 </p>
+
+## Agentlas Desktop in motion
+
+<table>
+<tr>
+<td width="42%" valign="middle">
+
+### Build an owned agent
+
+Describe the work in plain language. Agentlas classifies the request, runs the interview and research gate, generates the package, verifies it, and keeps the result inspectable.
+
+[Agentlas Desktop →](https://agentlas.cloud/desktop)
+
+</td>
+<td width="58%">
+  <a href="https://agentlas.cloud/desktop"><picture><source srcset="assets/readme/feature-wall/workflow-build-pipeline.gif" type="image/gif"><img src="assets/readme/feature-wall/workflow-build-pipeline.jpg" alt="Building an owned agent package from a plain-language request in Agentlas Desktop" width="100%"></picture></a>
+</td>
+</tr>
+<tr>
+<td width="42%" valign="middle">
+
+### Orchestrate a team
+
+Combine local agents and borrowed Hub specialists into one orchestrator. Roles stay explicit while Agentlas manages routing, handoffs, and review boundaries.
+
+[Explore Agentlas OS →](https://agentlas.cloud/models/hephaestus)
+
+</td>
+<td width="58%">
+  <a href="https://agentlas.cloud/models/hephaestus"><picture><source srcset="assets/readme/feature-wall/workflow-make-group.gif" type="image/gif"><img src="assets/readme/feature-wall/workflow-make-group.jpg" alt="Composing local and Hub agents into one orchestrated team" width="100%"></picture></a>
+</td>
+</tr>
+<tr>
+<td width="42%" valign="middle">
+
+### Run and verify locally
+
+Use the model account or API key you choose. Your current host performs the work under its local files, tools, credentials, permissions, and verification rules.
+
+[Read the trust model →](https://agentlas.cloud/docs/trust/agent-trust)
+
+</td>
+<td width="58%">
+  <a href="https://agentlas.cloud/docs/trust/agent-trust"><picture><source srcset="assets/readme/feature-wall/workflow-run.gif" type="image/gif"><img src="assets/readme/feature-wall/workflow-run.jpg" alt="Running and verifying an Agentlas agent under the local host permission boundary" width="100%"></picture></a>
+</td>
+</tr>
+</table>
 
 <p align="center">
   <a href="#build-borrow-own">Build · Borrow · Own</a>
@@ -76,6 +125,8 @@ surface active there. For direct shell commands, see the install methods below.
   <a href="#why-agentlas-os">Why Agentlas OS</a>
   ·
   <a href="#paste-to-install">Paste to Install</a>
+  ·
+  <a href="#agentlas-desktop-in-motion">Desktop Demo</a>
   ·
   <a href="#why-not-just-make-a-claude-agent">Why Not Just A Claude Agent?</a>
   ·
